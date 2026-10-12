@@ -1,0 +1,120 @@
+# Pilha de produção: nginx (TLS + limites) -> app (sandbox Landlock) -> Postgres/Redis.
+#
+#   cp .env.prod.example .env.prod     # preencha (segredos: `api_ocr gen-secret`)
+#   ./gen-selfsigned.sh SEU_HOST       # SÓ para teste; em produção monte o certificado real em ./certs
+#   docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+#
+# Desenho de rede: `internal` NÃO tem saída para a internet (internal: true). App, banco e
+# Redis ficam só nela; o proxy participa das duas redes e é o único com portas publicadas.
+# Um parser comprometido não consegue fazer requisições para fora nem alcançar o banco por
+# outro caminho que não o da aplicação.
+name: api-ocr
+
+x-hardened: &hardened
+  restart: unless-stopped
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  pids_limit: 512
+
+services:
+  proxy:
+    <<: *hardened
+    image: nginxinc/nginx-unprivileged:stable-alpine
+    ports:
+      - "${PROXY_BIND:-0.0.0.0}:${PROXY_HTTP_PORT:-80}:8080"
+      - "${PROXY_BIND:-0.0.0.0}:${PROXY_HTTPS_PORT:-443}:8443"
+    environment:
+      PUBLIC_HOST: ${PUBLIC_HOST:?defina PUBLIC_HOST}
+      UPSTREAM: app:8080
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:ro
+      - ./nginx/api-ocr-proxy.inc:/etc/nginx/api-ocr-proxy.inc:ro
+      - ./certs:/etc/nginx/certs:ro
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      # A raiz é somente leitura: o template é renderizado aqui (e o default.conf da imagem some).
+      - /etc/nginx/conf.d:size=1m,mode=755,uid=101,gid=101
+    networks: [edge, internal]
+    depends_on:
+      app:
+        condition: service_healthy
+    mem_limit: 256m
+
+  app:
+    <<: *hardened
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: api-ocr:${API_OCR_VERSION:-dev}
+    user: "10001:10001"
+    env_file: .env.prod
+    environment:
+      BIND_ADDR: 0.0.0.0:8080
+      ISSUER: https://${PUBLIC_HOST}
+      TRUST_PROXY: "true"            # há exatamente UM proxy confiável na frente
+      DATABASE_URL: postgres://api_ocr:${DB_PASSWORD:?defina DB_PASSWORD}@db:5432/api_ocr
+      # O banco está só na rede `internal` (sem rota para fora). Com banco gerenciado/remoto, remova
+      # esta linha e use ?sslmode=verify-full na DATABASE_URL.
+      DATABASE_ALLOW_PLAINTEXT: "true"
+      LOG_FORMAT: json
+      RATE_LIMIT_REDIS_URL: redis://:${REDIS_PASSWORD:?defina REDIS_PASSWORD}@redis:6379
+      SANDBOX: required
+    # Uploads (até OCR_MAX_UPLOAD_MB) e caches do motor vão para a tmpfs: a raiz é somente leitura.
+    tmpfs:
+      - /tmp:size=2g,mode=1777
+    networks: [internal]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    mem_limit: 6g
+    memswap_limit: 6g
+    cpus: 4
+    ulimits:
+      nofile: 8192
+
+  db:
+    <<: *hardened
+    read_only: false                  # o Postgres grava em PGDATA e /run
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: api_ocr
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD}
+      POSTGRES_DB: api_ocr
+    volumes:
+      - pg:/var/lib/postgresql/data
+    networks: [internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U api_ocr -d api_ocr"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    mem_limit: 1g
+
+  redis:
+    <<: *hardened
+    image: redis:7-alpine
+    user: "999:1000"                  # já sobe como `redis`: sem troca de usuário, sem capacidades
+    # Só contadores de limite de taxa: sem persistência, com senha e teto de memória.
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?defina REDIS_PASSWORD}", "--save", "", "--appendonly", "no", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru"]
+    environment:
+      REDIS_PW: ${REDIS_PASSWORD}
+    networks: [internal]
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PW\" ping 2>/dev/null | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    mem_limit: 128m
+
+networks:
+  edge: {}
+  internal:
+    internal: true                    # sem rota para a internet
+
+volumes:
+  pg: {}

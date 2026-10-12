@@ -1,0 +1,117 @@
+# Proxy de borda do OCR API (nginx-unprivileged). Variáveis: PUBLIC_HOST, UPSTREAM.
+# Carregado dentro de `http {}` pelo nginx.conf padrão da imagem (conf.d/*.conf).
+#
+# Papel: terminar TLS, absorver abuso ANTES do app (limites por IP, timeouts, buffer de
+# upload), expor só as rotas da API e entregar o IP real ao app (TRUST_PROXY=true).
+
+server_tokens off;
+log_format safe '$remote_addr $request_method $uri $status $body_bytes_sent ${request_time}s rid=$request_id';
+
+# --- limites por IP --------------------------------------------------------
+limit_req_zone  $binary_remote_addr zone=general:10m rate=20r/s;
+limit_req_zone  $binary_remote_addr zone=auth:10m    rate=5r/s;
+limit_req_zone  $binary_remote_addr zone=ocr:10m     rate=1r/s;
+limit_conn_zone $binary_remote_addr zone=perip:10m;
+limit_req_status  429;
+limit_conn_status 429;
+
+# --- anti-slowloris / corpos / cabeçalhos ----------------------------------
+client_header_timeout 10s;
+client_body_timeout   15s;
+send_timeout          15s;
+keepalive_requests    200;
+reset_timedout_connection on;
+client_header_buffer_size   2k;
+large_client_header_buffers 4 8k;
+client_max_body_size 16k;         # padrão; só o /v1/ocr sobe
+http2_max_concurrent_streams 32;
+
+upstream api_ocr_upstream {
+    server ${UPSTREAM};
+    keepalive 32;
+}
+
+# HTTP puro: só redireciona (host FIXO, nunca o Host enviado pelo cliente).
+server {
+    listen 8080 default_server;
+    listen [::]:8080 default_server;
+    server_name _;
+    keepalive_timeout 30s;
+    access_log /dev/stdout safe;   # sem query string: ela pode carregar `state`/`code_challenge`
+    return 301 https://${PUBLIC_HOST}$request_uri;
+}
+
+# HTTPS com SNI desconhecido: derruba o handshake (varredura por IP não vê o serviço).
+server {
+    listen 8443 ssl default_server;
+    listen [::]:8443 ssl default_server;
+    server_name _;
+    keepalive_timeout 30s;
+    access_log /dev/stdout safe;   # sem query string: ela pode carregar `state`/`code_challenge`
+    ssl_reject_handshake on;
+}
+
+server {
+    listen 8443 ssl;
+    listen [::]:8443 ssl;
+    http2 on;
+    server_name ${PUBLIC_HOST};
+    keepalive_timeout 30s;
+    access_log /dev/stdout safe;   # sem query string: ela pode carregar `state`/`code_challenge`
+
+    ssl_certificate     /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key /etc/nginx/certs/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 1d;
+    ssl_session_tickets off;
+
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+    add_header X-Content-Type-Options    "nosniff" always;
+    add_header X-Frame-Options           "DENY" always;
+    add_header Referrer-Policy           "no-referrer" always;
+
+    limit_conn perip 40;
+    limit_req  zone=general burst=40 nodelay;
+
+    # Só o que a API publica. Todo o resto (/readyz, /admin, ...) morre aqui, sem tocar o app.
+    location = /healthz {
+        include /etc/nginx/api-ocr-proxy.inc;
+    }
+    location = /.well-known/oauth-authorization-server {
+        include /etc/nginx/api-ocr-proxy.inc;
+    }
+    location ~ ^/(oauth|auth)/ {
+        limit_req zone=general burst=40 nodelay;
+        limit_req zone=auth    burst=10 nodelay;
+        include /etc/nginx/api-ocr-proxy.inc;
+    }
+    location = /v1/me {
+        client_max_body_size 1k;
+        include /etc/nginx/api-ocr-proxy.inc;
+    }
+    # Upload: o nginx recebe o corpo INTEIRO (com timeouts) antes de abrir a requisição ao app,
+    # então uploads lentos não seguram threads/conexões do app.
+    location = /v1/ocr {
+        limit_req zone=general burst=40 nodelay;
+        limit_req zone=ocr     burst=5  nodelay;
+        client_max_body_size 26m;
+        client_body_timeout  60s;
+        client_body_buffer_size 1m;
+        proxy_request_buffering on;
+        proxy_read_timeout 200s;       # > OCR_TIMEOUT_SECS do app
+        proxy_send_timeout 60s;
+        include /etc/nginx/api-ocr-proxy.inc;
+    }
+    # Documentação (Swagger UI). DESLIGADA por padrão no borda: descomente junto com ENABLE_DOCS=true
+    # no app. Se for expor, considere restringir por IP/VPN (allow/deny) ou autenticação básica.
+    # location ~ ^/(docs/|docs$|openapi\.json$) {
+    #     limit_req zone=general burst=20 nodelay;
+    #     client_max_body_size 1k;
+    #     include /etc/nginx/api-ocr-proxy.inc;
+    # }
+    location / {
+        return 404;
+    }
+}

@@ -1,0 +1,59 @@
+# CI: auditoria das dependências (cargo-deny) e a suíte completa contra Postgres e Redis reais.
+# A auditoria também roda todo dia: uma CVE nova numa dependência reprova o build mesmo sem
+# mudança no código.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deps:
+    name: dependências (cargo-deny)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check advisories bans licenses sources
+
+  test:
+    name: testes
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: api_ocr
+          POSTGRES_PASSWORD: ci-password
+          POSTGRES_DB: api_ocr
+        ports: ["55432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U api_ocr -d api_ocr" --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["56379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      TEST_ADMIN_DATABASE_URL: postgres://api_ocr:ci-password@127.0.0.1:55432/api_ocr
+      TEST_REDIS_URL: redis://127.0.0.1:56379/
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: compilar
+        run: cargo build --workspace --all-targets --locked
+      - name: testes
+        run: cargo test --workspace --locked

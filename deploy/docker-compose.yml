@@ -1,0 +1,37 @@
+# Postgres de desenvolvimento do OCR API. Só escuta em 127.0.0.1.
+# Em produção use um banco gerenciado, com TLS e credenciais próprias.
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: api_ocr_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: api_ocr
+      POSTGRES_PASSWORD: ${OCR_DB_PASSWORD:?defina OCR_DB_PASSWORD}
+      POSTGRES_DB: api_ocr
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - api_ocr_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U api_ocr -d api_ocr"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    container_name: api_ocr_redis
+    restart: unless-stopped
+    # Só contadores de limite de taxa: sem persistência, com senha, limitado em memória.
+    command: ["redis-server", "--requirepass", "${OCR_REDIS_PASSWORD:?defina OCR_REDIS_PASSWORD}", "--save", "", "--appendonly", "no", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru"]
+    ports:
+      - "127.0.0.1:56379:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PW\" ping | grep -q PONG || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    environment:
+      REDIS_PW: ${OCR_REDIS_PASSWORD}
+volumes:
+  api_ocr_pg:

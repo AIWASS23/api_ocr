@@ -1,0 +1,10 @@
+target
+.models
+.cuda
+.git
+**/.env
+**/.env.*
+!**/.env.example
+deploy/.env
+api/tests
+**/*.md
