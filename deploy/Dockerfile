@@ -3,7 +3,7 @@
 # `--features cuda` (ver api/README.md). Contexto de build: a RAIZ do repositório.
 
 # ---------- compilação ----------
-FROM rust:1.95-trixie AS build
+FROM rust:1.99-trixie AS build
 WORKDIR /src
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
