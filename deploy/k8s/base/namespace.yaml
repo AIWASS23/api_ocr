@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: api-ocr
+  labels:
+    # Pod Security Admission no nível mais estrito: recusa qualquer pod privilegiado, com
+    # capacidades, root, hostPath etc. — inclusive se alguém aplicar algo fora destes manifests.
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/audit: restricted

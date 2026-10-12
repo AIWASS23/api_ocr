@@ -35,7 +35,8 @@ pub fn severity(kind: &str) -> Severity {
     match kind {
         "refresh_reuse_detected" | "auth_code_reuse" | "account_locked" | "ocr_worker_crashed" => Severity::Alert,
         "login_failed" | "login_failed_unknown" | "login_blocked" | "login_ip_locked" | "mfa_failed"
-        | "token_exchange_failed" | "ocr_worker_failed" | "ocr_worker_bad_reply" | "sessions_revoked" => Severity::Warn,
+        | "token_exchange_failed" | "ocr_worker_failed" | "ocr_worker_bad_reply" | "ocr_worker_memory_killed"
+        | "sessions_revoked" => Severity::Warn,
         _ => Severity::Info,
     }
 }

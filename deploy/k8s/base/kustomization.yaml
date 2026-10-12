@@ -1,0 +1,19 @@
+# Base comum a todos os ambientes. Não é aplicável sozinha: os overlays definem o banco, o Redis,
+# os segredos, o Gateway (TLS) e a imagem. Veja deploy/k8s/README.md.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: api-ocr
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: api-ocr
+    includeSelectors: false
+resources:
+  - namespace.yaml
+  - serviceaccount.yaml
+  - configmap.yaml
+  - deployment.yaml
+  - service.yaml
+  - pdb.yaml
+  - hpa.yaml
+  - httproute.yaml
+  - networkpolicy.yaml

@@ -14,7 +14,7 @@
 
 use std::io::Read;
 use std::path::{Path, PathBuf};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use axum::Json;
 use axum::extract::{Multipart, State};
@@ -198,11 +198,32 @@ pub struct WireDocument {
     pub metadata: Map<String, Value>,
 }
 
+/// Duração das fases DENTRO do worker, em milissegundos (só vão para o log da API).
+#[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
+pub struct Timings {
+    /// rlimits + Landlock + seccomp.
+    pub confine_ms: u64,
+    /// Assinatura e limites anti-bomba (páginas, pixels, ZIP).
+    pub inspect_ms: u64,
+    /// Montagem do conversor.
+    pub engine_ms: u64,
+    /// Conversão, incluindo a carga dos modelos ONNX (o docling os carrega no 1º documento).
+    pub convert_ms: u64,
+}
+
+fn ms(d: Duration) -> u64 {
+    d.as_millis().try_into().unwrap_or(u64::MAX)
+}
+
 /// Resposta do worker (uma linha JSON no stdout).
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "status", rename_all = "snake_case")]
 pub enum Reply {
-    Ok { documents: Vec<WireDocument> },
+    Ok {
+        documents: Vec<WireDocument>,
+        #[serde(default)]
+        timings: Timings,
+    },
     Rejected { reason: Rejection },
 }
 
@@ -213,11 +234,18 @@ pub fn execute_job(path: &Path, max_pages: usize, timeout: Duration) -> Result<R
     let Some(kind) = extension(name).as_deref().and_then(kind_for_ext) else {
         return Ok(Reply::Rejected { reason: Rejection::UnsupportedFormat });
     };
+    let mut timings = Timings::default();
+    let t = Instant::now();
     if let Err(reason) = inspect(path, kind, max_pages) {
         return Ok(Reply::Rejected { reason });
     }
+    timings.inspect_ms = ms(t.elapsed());
+    let t = Instant::now();
     let engine = crate::ocr_engine(timeout, max_pages).map_err(|e| e.to_string())?;
+    timings.engine_ms = ms(t.elapsed());
+    let t = Instant::now();
     let (docs, errors) = engine.process_files(path, "txt").map_err(|e| e.to_string())?;
+    timings.convert_ms = ms(t.elapsed());
     if docs.is_empty()
         && let Some(e) = errors.first() {
             // Vai para o stderr do worker (a API registra um trecho); nunca para o cliente.
@@ -226,6 +254,7 @@ pub fn execute_job(path: &Path, max_pages: usize, timeout: Duration) -> Result<R
         }
     Ok(Reply::Ok {
         documents: docs.into_iter().map(|d| WireDocument { page_content: d.page_content, metadata: d.metadata }).collect(),
+        timings,
     })
 }
 
@@ -276,6 +305,7 @@ async fn save_field(mut field: axum::extract::multipart::Field<'_>, dest: &Path,
     )
 )]
 pub async fn ocr(State(st): State<AppState>, auth: Auth, mut multipart: Multipart) -> Result<Json<OcrResponse>, ApiError> {
+    let started = Instant::now();
     auth.require_scope("ocr")?;
     let user = auth.user_id()?;
 
@@ -293,7 +323,10 @@ pub async fn ocr(State(st): State<AppState>, auth: Auth, mut multipart: Multipar
         _ => return Err(ApiError::Unavailable(Duration::from_secs(10))),
     };
 
+    let admit_ms = ms(started.elapsed());
+
     // 2) Recebe exatamente um campo `file`.
+    let t_upload = Instant::now();
     let tmp = tempfile::Builder::new()
         .prefix("ocr-")
         .tempdir()
@@ -326,14 +359,37 @@ pub async fn ocr(State(st): State<AppState>, auth: Auth, mut multipart: Multipar
     };
     // Qualquer campo extra é ignorado (não é lido nem armazenado).
     drop(multipart);
+    let upload_ms = ms(t_upload.elapsed());
+    let bytes = std::fs::metadata(&path).map_or(0, |m| m.len());
 
     // 3) Processa num processo worker isolado. Ao estourar o prazo (ou o cliente desistir) o
     //    processo é morto de verdade; as vagas só são liberadas depois disso.
+    let t_worker = Instant::now();
     let outcome = worker::run_job(&st.cfg, tmp.path(), &path).await;
+    let worker_ms = ms(t_worker.elapsed());
     drop((permit, guard, tmp)); // apaga o diretório do job
 
     let docs = match outcome {
-        Ok(Reply::Ok { documents }) => documents,
+        Ok(Reply::Ok { documents, timings: w }) => {
+            // Tempo de cada fase (sem conteúdo nem nome do arquivo). `worker_spawn_ms` = criar o
+            // processo, carregar o binário e devolver a resposta: o custo do isolamento.
+            let inside = w.confine_ms + w.inspect_ms + w.engine_ms + w.convert_ms;
+            tracing::info!(
+                bytes,
+                documents = documents.len(),
+                admit_ms,
+                upload_ms,
+                worker_ms,
+                worker_spawn_ms = worker_ms.saturating_sub(inside),
+                confine_ms = w.confine_ms,
+                inspect_ms = w.inspect_ms,
+                engine_ms = w.engine_ms,
+                convert_ms = w.convert_ms,
+                total_ms = ms(started.elapsed()),
+                "OCR concluído"
+            );
+            documents
+        }
         Ok(Reply::Rejected { reason }) => {
             if reason == Rejection::ConversionFailed {
                 tracing::warn!("conversão falhou");

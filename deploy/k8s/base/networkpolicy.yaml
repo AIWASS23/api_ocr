@@ -1,0 +1,49 @@
+# Nada entra nem sai do namespace sem uma regra explícita.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+# Todo pod do namespace pode resolver nomes (DNS do cluster).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - { protocol: UDP, port: 53 }
+        - { protocol: TCP, port: 53 }
+---
+# A API só recebe tráfego do Gateway. Isso é o que torna TRUST_PROXY=true seguro: nenhum outro
+# pod do cluster consegue chegar na porta 8080 com um X-Forwarded-For forjado.
+# O namespace do proxy é o do Envoy Gateway; troque no overlay se usar outra implementação.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-ocr-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: api-ocr
+      app.kubernetes.io/component: api
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: envoy-gateway-system
+      ports:
+        - { protocol: TCP, port: 8080 }

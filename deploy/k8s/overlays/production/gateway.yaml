@@ -1,0 +1,79 @@
+# Gateway API com Envoy Gateway. TLS emitido pelo cert-manager (ClusterIssuer `letsencrypt`).
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: envoy
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: api-ocr
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt          # TROQUE pelo seu ClusterIssuer
+spec:
+  gatewayClassName: envoy
+  infrastructure:
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: api-ocr-proxy
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: api.example.com                         # TROQUE
+      allowedRoutes:
+        namespaces: { from: Same }
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: api.example.com                         # TROQUE
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: api-ocr-tls                           # criado pelo cert-manager
+      allowedRoutes:
+        namespaces: { from: Same }
+---
+# Proxy de borda: 2 réplicas e preservação do IP real do cliente. Sem `Local`, o balanceador da
+# nuvem faz SNAT e todos os clientes chegariam com o IP de um nó: limite de taxa, bloqueio de
+# login e auditoria passariam a valer "por nó" em vez de "por cliente".
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: api-ocr-proxy
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyDeployment:
+        replicas: 2
+      envoyService:
+        externalTrafficPolicy: Local
+---
+# Limites do lado do cliente na borda (a API tem os seus; isto corta antes de chegar nela).
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: api-ocr-edge
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: api-ocr
+  tls:
+    minVersion: "1.2"
+  timeout:
+    http:
+      # Cabeçalhos + corpo: o upload maior (25 MB) tem 120 s na API.
+      requestReceivedTimeout: 130s
+      idleTimeout: 60s
+  connection:
+    connectionLimit:
+      value: 10000
+    bufferLimit: 32Ki
+  headers:
+    # Cabeçalhos com "_" são descartados (evita ambiguidade com variáveis de ambiente/CGI).
+    withUnderscoresAction: RejectRequest

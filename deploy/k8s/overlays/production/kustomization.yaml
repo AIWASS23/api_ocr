@@ -1,0 +1,21 @@
+# Produção: banco e Redis GERENCIADOS (fora do cluster, com TLS), certificado via cert-manager,
+# segredos vindos de fora (External Secrets / Sealed Secrets / CSI), imagem fixada por digest.
+# Antes de aplicar, troque todo valor marcado com TROQUE (veja deploy/k8s/README.md).
+#   kubectl apply -k deploy/k8s/overlays/production
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: api-ocr
+resources:
+  - ../../base
+  - gateway.yaml
+  - networkpolicy.yaml
+images:
+  - name: api-ocr
+    newName: registry.example.com/api-ocr              # TROQUE
+    # Fixe por digest (imutável), não por tag: `digest: sha256:...`
+    newTag: "0.1.0"                                     # TROQUE
+configMapGenerator:
+  - name: api-ocr-config
+    behavior: merge
+    literals:
+      - ISSUER=https://api.example.com                  # TROQUE (URL pública, https)

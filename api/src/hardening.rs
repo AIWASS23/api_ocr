@@ -194,10 +194,22 @@ pub fn is_dumpable() -> bool {
     unsafe { libc::prctl(libc::PR_GET_DUMPABLE, 0, 0, 0, 0) == 1 }
 }
 
+/// `oom_score_adj = 1000`: se a memória do contêiner/cgroup acabar, o kernel mata ESTE processo
+/// primeiro (SIGKILL, morte limpa). Aumentar a própria pontuação não exige privilégio.
+pub fn prefer_oom_kill() -> Result<(), HardeningError> {
+    use std::io::Write;
+    // Só escrita: sem O_CREAT/O_TRUNC, que o Landlock trataria como criar/truncar arquivo.
+    std::fs::OpenOptions::new()
+        .write(true)
+        .open("/proc/self/oom_score_adj")
+        .and_then(|mut f| f.write_all(b"1000"))
+        .map_err(|e| HardeningError::Sys("oom_score_adj", e))
+}
+
 /// Limites de recursos do worker de OCR.
 #[derive(Debug, Clone, Copy)]
 pub struct Limits {
-    /// Espaço de endereçamento (bytes). `None` = sem limite (necessário com CUDA).
+    /// Espaço de endereçamento (bytes). `None` = sem limite (padrão; ver `OCR_WORKER_MEMORY_MB`).
     pub address_space: Option<u64>,
     /// Tempo de CPU (segundos, somando todas as threads).
     pub cpu_secs: u64,
@@ -264,6 +276,8 @@ pub fn probe_syscalls() -> Vec<String> {
         out.push(format!("rlimit {name} {v}"));
     }
     out.push(format!("dumpable {}", is_dumpable()));
+    let oom = std::fs::read_to_string("/proc/self/oom_score_adj").unwrap_or_default();
+    out.push(format!("oom_score_adj {}", oom.trim()));
     out
 }
 

@@ -46,6 +46,10 @@ enum Cmd {
         write: Vec<std::path::PathBuf>,
         #[arg(long = "connect")]
         connect: Vec<u16>,
+        /// (perfil api) roda também a sonda do worker COMO PROCESSO FILHO, aninhando os dois
+        /// sandboxes exatamente como em produção; as linhas saem com o prefixo `nested `.
+        #[arg(long)]
+        nested_worker: bool,
     },
     /// (interno) Processa um documento num processo isolado. Executado pela própria API.
     #[command(hide = true)]
@@ -153,16 +157,39 @@ fn main() -> anyhow::Result<ExitCode> {
                 memory_mb,
             }));
         }
-        Cmd::SandboxCheck { profile, job_dir, read, write, connect } => {
+        Cmd::SandboxCheck { profile, job_dir, read, write, connect, nested_worker } => {
             match profile {
                 ProbeProfile::Api => harden_api(&sandbox::plan_from_env())?,
                 ProbeProfile::Worker => {
-                    let args = worker::WorkerArgs { file: None, warmup: false, max_pages: 1, timeout: std::time::Duration::from_secs(60), memory_mb: 2048 };
+                    let args = worker::WorkerArgs { file: None, warmup: false, max_pages: 1, timeout: std::time::Duration::from_secs(60), memory_mb: 0 };
                     worker::confine(job_dir.as_deref(), sandbox::trusted_graph_dir().as_deref(), false, &worker::limits_for(&args))?;
                 }
             }
             for line in sandbox::probe(&read, &write, &connect).into_iter().chain(hardening::probe_syscalls()) {
                 println!("{line}");
+            }
+            if nested_worker {
+                let mut child = std::process::Command::new(std::env::current_exe()?);
+                child.args(["sandbox-check", "--profile", "worker"]);
+                if let Some(dir) = &job_dir {
+                    child.arg("--job-dir").arg(dir);
+                }
+                for p in &read {
+                    child.arg("--read").arg(p);
+                }
+                for p in &write {
+                    child.arg("--write").arg(p);
+                }
+                for p in &connect {
+                    child.args(["--connect", &p.to_string()]);
+                }
+                let out = child.output()?;
+                for line in String::from_utf8_lossy(&out.stdout).lines() {
+                    println!("nested {line}");
+                }
+                if !out.status.success() {
+                    println!("nested FAILED {}", String::from_utf8_lossy(&out.stderr).lines().last().unwrap_or(""));
+                }
             }
             return Ok(ExitCode::SUCCESS);
         }
@@ -183,7 +210,20 @@ fn main() -> anyhow::Result<ExitCode> {
 
 async fn serve(cfg: Config, no_migrate: bool) -> anyhow::Result<()> {
     tracing::info!(?cfg, "configuração carregada");
-    let db = api_ocr::connect_db(&cfg.database_url).await?;
+    // O banco pode ainda estar subindo (Kubernetes/compose): espera até 2 min em vez de cair e
+    // ser reiniciado em laço.
+    let mut attempt = 0u32;
+    let db = loop {
+        match api_ocr::connect_db(&cfg.database_url).await {
+            Ok(db) => break db,
+            Err(e) if attempt < 40 => {
+                attempt += 1;
+                tracing::warn!(error = %e, attempt, "banco indisponível; tentando de novo em 3 s");
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+            }
+            Err(e) => return Err(e),
+        }
+    };
     if !no_migrate {
         api_ocr::MIGRATOR.run(&db).await?;
     }

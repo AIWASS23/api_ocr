@@ -122,3 +122,24 @@ async fn real_worker_out_of_memory_is_contained() {
     let failed: i64 = sqlx::query_scalar("SELECT count(*) FROM audit_log WHERE kind LIKE 'ocr_worker_%'").fetch_one(&app.db).await.unwrap();
     assert_eq!(failed, 1);
 }
+
+#[tokio::test]
+async fn worker_over_its_memory_budget_is_killed_by_the_watchdog() {
+    // Worker que aloca ~60 MB e fica parado; teto de 32 MiB de RSS. O vigia o mata em ~100 ms,
+    // sem negar nenhuma alocação (o que faria o ONNX Runtime travar): o processo leva SIGKILL.
+    let dir = tempfile::tempdir().unwrap();
+    let script = fake_worker(dir.path(), "x=$(head -c 60000000 /dev/zero | tr '\\0' a)\nsleep 60");
+    let app = TestApp::start_with(|c| {
+        c.ocr_worker_exe = script;
+        c.ocr_worker_max_rss_mb = 32;
+    })
+    .await;
+    let (token, _) = app.tokens().await;
+    let started = Instant::now();
+    assert_generic_422(upload(&app, &token).await).await;
+    assert!(started.elapsed() < Duration::from_secs(10), "o vigia não agiu: {:?}", started.elapsed());
+    assert_eq!(events(&app, "ocr_worker_memory_killed").await, 1);
+    assert_eq!(events(&app, "ocr_worker_crashed").await, 0, "morte pelo vigia não é crash");
+    assert_eq!(app.state.ocr.slots.available_permits(), 2, "vagas devolvidas");
+    assert_eq!(app.http.get(app.url("/healthz")).send().await.unwrap().status(), 200);
+}

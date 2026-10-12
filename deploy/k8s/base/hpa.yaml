@@ -1,0 +1,23 @@
+# O OCR é limitado por CPU. Escalar horizontalmente funciona porque os limites de taxa são
+# globais (Redis); o "1 OCR por vez por usuário" continua sendo por réplica.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-ocr
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-ocr
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300

@@ -41,6 +41,8 @@ impl Mode {
 pub struct Plan {
     pub read: Vec<PathBuf>,
     pub read_write: Vec<PathBuf>,
+    /// Leitura + escrita em arquivos já existentes (sem criar, apagar ou renomear nada).
+    pub write_existing: Vec<PathBuf>,
     pub connect_ports: Vec<u16>,
     pub bind_ports: Vec<u16>,
 }
@@ -155,6 +157,11 @@ pub fn plan_from_env() -> Plan {
         p.read_write.push(g);
     }
     p.read_write.extend(split_paths("SANDBOX_RW_PATHS"));
+    // O worker é filho da API e herda este domínio: uma regra para `/proc/self` seria resolvida
+    // para o PID da API e negaria ao worker o próprio `oom_score_adj` (e o `comm` das threads da
+    // CUDA). Escrever em arquivos de /proc não amplia nada além disso: os de outros processos
+    // continuam protegidos pelo kernel (dono/ptrace; a API e o worker são não-depuráveis).
+    p.write_existing.push("/proc".into());
 
     // Rede: banco, Redis, DNS; escuta só na porta da API.
     p.connect_ports.push(53);
@@ -210,7 +217,8 @@ pub fn apply(plan: &Plan, mode: Mode) -> Result<Outcome, SandboxError> {
         .handle_access(AccessNet::from_all(abi))?
         .create()?
         .add_rules(path_beneath_rules(&plan.read, read))?
-        .add_rules(path_beneath_rules(&plan.read_write, rw))?;
+        .add_rules(path_beneath_rules(&plan.read_write, rw))?
+        .add_rules(path_beneath_rules(&plan.write_existing, read | AccessFs::WriteFile))?;
     for port in &plan.connect_ports {
         ruleset = ruleset.add_rule(NetPort::new(*port, AccessNet::ConnectTcp))?;
     }

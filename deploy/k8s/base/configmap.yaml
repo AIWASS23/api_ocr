@@ -1,0 +1,36 @@
+# Configuração NÃO secreta. Segredos (JWT_SECRET, PASSWORD_PEPPER, DATABASE_URL,
+# RATE_LIMIT_REDIS_URL) vêm do Secret `api-ocr-secrets`, criado pelo overlay.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-ocr-config
+data:
+  BIND_ADDR: "0.0.0.0:8080"
+  # Exatamente UM proxy confiável na frente (o Envoy do Gateway): o IP do cliente é o último
+  # valor de X-Forwarded-For. A NetworkPolicy garante que só o Gateway alcança a porta 8080.
+  TRUST_PROXY: "true"
+  ALLOW_REGISTRATION: "false"
+  ENABLE_DOCS: "false"
+  SANDBOX: "required"
+  LOG_FORMAT: "json"
+  RUST_LOG: "info,sqlx=warn"
+  # Raiz somente leitura: HOME e caches vão para volumes graváveis.
+  HOME: "/tmp"
+  XDG_CACHE_HOME: "/cache"
+  OCR_MAX_UPLOAD_MB: "25"
+  OCR_MAX_PAGES: "100"
+  OCR_MAX_CONCURRENT: "2"
+  OCR_TIMEOUT_SECS: "180"
+  # Memória: o vigia da API mata o maior worker a 85% do limits.memory do contêiner (sem isso o
+  # OOM do kernel derrubaria o contêiner inteiro). Teto adicional por worker (0 = desligado):
+  OCR_WORKER_MAX_RSS_MB: "0"
+  OCR_WORKER_MEMORY_MB: "0"
+  # Sem limite de CPU o motor enxergaria todos os núcleos do nó e criaria um worker de página
+  # (~0,4 GB) para cada um: fixa o paralelismo dentro de um documento.
+  DOCLING_RS_PDF_WORKERS: "4"
+  OCR_MEMORY_WATERMARK_PCT: "85"
+  MAX_IN_FLIGHT: "256"
+  RATE_GENERAL_PER_MIN: "300"
+  RATE_AUTH_PER_MIN: "20"
+  RATE_OCR_PER_MIN: "10"
+  SECURITY_ALERT_LOGIN_FAILURES: "20"

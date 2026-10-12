@@ -1,0 +1,44 @@
+# Ambiente local (k3d/kind/minikube): Postgres e Redis dentro do cluster, certificado autoassinado.
+#   ./up.sh            # cria os segredos (se faltarem) e aplica
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: api-ocr
+resources:
+  - ../../base
+  - gateway.yaml
+  - postgres.yaml
+  - redis.yaml
+  - networkpolicy.yaml
+images:
+  - name: api-ocr
+    newName: api-ocr
+    newTag: k8s-test
+# Gerados pelo up.sh em ./secrets (ignorado pelo git). O sufixo de hash faz o Deployment
+# reiniciar sozinho quando um segredo muda.
+secretGenerator:
+  - name: api-ocr-secrets
+    envs: [secrets/app.env]
+  - name: api-ocr-db
+    envs: [secrets/db.env]
+  - name: api-ocr-tls
+    type: kubernetes.io/tls
+    files:
+      - tls.crt=secrets/tls.crt
+      - tls.key=secrets/tls.key
+    # O Kustomize não reescreve `certificateRefs` do Gateway: o nome precisa ser fixo.
+    options:
+      disableNameSuffixHash: true
+configMapGenerator:
+  - name: api-ocr-config
+    behavior: merge
+    literals:
+      - ISSUER=https://localhost:18443
+      # O Postgres local fica no cluster, sem TLS, alcançável só pela API (NetworkPolicy).
+      - DATABASE_ALLOW_PLAINTEXT=true
+patches:
+  # Máquina de desenvolvimento: reservas menores.
+  - target: { kind: Deployment, name: api-ocr }
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests
+        value: { cpu: 250m, memory: 1Gi, ephemeral-storage: 512Mi }

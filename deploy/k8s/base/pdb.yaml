@@ -1,0 +1,11 @@
+# Manutenção de nó (drain) nunca derruba todas as réplicas ao mesmo tempo.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: api-ocr
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: api-ocr
+      app.kubernetes.io/component: api

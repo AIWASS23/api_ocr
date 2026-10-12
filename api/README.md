@@ -123,10 +123,15 @@ tokens caem e os clientes renovam com o refresh token, que não depende do segre
 **Worker de OCR:** cada documento roda num processo `api_ocr ocr-worker` (interno). Na subida, um
 warm-up converte um documento sintético embutido e grava o cache de grafos ONNX (~4 s em release);
 depois disso cada job custa ~0,25 s a mais que no desenho antigo (medido: 2,55 s contra ~2,3 s por
-documento). `OCR_WORKER_MEMORY_MB` (padrão 6144) é o teto de espaço de endereçamento de cada worker;
-o motor reserva memória virtual proporcional ao número de núcleos: com muitos núcleos, suba o valor.
-Com `DOCLING_RS_EP=cuda` o teto é ignorado automaticamente (com ele, o cuDNN falha); CPU, arquivos e
-descritores continuam limitados. GPU testada: OCR sob `SANDBOX=required` usando a VRAM de verdade.
+documento). **Memória:** um vigia na API mede, a cada 10 ms, a memória não recuperável do
+contêiner (cgroup v2) e o RSS de cada worker; a 85% do limite, o maior worker leva SIGKILL (a API
+responde 422 e registra `ocr_worker_memory_killed`). `OCR_WORKER_MAX_RSS_MB` acrescenta um teto por
+worker. Não dá para deixar isso com o kernel: no Kubernetes (`memory.oom.group=1`) o OOM mata o
+contêiner INTEIRO, API junto; fora de contêiner, o worker é a primeira vítima (`oom_score_adj=1000`).
+Também não use `RLIMIT_AS` (`OCR_WORKER_MEMORY_MB`, desligado): o ONNX Runtime reserva ~7 GB de
+endereços com qualquer documento (medido) e **trava**, em vez de falhar, quando uma reserva é negada.
+GPU testada: OCR sob `SANDBOX=required` usando a VRAM de verdade. Com muitos núcleos e sem limite de
+CPU, fixe `DOCLING_RS_PDF_WORKERS` (cada worker de página custa ~0,4 GB em PDFs de 6+ páginas).
 
 ## Produção
 
@@ -174,9 +179,9 @@ trocado por `GlobalConcurrencyLimitLayer` (um semáforo só). Quem usa `tower` c
    simultâneo derruba a sessão (e agora também os access tokens do usuário), `JWT_SECRET` simétrico,
    o *pepper* não tem rotação (trocá-lo invalida senhas e segredos TOTP), MFA é opcional e ativado
    pelo operador, a contagem de falhas por IP para alertas é por réplica.
-8. **Worker sob pouca memória pode travar em vez de falhar** (comportamento do ONNX Runtime com
-   `OCR_WORKER_MEMORY_MB` baixo demais); o prazo do job o mata, mas a vaga fica presa até lá.
-9. **Na GPU o worker não tem teto de memória do host** (a CUDA não funciona com `RLIMIT_AS`); o
-   `mem_limit` do contêiner/cgroup é o que segura. A GPU não foi testada DENTRO do contêiner.
+8. **O vigia de memória mede a cada 10 ms:** uma alocação muito rápida pode chegar ao limite do
+   contêiner entre duas medições, e aí o OOM do kernel derruba o contêiner inteiro (o Kubernetes o
+   reinicia). Deixe folga entre o consumo de pico dos jobs e `limits.memory`.
+9. **A GPU não foi testada DENTRO do contêiner/Kubernetes** (só no host, sob o sandbox).
 7. As imagens base e os modelos ONNX vêm da internet no *build* (o script de modelos tem hash fixado;
    os modelos em si não têm checksum publicado).

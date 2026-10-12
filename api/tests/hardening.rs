@@ -97,8 +97,8 @@ fn worker_profile_is_locked_down() {
     assert_eq!(verdict(&lines, "syscall process_vm_readv"), "DENIED");
     assert_eq!(verdict(&lines, "syscall unshare"), "DENIED");
 
-    // Limites de recursos.
-    assert_ne!(verdict(&lines, "rlimit as"), "unlimited", "sem teto de memória");
+    // Limites de recursos. Memória: o worker é a primeira vítima do OOM killer.
+    assert_eq!(verdict(&lines, "oom_score_adj"), "1000");
     assert_ne!(verdict(&lines, "rlimit cpu"), "unlimited", "sem teto de CPU");
     assert_eq!(verdict(&lines, "rlimit core"), "0");
     assert_eq!(verdict(&lines, "rlimit nofile"), "1024");
@@ -137,4 +137,42 @@ fn api_profile_keeps_what_the_api_needs_and_blocks_the_rest() {
     assert_eq!(verdict(&lines, s.secret.path().to_str().unwrap()), "DENIED");
     // Memória e ambiente da API inacessíveis a outros processos do mesmo usuário.
     assert_eq!(verdict(&lines, "dumpable"), "false");
+}
+
+#[test]
+fn worker_confines_itself_inside_the_api_sandbox() {
+    // Produção: a API (já sob Landlock + seccomp) executa o worker, que aplica o próprio
+    // confinamento POR CIMA. Aqui os dois sandboxes são aninhados de verdade.
+    let s = setup();
+    let db_port = s.db_listener.local_addr().unwrap().port();
+    let out = Command::new(env!("CARGO_BIN_EXE_api_ocr"))
+        .arg("sandbox-check")
+        .args(["--profile", "api", "--nested-worker"])
+        .args(["--job-dir", s.job.path().to_str().unwrap()])
+        .args(["--read", s.other_job.path().join("contrato.pdf").to_str().unwrap()])
+        .args(["--write", s.job.path().join("saida.tmp").to_str().unwrap()])
+        .args(["--connect", &db_port.to_string()])
+        .env("DATABASE_URL", format!("postgres://u:p@127.0.0.1:{db_port}/db"))
+        .env("SANDBOX", "required")
+        .env("BIND_ADDR", "127.0.0.1:18082")
+        .output()
+        .unwrap();
+    let stdout = String::from_utf8_lossy(&out.stdout).to_string();
+    let log = String::from_utf8_lossy(&out.stderr).to_string() + &stdout;
+    if skip_if_unsupported(out.status.success(), &log) {
+        return;
+    }
+    assert!(out.status.success(), "{log}");
+    let nested: Vec<String> = stdout.lines().filter_map(|l| l.strip_prefix("nested ").map(String::from)).collect();
+    assert!(!nested.iter().any(|l| l.starts_with("FAILED")), "worker não conseguiu se confinar dentro da API: {log}");
+
+    // A API (fora) vê o banco e o diretório temporário; o worker (dentro), não.
+    let api: Vec<String> = stdout.lines().filter(|l| !l.starts_with("nested ")).map(String::from).collect();
+    assert!(verdict(&api, "connect ").starts_with("OK"));
+    assert_eq!(verdict(&nested, "connect "), "DENIED");
+    assert_eq!(verdict(&nested, "contrato.pdf"), "DENIED");
+    assert_eq!(verdict(&nested, "saida.tmp"), "OK");
+    assert_eq!(verdict(&nested, "syscall execve"), "DENIED");
+    assert_eq!(verdict(&nested, "oom_score_adj"), "1000", "o worker precisa ser a 1ª vítima do OOM killer");
+    assert_eq!(verdict(&nested, "dumpable"), "false");
 }

@@ -34,8 +34,12 @@ pub struct Config {
     pub ocr_memory_watermark_pct: u8,
     /// Binário executado como worker de OCR (o próprio executável, por padrão).
     pub ocr_worker_exe: PathBuf,
-    /// Teto de memória (espaço de endereçamento) de cada worker, em MiB. 0 = sem teto (CUDA).
+    /// Teto opcional de espaço de endereçamento de cada worker, em MiB. 0 (padrão) = sem teto: a
+    /// memória real é limitada pelo cgroup, e o worker é quem morre se ela acabar.
     pub ocr_worker_memory_mb: u64,
+    /// Teto de RSS por worker, em MiB, imposto pelo vigia da API (SIGKILL ao passar). 0 = só o
+    /// limite do contêiner (o vigia mata o maior worker ao chegar a 90% dele).
+    pub ocr_worker_max_rss_mb: u64,
 
     // Limites de conexão / taxa
     pub max_connections: usize,
@@ -170,7 +174,8 @@ impl Config {
                 Some(p) => PathBuf::from(p),
                 None => std::env::current_exe().map_err(|e| ConfigError(format!("executável atual: {e}")))?,
             },
-            ocr_worker_memory_mb: parse("OCR_WORKER_MEMORY_MB", 6144)?,
+            ocr_worker_memory_mb: parse("OCR_WORKER_MEMORY_MB", 0)?,
+            ocr_worker_max_rss_mb: parse("OCR_WORKER_MAX_RSS_MB", 0)?,
 
             max_connections: parse("MAX_CONNECTIONS", 1024)?,
             max_connections_per_ip: parse("MAX_CONNECTIONS_PER_IP", 64)?,

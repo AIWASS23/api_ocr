@@ -14,7 +14,13 @@
 //!   ONNX Runtime derruba o processo com SIGSEGV quando não consegue gravar o grafo otimizado.);
 //! * Landlock "scopes": não sinaliza nem conecta (socket abstrato) fora do próprio domínio;
 //! * seccomp: sem `execve`, sem sockets de rede, sem ptrace/montagem/namespaces/eBPF...;
-//! * `rlimit` de memória (espaço de endereçamento), CPU, tamanho de arquivo e descritores;
+//! * `rlimit` de CPU, tamanho de arquivo e descritores;
+//! * memória: um VIGIA na API mede a memória não recuperável do contêiner e o RSS de cada worker
+//!   a cada 10 ms e mata (SIGKILL) o maior worker antes que o cgroup chegue ao limite. Não dá
+//!   para deixar isso com o kernel: no Kubernetes (cgroup v2, `memory.oom.group=1`) o OOM mata o
+//!   contêiner INTEIRO, API junto. O `oom_score_adj=1000` cobre o caso de OOM fora de contêiner.
+//!   (Teto de espaço de endereçamento é opcional: o ONNX Runtime reserva ~7 GB de endereços com
+//!   qualquer documento e TRAVA, em vez de falhar, quando uma reserva é negada.);
 //! * não-depurável e sem core dump (um core teria o conteúdo do documento);
 //! * um processo novo por documento: um job comprometido não contamina o próximo;
 //! * prazo estourado ou cliente desconectado => SIGKILL (antes, a thread seguia rodando).
@@ -22,9 +28,12 @@
 //! Protocolo: a API executa `<binário> ocr-worker --file <caminho> ...`; o worker escreve UMA
 //! resposta JSON (`ocr::Reply`) no stdout. O stdout e o stderr são lidos com teto de tamanho.
 
+use std::collections::HashMap;
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 use std::process::{ExitCode, Stdio};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex, Once, PoisonError};
 use std::time::Duration;
 
 use tokio::io::{AsyncRead, AsyncReadExt};
@@ -60,6 +69,8 @@ pub enum WorkerFailure {
     ReplyTooLarge,
     #[error("resposta do worker inválida")]
     BadReply,
+    #[error("worker morto por excesso de memória ({0})")]
+    MemoryLimit(&'static str),
 }
 
 impl WorkerFailure {
@@ -69,6 +80,7 @@ impl WorkerFailure {
         match self {
             WorkerFailure::Signaled(_) => "ocr_worker_crashed",
             WorkerFailure::ReplyTooLarge | WorkerFailure::BadReply => "ocr_worker_bad_reply",
+            WorkerFailure::MemoryLimit(_) => "ocr_worker_memory_killed",
             _ => "ocr_worker_failed",
         }
     }
@@ -125,24 +137,152 @@ fn command(cfg: &Config, args: &[OsString]) -> Command {
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
+        // Grupo de processos próprio: o SIGKILL alcança qualquer descendente que segure os pipes.
+        .process_group(0)
         .kill_on_drop(true);
     cmd
 }
 
+/// SIGKILL no grupo do worker (enquanto ele não foi colhido, o PGID não pode ser reaproveitado).
+fn kill_group(child: &mut tokio::process::Child) {
+    if let Some(pid) = child.id() {
+        // SAFETY: kill(2) com PGID negativo e sinal constante.
+        unsafe { libc::kill(-(pid as libc::pid_t), libc::SIGKILL) };
+    }
+    let _ = child.start_kill();
+}
+
+// ------------------------------------------------------------------ vigia de memória
+
+const WATCH_EVERY: Duration = Duration::from_millis(10);
+/// Acima disto (% do limite do cgroup, só memória não recuperável) o maior worker morre.
+const CGROUP_KILL_PCT: u64 = 85;
+
+/// Worker em execução: o vigia só MARCA; quem mata é a tarefa dona do processo (pelo handle do
+/// tokio), então não existe o risco de sinalizar um PID já reaproveitado.
+struct Watched {
+    kill: AtomicBool,
+    reason: Mutex<&'static str>,
+    /// Teto de RSS deste worker em bytes (0 = só o limite do contêiner).
+    max_rss: u64,
+}
+
+static RUNNING: Mutex<Option<HashMap<u32, Arc<Watched>>>> = Mutex::new(None);
+static WATCHDOG: Once = Once::new();
+
+fn running() -> std::sync::MutexGuard<'static, Option<HashMap<u32, Arc<Watched>>>> {
+    RUNNING.lock().unwrap_or_else(PoisonError::into_inner)
+}
+
+/// Memória que o worker não devolve sob pressão (anônima + tmpfs), em bytes.
+fn worker_rss(pid: u32) -> u64 {
+    let Ok(s) = std::fs::read_to_string(format!("/proc/{pid}/status")) else { return 0 };
+    s.lines()
+        .filter(|l| l.starts_with("RssAnon:") || l.starts_with("RssShmem:"))
+        .filter_map(|l| l.split_whitespace().nth(1)?.parse::<u64>().ok())
+        .sum::<u64>()
+        * 1024
+}
+
+/// `(não recuperável, limite)` do cgroup v2 do contêiner: `memory.current` menos o cache de
+/// arquivos, mais o tmpfs (que conta como arquivo, mas não pode ser descartado).
+pub fn cgroup_unreclaimable() -> Option<(u64, u64)> {
+    let read = |f: &str| std::fs::read_to_string(format!("/sys/fs/cgroup/{f}")).ok();
+    let limit: u64 = read("memory.max")?.trim().parse().ok()?; // "max" => sem limite
+    let current: u64 = read("memory.current")?.trim().parse().ok()?;
+    let stat = read("memory.stat")?;
+    let field = |k: &str| {
+        stat.lines().find_map(|l| l.strip_prefix(k)?.strip_prefix(' ')?.trim().parse::<u64>().ok()).unwrap_or(0)
+    };
+    Some((current.saturating_sub(field("file")) + field("shmem"), limit))
+}
+
+fn watchdog_tick() {
+    let guard = running();
+    let Some(map) = guard.as_ref().filter(|m| !m.is_empty()) else { return };
+    let rss: Vec<(u32, u64)> = map.keys().map(|&pid| (pid, worker_rss(pid))).collect();
+    let mark = |pid: u32, reason: &'static str| {
+        if let Some(w) = map.get(&pid) {
+            *w.reason.lock().unwrap_or_else(PoisonError::into_inner) = reason;
+            w.kill.store(true, Ordering::SeqCst);
+        }
+    };
+
+    for &(pid, r) in &rss {
+        if map.get(&pid).is_some_and(|w| w.max_rss > 0 && r > w.max_rss) {
+            mark(pid, "teto por worker");
+        }
+    }
+    if let Some((used, limit)) = cgroup_unreclaimable()
+        && (used as u128) * 100 >= (limit as u128) * CGROUP_KILL_PCT as u128
+        && let Some(&(pid, _)) = rss.iter().max_by_key(|(_, r)| *r)
+    {
+        mark(pid, "limite do contêiner");
+    }
+}
+
+/// Thread própria (e não tarefa do tokio): independe de qual runtime chamou primeiro e continua
+/// medindo mesmo com o runtime saturado.
+fn start_watchdog() {
+    WATCHDOG.call_once(|| {
+        let spawned = std::thread::Builder::new().name("ocr-memory-watchdog".into()).spawn(|| {
+            loop {
+                std::thread::sleep(WATCH_EVERY);
+                watchdog_tick();
+            }
+        });
+        if let Err(e) = spawned {
+            tracing::error!(error = %e, "vigia de memória do OCR não iniciou");
+        }
+    });
+}
+
 /// Roda o worker, com prazo; mata o processo ao estourar. Devolve o stdout se ele saiu com 0.
-async fn run(mut cmd: Command, timeout: Duration) -> Result<Vec<u8>, WorkerFailure> {
+async fn run(mut cmd: Command, timeout: Duration, max_rss: u64) -> Result<Vec<u8>, WorkerFailure> {
+    start_watchdog();
     let mut child = cmd.spawn().map_err(WorkerFailure::Spawn)?;
     let (stdout, stderr) = (child.stdout.take(), child.stderr.take());
+    let watched = Arc::new(Watched { kill: AtomicBool::new(false), reason: Mutex::new(""), max_rss });
+    let pid = child.id();
+    if let Some(pid) = pid {
+        running().get_or_insert_with(HashMap::new).insert(pid, watched.clone());
+    }
+    let unregister = || {
+        if let Some(pid) = pid
+            && let Some(m) = running().as_mut()
+        {
+            m.remove(&pid);
+        }
+    };
 
+    let waiter = async {
+        loop {
+            tokio::select! {
+                st = child.wait() => break st,
+                () = tokio::time::sleep(WATCH_EVERY) => {
+                    if watched.kill.load(Ordering::SeqCst) {
+                        kill_group(&mut child);
+                    }
+                }
+            }
+        }
+    };
     let waited = tokio::time::timeout(timeout, async {
-        tokio::join!(read_capped(stdout, MAX_REPLY_BYTES), read_capped(stderr, MAX_STDERR_BYTES), child.wait())
+        tokio::join!(read_capped(stdout, MAX_REPLY_BYTES), read_capped(stderr, MAX_STDERR_BYTES), waiter)
     })
     .await;
+    unregister();
+
+    if watched.kill.load(Ordering::SeqCst) {
+        kill_group(&mut child);
+        let _ = child.wait().await;
+        return Err(WorkerFailure::MemoryLimit(*watched.reason.lock().unwrap_or_else(PoisonError::into_inner)));
+    }
 
     let ((out, out_overflow), (err, _), status) = match waited {
         Ok(r) => r,
         Err(_) => {
-            let _ = child.start_kill();
+            kill_group(&mut child);
             let _ = child.wait().await; // só libera a vaga depois que o processo morreu
             return Err(WorkerFailure::Timeout);
         }
@@ -172,7 +312,7 @@ pub async fn run_job(cfg: &Config, job_dir: &Path, file: &Path) -> Result<Reply,
     debug_assert!(file.starts_with(job_dir));
     let cmd = command(cfg, &["--file".into(), file.as_os_str().to_owned()]);
     // Margem sobre o prazo do motor: o worker para sozinho entre páginas; o SIGKILL é o último recurso.
-    let out = run(cmd, cfg.ocr_timeout + Duration::from_secs(5)).await?;
+    let out = run(cmd, cfg.ocr_timeout + Duration::from_secs(5), cfg.ocr_worker_max_rss_mb * 1024 * 1024).await?;
     serde_json::from_slice(&out).map_err(|_| WorkerFailure::BadReply)
 }
 
@@ -181,7 +321,7 @@ pub async fn run_job(cfg: &Config, job_dir: &Path, file: &Path) -> Result<Reply,
 pub fn spawn_warmup(cfg: Config) {
     tokio::spawn(async move {
         let started = std::time::Instant::now();
-        match run(command(&cfg, &["--warmup".into()]), WARMUP_TIMEOUT).await {
+        match run(command(&cfg, &["--warmup".into()]), WARMUP_TIMEOUT, cfg.ocr_worker_max_rss_mb * 1024 * 1024).await {
             Ok(_) => tracing::info!(secs = started.elapsed().as_secs(), "modelos do OCR pré-carregados"),
             Err(e) => tracing::warn!(error = %e, "pré-carga dos modelos do OCR falhou (os jobs carregam sozinhos, mais devagar)"),
         }
@@ -203,6 +343,8 @@ pub fn confine(job_dir: Option<&Path>, graph_dir: Option<&Path>, graph_writable:
     let mode = Mode::from_env().map_err(|e| anyhow::anyhow!(e))?;
 
     hardening::apply_limits(limits)?;
+    // Antes do PR_SET_DUMPABLE: depois dele o /proc/self passa a ser do root.
+    hardening::prefer_oom_kill()?;
     hardening::set_not_dumpable()?;
 
     let plan = sandbox::worker_plan(job_dir, graph_dir, graph_writable);
@@ -312,13 +454,20 @@ pub fn main(args: WorkerArgs) -> ExitCode {
             unsafe { std::env::set_var("DOCLING_RS_NO_GRAPH_CACHE", "1") };
         }
     }
+    let t = std::time::Instant::now();
     if let Err(e) = confine(Some(job_dir), trusted.as_deref(), false, &limits_for(&args)) {
         eprintln!("confinamento do worker falhou: {e}");
         return ExitCode::from(3);
     }
+    let confine_ms = t.elapsed().as_millis() as u64;
 
     match ocr::execute_job(file, args.max_pages, args.timeout) {
-        Ok(reply) => write_reply(&reply),
+        Ok(mut reply) => {
+            if let Reply::Ok { timings, .. } = &mut reply {
+                timings.confine_ms = confine_ms;
+            }
+            write_reply(&reply)
+        }
         Err(e) => {
             eprintln!("{e}");
             ExitCode::from(1)
