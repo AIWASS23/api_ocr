@@ -12,7 +12,7 @@ use reqwest::multipart::{Form, Part};
 
 async fn upload(app: &TestApp, token: &str) -> reqwest::Response {
     let form = Form::new().part("file", Part::bytes(minimal_docx("texto")).file_name("a.docx"));
-    app.http.post(app.url("/v1/ocr")).bearer_auth(token).multipart(form).send().await.unwrap()
+    app.http.post(app.url("/v1/data_preparation")).bearer_auth(token).multipart(form).send().await.unwrap()
 }
 
 /// Grava um script executável que faz o papel do worker.

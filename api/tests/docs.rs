@@ -16,7 +16,9 @@ const REAL_ROUTES: &[(&str, &str)] = &[
     ("post", "/oauth/revoke"),
     ("post", "/auth/register"),
     ("get", "/v1/me"),
-    ("post", "/v1/ocr"),
+    ("post", "/v1/data_preparation"),
+    ("get", "/v1/chunk/strategies"),
+    ("post", "/v1/chunk"),
 ];
 
 async fn docs_app() -> TestApp {
@@ -114,7 +116,14 @@ async fn security_schemes_use_the_real_issuer_and_protected_routes_require_them(
     assert_eq!(doc["servers"][0]["url"], ISSUER);
 
     // Rotas protegidas declaram segurança; as públicas não.
-    for (path, method, protected) in [("/v1/me", "get", true), ("/v1/ocr", "post", true), ("/oauth/token", "post", false), ("/auth/register", "post", false)] {
+    for (path, method, protected) in [
+        ("/v1/me", "get", true),
+        ("/v1/data_preparation", "post", true),
+        ("/v1/chunk/strategies", "get", true),
+        ("/v1/chunk", "post", true),
+        ("/oauth/token", "post", false),
+        ("/auth/register", "post", false),
+    ] {
         let sec = &doc["paths"][path][method]["security"];
         assert_eq!(sec.is_array() && !sec.as_array().unwrap().is_empty(), protected, "{method} {path}");
     }
@@ -141,11 +150,28 @@ async fn documented_schemas_match_real_responses() {
     let me: Value = app.http.get(app.url("/v1/me")).bearer_auth(access).send().await.unwrap().json().await.unwrap();
     assert_eq!(keys(&me), props("MeResponse"));
 
-    // /v1/ocr
+    // /v1/data_preparation
     let form = reqwest::multipart::Form::new().part("file", reqwest::multipart::Part::bytes(minimal_docx("doc")).file_name("a.docx"));
-    let ocr: Value = app.http.post(app.url("/v1/ocr")).bearer_auth(access).multipart(form).send().await.unwrap().json().await.unwrap();
+    let ocr: Value = app.http.post(app.url("/v1/data_preparation")).bearer_auth(access).multipart(form).send().await.unwrap().json().await.unwrap();
     assert_eq!(keys(&ocr), props("OcrResponse"));
     assert_eq!(keys(&ocr["documents"][0]), props("OcrDocument"));
+
+    // /v1/chunk/strategies e /v1/chunk (com a saída do data_preparation como entrada)
+    let cat: Value = app.http.get(app.url("/v1/chunk/strategies")).bearer_auth(access).send().await.unwrap().json().await.unwrap();
+    assert_eq!(keys(&cat), props("StrategiesResponse"));
+    assert_eq!(keys(&cat["limits"]), props("ChunkLimits"));
+    for s in cat["strategies"].as_array().unwrap() {
+        // `unavailable_reason` e `note` só aparecem quando têm valor.
+        assert!(keys(s).is_subset(&props("StrategyInfo")), "{s}");
+        assert_eq!(keys(&s["chunk_size"]), props("SizeParam"));
+        if !s["chunk_overlap"].is_null() {
+            assert_eq!(keys(&s["chunk_overlap"]), props("OverlapParam"));
+        }
+    }
+    let body = serde_json::json!({"strategy": "recursive", "documents": ocr["documents"]});
+    let chunked: Value = app.http.post(app.url("/v1/chunk")).bearer_auth(access).json(&body).send().await.unwrap().json().await.unwrap();
+    assert_eq!(keys(&chunked), props("ChunkResponse"));
+    assert_eq!(keys(&chunked["chunks"][0]), props("ChunkOut"));
 
     // Erro e metadados
     let err: Value = app.http.get(app.url("/v1/me")).send().await.unwrap().json().await.unwrap();

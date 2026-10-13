@@ -98,9 +98,12 @@ fn base_read_paths() -> Vec<PathBuf> {
         read.push(cwd.join(".models"));
         read.push(cwd.join(".cuda"));
     }
-    // Modelos/arquivos apontados por DOCLING_* (ex.: DOCLING_LAYOUT_ONNX).
+    // Modelos/arquivos apontados por DOCLING_* (ex.: DOCLING_LAYOUT_ONNX) e os modelos do
+    // chunking (tokenizador, dados do NLTK). O worker herda o domínio da API: o que ele precisa
+    // ler tem de estar liberado aqui também.
     for (k, v) in std::env::vars() {
-        if k.starts_with("DOCLING_") && Path::new(&v).exists() {
+        let model = k.starts_with("DOCLING_") || matches!(k.as_str(), "CHUNK_TOKENIZER" | "CHUNK_NLTK_DATA");
+        if model && Path::new(&v).exists() {
             read.push(v.into());
         }
     }
@@ -184,15 +187,16 @@ pub fn plan_from_env() -> Plan {
     p
 }
 
-/// Plano do worker de OCR: lê só sistema/modelos e grava só no diretório do PRÓPRIO job.
-/// Nenhuma porta TCP (nem DNS) e nenhum `bind`. Os uploads de outros usuários, o `.env`, o
-/// código e o HOME ficam invisíveis.
+/// Plano do worker (OCR ou chunking): lê só sistema/modelos (e `extra_read`, ex.: o tokenizador
+/// do chunking) e grava só no diretório do PRÓPRIO job. Nenhuma porta TCP (nem DNS) e nenhum
+/// `bind`. Os uploads de outros usuários, o `.env`, o código e o HOME ficam invisíveis.
 ///
 /// O cache confiável de grafos (`graph_dir`) é somente leitura para jobs (`graph_writable =
 /// false`): um worker comprometido não consegue plantar um grafo adulterado que os próximos jobs
 /// carregariam. Só o warm-up, que não toca entrada de usuário, grava nele.
-pub fn worker_plan(job_dir: Option<&Path>, graph_dir: Option<&Path>, graph_writable: bool) -> Plan {
+pub fn worker_plan(job_dir: Option<&Path>, graph_dir: Option<&Path>, graph_writable: bool, extra_read: &[PathBuf]) -> Plan {
     let mut p = Plan { read: base_read_paths(), ..Plan::default() };
+    p.read.extend(extra_read.iter().cloned());
     p.read_write.extend(engine_write_paths());
     if let Some(dir) = job_dir {
         p.read_write.push(dir.to_path_buf());

@@ -1,7 +1,7 @@
 # OCR API
 
-API HTTP em Rust (axum + hyper) que expõe o OCR (`data_preparation`/docling.rs) atrás de um
-servidor OAuth2 próprio: **Authorization Code + PKCE (S256)**, **access token JWT curto**,
+API HTTP em Rust (axum + hyper) que expõe a preparação de dados (`src/data_preparation`, OCR com
+docling.rs) e o chunking (`src/chunking`, 33 estratégias) atrás de um servidor OAuth2 próprio: **Authorization Code + PKCE (S256)**, **access token JWT curto**,
 **refresh token com rotação e detecção de reuso**, rotas protegidas e PostgreSQL via `sqlx`.
 
 ## Subir em desenvolvimento
@@ -38,15 +38,46 @@ GPU: compile com `--features cuda` e use `source scripts/cuda-env.sh` antes de s
 | `GET /.well-known/oauth-authorization-server` | — | Metadados (RFC 8414) |
 | `POST /auth/register` | — | Cadastro (`{email, password}`); só com `ALLOW_REGISTRATION=true` |
 | `GET /v1/me` | Bearer | Dados do usuário autenticado |
-| `POST /v1/ocr` | Bearer, escopo `ocr` | Multipart com **um** campo `file` (pdf, png, jpg, tif, bmp, webp, docx, pptx, xlsx) |
+| `POST /v1/data_preparation` | Bearer, escopo `ocr` | Multipart com **um** campo `file` (pdf, png, jpg, tif, bmp, webp, docx, pptx, xlsx); devolve `documents` (`page_content` + `metadata`) |
+| `GET /v1/chunk/strategies` | Bearer, escopo `ocr` | Estratégias de chunking: apelidos, disponibilidade neste servidor, unidade e intervalo do `chunk_size`, padrão e máximo do `chunk_overlap` (ou `null`), limites |
+| `POST /v1/chunk` | Bearer, escopo `ocr` | JSON `{strategy, chunk_size?, chunk_overlap?, text}` ou `{..., documents}` (a saída do `/v1/data_preparation`); devolve os chunks com metadados |
 | `GET /healthz`, `GET /readyz` | — | Liveness / readiness (checa o banco) |
 | `GET /docs`, `GET /openapi.json` | — | **Swagger UI** e OpenAPI 3.1 (só com `ENABLE_DOCS=true`; veja abaixo) |
 
-Exemplo de OCR:
+Exemplo de extração seguida de chunking:
 
 ```bash
-curl -H "Authorization: Bearer $ACCESS_TOKEN" -F "file=@relatorio.pdf" http://localhost:8080/v1/ocr
+curl -H "Authorization: Bearer $ACCESS_TOKEN" -F "file=@relatorio.pdf" \
+     http://localhost:8080/v1/data_preparation > extraido.json
+
+# Os `documents` extraídos vão direto para o chunking (os metadados de cada um seguem para os chunks).
+jq '{strategy: "markdown_header_contextual", chunk_size: 800, chunk_overlap: 80, documents: .documents}' extraido.json |
+  curl -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" --data-binary @- \
+       http://localhost:8080/v1/chunk
+
+# Ou um texto qualquer:
+curl -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" \
+     -d '{"strategy": "sentence", "chunk_size": 500, "text": "Primeira frase. Segunda frase..."}' \
+     http://localhost:8080/v1/chunk
 ```
+
+### Chunking
+
+- **Parâmetros:** só `strategy` (nome ou apelido), `chunk_size` e `chunk_overlap`. Padrões: 1000 caracteres
+  (512 tokens nas estratégias medidas em tokens) e sobreposição de 10% do `chunk_size`; a sobreposição vai
+  até a metade do `chunk_size`. Numa estratégia sem sobreposição (`docling_hybrid`), um `chunk_overlap`
+  maior que 0 é recusado (422). As opções internas das estratégias (modelos, URLs, caminhos) não são
+  aceitas do cliente: campos desconhecidos dão 400.
+- **Disponibilidade:** 26 estratégias funcionam sem nada a mais. `token`, `semchunk`,
+  `token_sentence_transformer` e `docling_hybrid` precisam de um tokenizador local (`CHUNK_TOKENIZER`).
+  `semantic`, `late_chunking` e `contextual_retrieval` precisam de modelo de embeddings ou LLM e aparecem
+  como indisponíveis. `GET /v1/chunk/strategies` mostra o estado de cada uma neste servidor.
+- **Fixos do servidor:** `nltk` e `spacy` em português; `code` = Python; `token_tiktoken` trata tokens
+  especiais (`<|endoftext|>`) como texto; `parent_child` devolve o pai em `metadata.parent_content`.
+- **Isolamento:** a divisão roda num worker igual ao do OCR (ambiente zerado, Landlock, seccomp, sem rede,
+  prazo de `CHUNK_TIMEOUT_SECS` e teto de memória). Texto patológico (HTML/JSON aninhados a ponto de
+  estourar a pilha ou deixar o parser HTML quadrático) derruba ou trava só o worker: a API responde 422/503
+  e segue de pé. Antes do worker, a API valida o pedido e recusa o que geraria chunks demais.
 
 ## Swagger / OpenAPI
 
@@ -59,7 +90,7 @@ ENABLE_DOCS=true ./target/release/api_ocr serve     # http://localhost:8080/docs
   (`script-src 'self'`, sem scripts inline); o resto da API mantém `default-src 'none'`.
 - O botão **Authorize** faz Authorization Code + PKCE de verdade. Ao ligar as docs, o cliente `swagger-ui`
   é registrado sozinho, com redirect apenas para `ISSUER/docs/oauth2-redirect.html`.
-- As respostas de `/v1/me`, `/v1/ocr`, token etc. usam os **mesmos tipos Rust** que geram o schema, e
+- As respostas de `/v1/me`, `/v1/data_preparation`, `/v1/chunk`, token etc. usam os **mesmos tipos Rust** que geram o schema, e
   os testes (`tests/docs.rs`) conferem que as rotas documentadas são exatamente as reais, que todo `$ref`
   resolve e que os campos das respostas reais batem com o schema.
 - Atrás do nginx de produção, `/docs` fica **bloqueado por padrão** (bloco comentado no template);
@@ -88,6 +119,7 @@ ENABLE_DOCS=true ./target/release/api_ocr serve     # http://localhost:8080/docs
 | **Parser comprometido (RCE via upload)** | Inspeção e conversão rodam num **processo worker por documento**: ambiente zerado (nenhum segredo/URL), Landlock próprio (grava só no diretório do próprio job, não vê uploads alheios, **nenhuma porta TCP**), seccomp (sem `execve`, sem socket de rede, sem ptrace/namespaces/eBPF/montagem), `rlimit` de memória/CPU/arquivos, sem core dump. Cache de grafos ONNX confiável é só leitura (cada job tem uma cópia privada descartável): nada que um job grave chega ao próximo | `worker_profile_is_locked_down` (+ controle `without_sandbox...`), `worker_gets_an_empty_environment_without_secrets`, `crashed_worker_gives_generic_error_alert...`, `garbage_or_oversized_reply_is_rejected` |
 | **Processo da API** | Landlock + seccomp (sem ptrace, `process_vm_*`, namespaces, eBPF, montagem, módulos) + `PR_SET_DUMPABLE=0` (memória e `environ` inacessíveis a outros processos do mesmo usuário, sem core dump); segredos removidos do ambiente após a leitura | `api_profile_keeps_what_the_api_needs_and_blocks_the_rest` |
 | **Esgotamento por OCR** | 1 OCR por vez por usuário, N globais, espera máxima de 2 s por vaga (senão 503 + `Retry-After`), prazo por documento; ao estourar o prazo (ou o cliente desistir) o worker leva **SIGKILL** e só então a vaga volta | `one_ocr_at_a_time_per_user_and_global_capacity`, `hung_worker_is_killed_at_the_deadline_and_slots_are_freed`, `real_worker_out_of_memory_is_contained` |
+| **Abuso do chunking** | Corpo lido só depois do limite de taxa e da vaga do usuário (1 por vez), com teto e prazo; texto, documentos, metadados (copiados para cada chunk) e chunks gerados limitados; estimativa de chunks antes do worker; sobreposição até metade do tamanho; o cliente não passa opções internas (sem SSRF por URL de LLM, sem ler arquivo por `model_name`); divisão num worker isolado com prazo | `tests/chunk.rs` (`invalid_requests_are_rejected_without_details`, `limits_on_text_size_documents_and_chunks`, `hostile_text_only_hurts_the_worker`, `crashed_chunk_worker_gives_a_generic_error_and_an_alert`) |
 | **Vazamento de informação** | Mensagens fixas, sem caminhos/SQL/stack; `invalid_grant` único; segredos nunca logados; a query string não entra nos logs | `corrupt_office_file_gives_generic_error`, `ocr_happy_path_returns_text_and_hides_server_paths` |
 | **Ataque sem ninguém ver** | Todo evento vai para o `audit_log` **e** para o log (`target=security`, JSON com `LOG_FORMAT=json`). Reuso de token, bloqueio de conta inteira, worker morto por sinal e muitas falhas de login do mesmo IP (`SECURITY_ALERT_LOGIN_FAILURES` em 5 min) geram `target=security_alert` em nível ERROR — pendure o alerta do coletor de logs nele | `repeated_failures_from_one_ip_raise_a_security_alert`, `security::tests` |
 | **CVE em dependência** | `cargo-deny` (RustSec, crates retiradas, licenças, origem) no CI a cada push **e diariamente**; Dependabot para cargo, Docker e Actions | `.github/workflows/ci.yml`, `deny.toml` |
@@ -102,7 +134,7 @@ faz o teste correspondente **falhar** (os testes de upload conferem também o mo
 ```bash
 export TEST_ADMIN_DATABASE_URL="postgres://api_ocr:<senha de deploy/.env>@127.0.0.1:55432/api_ocr"
 export TEST_REDIS_URL="redis://:<senha de deploy/.env>@127.0.0.1:56379/"
-cargo test --workspace      # 121 testes; cada um cria e apaga o próprio banco
+cargo test --workspace      # cada teste da API cria e apaga o próprio banco
 cargo deny check            # dependências (cargo install cargo-deny --locked)
 ```
 

@@ -53,6 +53,11 @@ jobs:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+      - name: dados do NLTK (punkt_tab) para os testes de paridade do chunking
+        run: |
+          mkdir -p ~/nltk_data/tokenizers
+          curl -fsSL https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/tokenizers/punkt_tab.zip -o /tmp/punkt_tab.zip
+          unzip -q /tmp/punkt_tab.zip -d ~/nltk_data/tokenizers
       - name: compilar
         run: cargo build --workspace --all-targets --locked
       - name: testes

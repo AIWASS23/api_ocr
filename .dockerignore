@@ -8,3 +8,4 @@ target
 deploy/.env
 api/tests
 **/*.md
+src/*/tests

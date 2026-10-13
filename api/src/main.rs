@@ -66,6 +66,20 @@ enum Cmd {
         #[arg(long, default_value_t = 0)]
         memory_mb: u64,
     },
+    /// (interno) Divide um texto em chunks num processo isolado. Executado pela própria API.
+    #[command(hide = true)]
+    ChunkWorker {
+        #[arg(long)]
+        file: std::path::PathBuf,
+        #[arg(long, default_value_t = 30)]
+        timeout_secs: u64,
+        /// Tokenizador Hugging Face local (diretório ou tokenizer.json).
+        #[arg(long)]
+        tokenizer: Option<std::path::PathBuf>,
+        /// Diretório de dados do NLTK (com tokenizers/punkt_tab).
+        #[arg(long)]
+        nltk_data: Option<std::path::PathBuf>,
+    },
     /// Ativa o segundo fator (TOTP) de um usuário e mostra a URI para o app autenticador.
     MfaEnable {
         #[arg(long)]
@@ -157,12 +171,20 @@ fn main() -> anyhow::Result<ExitCode> {
                 memory_mb,
             }));
         }
+        Cmd::ChunkWorker { file, timeout_secs, tokenizer, nltk_data } => {
+            return Ok(worker::chunk_main(worker::ChunkWorkerArgs {
+                file,
+                timeout: std::time::Duration::from_secs(timeout_secs),
+                tokenizer,
+                nltk_data,
+            }));
+        }
         Cmd::SandboxCheck { profile, job_dir, read, write, connect, nested_worker } => {
             match profile {
                 ProbeProfile::Api => harden_api(&sandbox::plan_from_env())?,
                 ProbeProfile::Worker => {
                     let args = worker::WorkerArgs { file: None, warmup: false, max_pages: 1, timeout: std::time::Duration::from_secs(60), memory_mb: 0 };
-                    worker::confine(job_dir.as_deref(), sandbox::trusted_graph_dir().as_deref(), false, &worker::limits_for(&args))?;
+                    worker::confine(job_dir.as_deref(), sandbox::trusted_graph_dir().as_deref(), false, &[], &worker::limits_for(&args))?;
                 }
             }
             for line in sandbox::probe(&read, &write, &connect).into_iter().chain(hardening::probe_syscalls()) {
@@ -251,7 +273,9 @@ async fn user_by_email(db: &sqlx::PgPool, email: &str) -> anyhow::Result<uuid::U
 
 async fn run(cmd: Cmd) -> anyhow::Result<()> {
     match cmd {
-        Cmd::Serve { .. } | Cmd::SandboxCheck { .. } | Cmd::OcrWorker { .. } => unreachable!("tratados em main"),
+        Cmd::Serve { .. } | Cmd::SandboxCheck { .. } | Cmd::OcrWorker { .. } | Cmd::ChunkWorker { .. } => {
+            unreachable!("tratados em main")
+        }
         Cmd::MfaEnable { email } => {
             let cfg = Config::from_env()?;
             let db = api_ocr::connect_db(&cfg.database_url).await?;

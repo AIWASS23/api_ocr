@@ -8,7 +8,7 @@ use serde_json::Value;
 
 async fn upload(app: &TestApp, token: &str, name: &str, bytes: Vec<u8>) -> reqwest::Response {
     let form = Form::new().part("file", Part::bytes(bytes).file_name(name.to_string()));
-    app.http.post(app.url("/v1/ocr")).bearer_auth(token).multipart(form).send().await.unwrap()
+    app.http.post(app.url("/v1/data_preparation")).bearer_auth(token).multipart(form).send().await.unwrap()
 }
 
 /// PDF válido e vazio com `pages` páginas.
@@ -62,7 +62,7 @@ async fn uppercase_extension_is_accepted() {
 async fn ocr_requires_auth_and_post() {
     let app = TestApp::start().await;
     let form = Form::new().part("file", Part::bytes(minimal_docx("x")).file_name("a.docx"));
-    assert_eq!(app.http.post(app.url("/v1/ocr")).multipart(form).send().await.unwrap().status(), 401);
+    assert_eq!(app.http.post(app.url("/v1/data_preparation")).multipart(form).send().await.unwrap().status(), 401);
 }
 
 #[tokio::test]
@@ -162,13 +162,13 @@ async fn only_the_file_field_is_accepted() {
     let app = TestApp::start().await;
     let (token, _) = app.tokens().await;
     let form = Form::new().text("comando", "rm -rf /").part("file", Part::bytes(minimal_docx("x")).file_name("a.docx"));
-    let r = app.http.post(app.url("/v1/ocr")).bearer_auth(&token).multipart(form).send().await.unwrap();
+    let r = app.http.post(app.url("/v1/data_preparation")).bearer_auth(&token).multipart(form).send().await.unwrap();
     assert_eq!(r.status(), 400);
 
-    let r = app.http.post(app.url("/v1/ocr")).bearer_auth(&token).multipart(Form::new()).send().await.unwrap();
+    let r = app.http.post(app.url("/v1/data_preparation")).bearer_auth(&token).multipart(Form::new()).send().await.unwrap();
     assert_eq!(r.status(), 400);
 
-    let r = app.http.post(app.url("/v1/ocr")).bearer_auth(&token).header("content-type", "application/json").body("{}").send().await.unwrap();
+    let r = app.http.post(app.url("/v1/data_preparation")).bearer_auth(&token).header("content-type", "application/json").body("{}").send().await.unwrap();
     assert!(r.status().is_client_error());
 }
 

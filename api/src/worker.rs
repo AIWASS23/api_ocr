@@ -1,4 +1,5 @@
-//! Worker de OCR: cada documento é inspecionado e convertido num PROCESSO separado.
+//! Worker de OCR: cada documento é inspecionado e convertido num PROCESSO separado. O chunking
+//! (`/v1/chunk`) usa o mesmo worker, com o subcomando `chunk-worker` e o mesmo confinamento.
 //!
 //! Por quê: os parsers (PDF, Office, imagens, ONNX Runtime) são o código mais exposto do
 //! servidor. Rodando dentro da API, um bug explorável num deles daria acesso à memória onde
@@ -25,8 +26,9 @@
 //! * um processo novo por documento: um job comprometido não contamina o próximo;
 //! * prazo estourado ou cliente desconectado => SIGKILL (antes, a thread seguia rodando).
 //!
-//! Protocolo: a API executa `<binário> ocr-worker --file <caminho> ...`; o worker escreve UMA
-//! resposta JSON (`ocr::Reply`) no stdout. O stdout e o stderr são lidos com teto de tamanho.
+//! Protocolo: a API executa `<binário> ocr-worker --file <caminho> ...` (ou `chunk-worker`); o
+//! worker escreve UMA resposta JSON (`ocr::Reply` / `chunk::Reply`) no stdout. O stdout e o
+//! stderr são lidos com teto de tamanho.
 
 use std::collections::HashMap;
 use std::ffi::OsString;
@@ -39,6 +41,7 @@ use std::time::Duration;
 use tokio::io::{AsyncRead, AsyncReadExt};
 use tokio::process::Command;
 
+use crate::chunk;
 use crate::config::Config;
 use crate::hardening::{self, Limits, Profile};
 use crate::ocr::{self, Reply};
@@ -73,15 +76,26 @@ pub enum WorkerFailure {
     MemoryLimit(&'static str),
 }
 
+/// Tipo de job, para o nome dos eventos de segurança.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum JobKind {
+    Ocr,
+    Chunk,
+}
+
 impl WorkerFailure {
     /// Nome do evento de segurança. Morte por sinal (SIGSYS do seccomp, SIGSEGV, SIGKILL do
-    /// limite de CPU...) é o que se espera ver quando um arquivo tenta explorar o parser.
-    pub fn event_kind(&self) -> &'static str {
-        match self {
-            WorkerFailure::Signaled(_) => "ocr_worker_crashed",
-            WorkerFailure::ReplyTooLarge | WorkerFailure::BadReply => "ocr_worker_bad_reply",
-            WorkerFailure::MemoryLimit(_) => "ocr_worker_memory_killed",
-            _ => "ocr_worker_failed",
+    /// limite de CPU...) é o que se espera ver quando uma entrada tenta explorar o parser.
+    pub fn event_kind(&self, job: JobKind) -> &'static str {
+        match (job, self) {
+            (JobKind::Ocr, WorkerFailure::Signaled(_)) => "ocr_worker_crashed",
+            (JobKind::Ocr, WorkerFailure::ReplyTooLarge | WorkerFailure::BadReply) => "ocr_worker_bad_reply",
+            (JobKind::Ocr, WorkerFailure::MemoryLimit(_)) => "ocr_worker_memory_killed",
+            (JobKind::Ocr, _) => "ocr_worker_failed",
+            (JobKind::Chunk, WorkerFailure::Signaled(_)) => "chunk_worker_crashed",
+            (JobKind::Chunk, WorkerFailure::ReplyTooLarge | WorkerFailure::BadReply) => "chunk_worker_bad_reply",
+            (JobKind::Chunk, WorkerFailure::MemoryLimit(_)) => "chunk_worker_memory_killed",
+            (JobKind::Chunk, _) => "chunk_worker_failed",
         }
     }
 }
@@ -125,13 +139,10 @@ async fn read_capped(src: Option<impl AsyncRead + Unpin>, cap: usize) -> (Vec<u8
     (buf, overflow)
 }
 
-fn command(cfg: &Config, args: &[OsString]) -> Command {
+/// `<binário> <subcomando>` com ambiente zerado (só a lista permitida), pipes e grupo próprio.
+fn base_command(cfg: &Config, subcommand: &str) -> Command {
     let mut cmd = Command::new(&cfg.ocr_worker_exe);
-    cmd.arg("ocr-worker")
-        .args(args)
-        .args(["--max-pages", &cfg.ocr_max_pages.to_string()])
-        .args(["--timeout-secs", &cfg.ocr_timeout.as_secs().to_string()])
-        .args(["--memory-mb", &cfg.ocr_worker_memory_mb.to_string()])
+    cmd.arg(subcommand)
         .env_clear()
         .envs(worker_env(std::env::vars_os()))
         .stdin(Stdio::null())
@@ -140,6 +151,15 @@ fn command(cfg: &Config, args: &[OsString]) -> Command {
         // Grupo de processos próprio: o SIGKILL alcança qualquer descendente que segure os pipes.
         .process_group(0)
         .kill_on_drop(true);
+    cmd
+}
+
+fn command(cfg: &Config, args: &[OsString]) -> Command {
+    let mut cmd = base_command(cfg, "ocr-worker");
+    cmd.args(args)
+        .args(["--max-pages", &cfg.ocr_max_pages.to_string()])
+        .args(["--timeout-secs", &cfg.ocr_timeout.as_secs().to_string()])
+        .args(["--memory-mb", &cfg.ocr_worker_memory_mb.to_string()]);
     cmd
 }
 
@@ -316,6 +336,21 @@ pub async fn run_job(cfg: &Config, job_dir: &Path, file: &Path) -> Result<Reply,
     serde_json::from_slice(&out).map_err(|_| WorkerFailure::BadReply)
 }
 
+/// Divide o texto de `file` (o job, dentro de `job_dir`, exclusivo deste job).
+pub async fn run_chunk_job(cfg: &Config, job_dir: &Path, file: &Path) -> Result<chunk::Reply, WorkerFailure> {
+    debug_assert!(file.starts_with(job_dir));
+    let mut cmd = base_command(cfg, "chunk-worker");
+    cmd.arg("--file").arg(file).args(["--timeout-secs", &cfg.chunk.timeout.as_secs().to_string()]);
+    if let Some(t) = &cfg.chunk.tokenizer {
+        cmd.arg("--tokenizer").arg(t);
+    }
+    if let Some(d) = &cfg.chunk.nltk_data {
+        cmd.arg("--nltk-data").arg(d);
+    }
+    let out = run(cmd, cfg.chunk.timeout, cfg.chunk.worker_max_rss_mb * 1024 * 1024).await?;
+    serde_json::from_slice(&out).map_err(|_| WorkerFailure::BadReply)
+}
+
 /// Pré-carrega os modelos num worker confiável (sem entrada de usuário), o único autorizado a
 /// gravar o cache de grafos. Roda em segundo plano na subida do servidor.
 pub fn spawn_warmup(cfg: Config) {
@@ -338,8 +373,15 @@ pub struct WorkerArgs {
     pub memory_mb: u64,
 }
 
-/// Aplica todo o confinamento do worker. Chamado ANTES de criar qualquer thread.
-pub fn confine(job_dir: Option<&Path>, graph_dir: Option<&Path>, graph_writable: bool, limits: &Limits) -> anyhow::Result<()> {
+/// Aplica todo o confinamento do worker. Chamado ANTES de criar qualquer thread. `extra_read`:
+/// arquivos que o job precisa ler além do sistema e dos modelos do OCR (ex.: o tokenizador).
+pub fn confine(
+    job_dir: Option<&Path>,
+    graph_dir: Option<&Path>,
+    graph_writable: bool,
+    extra_read: &[PathBuf],
+    limits: &Limits,
+) -> anyhow::Result<()> {
     let mode = Mode::from_env().map_err(|e| anyhow::anyhow!(e))?;
 
     hardening::apply_limits(limits)?;
@@ -347,10 +389,10 @@ pub fn confine(job_dir: Option<&Path>, graph_dir: Option<&Path>, graph_writable:
     hardening::prefer_oom_kill()?;
     hardening::set_not_dumpable()?;
 
-    let plan = sandbox::worker_plan(job_dir, graph_dir, graph_writable);
+    let plan = sandbox::worker_plan(job_dir, graph_dir, graph_writable, extra_read);
     match sandbox::apply(&plan, mode)? {
         Outcome::Enforced | Outcome::Disabled => {}
-        other => tracing::warn!(?other, "worker de OCR sem Landlock completo"),
+        other => tracing::warn!(?other, "worker sem Landlock completo"),
     }
     if let Err(e) = sandbox::apply_scopes(mode) {
         tracing::warn!(error = %e, "Landlock scopes indisponível");
@@ -400,7 +442,7 @@ fn private_graph_cache(job_dir: &Path, trusted: Option<&Path>) -> std::io::Resul
     Ok(private)
 }
 
-fn write_reply(reply: &Reply) -> ExitCode {
+fn write_reply(reply: &impl serde::Serialize) -> ExitCode {
     let Ok(json) = serde_json::to_vec(reply) else { return ExitCode::from(1) };
     use std::io::Write;
     let mut out = std::io::stdout().lock();
@@ -415,7 +457,7 @@ fn warmup(args: &WorkerArgs, trusted: Option<&Path>) -> anyhow::Result<()> {
     let job = tempfile::Builder::new().prefix("ocr-warmup-").tempdir()?;
     let doc = job.path().join("warmup.pdf");
     std::fs::write(&doc, WARMUP_DOC)?;
-    confine(Some(job.path()), trusted, true, &limits_for(args))?;
+    confine(Some(job.path()), trusted, true, &[], &limits_for(args))?;
     data_preparation::warm_up_models().map_err(|e| anyhow::anyhow!(e))?;
     match ocr::execute_job(&doc, args.max_pages, args.timeout).map_err(|e| anyhow::anyhow!(e))? {
         Reply::Ok { .. } => Ok(()),
@@ -455,7 +497,7 @@ pub fn main(args: WorkerArgs) -> ExitCode {
         }
     }
     let t = std::time::Instant::now();
-    if let Err(e) = confine(Some(job_dir), trusted.as_deref(), false, &limits_for(&args)) {
+    if let Err(e) = confine(Some(job_dir), trusted.as_deref(), false, &[], &limits_for(&args)) {
         eprintln!("confinamento do worker falhou: {e}");
         return ExitCode::from(3);
     }
@@ -464,6 +506,52 @@ pub fn main(args: WorkerArgs) -> ExitCode {
     match ocr::execute_job(file, args.max_pages, args.timeout) {
         Ok(mut reply) => {
             if let Reply::Ok { timings, .. } = &mut reply {
+                timings.confine_ms = confine_ms;
+            }
+            write_reply(&reply)
+        }
+        Err(e) => {
+            eprintln!("{e}");
+            ExitCode::from(1)
+        }
+    }
+}
+
+// ------------------------------------------------------------------ worker de chunking
+
+pub struct ChunkWorkerArgs {
+    pub file: PathBuf,
+    pub timeout: Duration,
+    pub tokenizer: Option<PathBuf>,
+    pub nltk_data: Option<PathBuf>,
+}
+
+/// Ponto de entrada do subcomando `chunk-worker`. Confina antes de ler qualquer coisa do job.
+/// Sem cache de grafos nem ONNX: só texto, tokenizador e dados do NLTK.
+pub fn chunk_main(args: ChunkWorkerArgs) -> ExitCode {
+    let Some(job_dir) = args.file.parent() else {
+        eprintln!("--file sem diretório");
+        return ExitCode::from(2);
+    };
+    let extra: Vec<PathBuf> = args.tokenizer.iter().chain(args.nltk_data.iter()).cloned().collect();
+    let cores = std::thread::available_parallelism().map_or(4, |n| n.get() as u64);
+    let limits = Limits {
+        address_space: None,
+        cpu_secs: (args.timeout.as_secs() + 30) * cores,
+        // O worker não grava arquivos (a resposta sai pelo pipe).
+        file_size: 16 * 1024 * 1024,
+        open_files: 256,
+    };
+    let t = std::time::Instant::now();
+    if let Err(e) = confine(Some(job_dir), None, false, &extra, &limits) {
+        eprintln!("confinamento do worker falhou: {e}");
+        return ExitCode::from(3);
+    }
+    let confine_ms = t.elapsed().as_millis() as u64;
+
+    match chunk::execute_job(&args.file, args.tokenizer.as_deref(), args.nltk_data.as_deref()) {
+        Ok(mut reply) => {
+            if let chunk::Reply::Ok { timings, .. } = &mut reply {
                 timings.confine_ms = confine_ms;
             }
             write_reply(&reply)

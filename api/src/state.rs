@@ -14,35 +14,39 @@ use crate::mfa::MfaCipher;
 use crate::security::Monitor;
 use crate::tokens::TokenService;
 
-pub struct OcrRuntime {
-    /// Quantos documentos são processados ao mesmo tempo em todo o servidor.
+/// Vagas de um tipo de job que roda em processo worker (OCR, chunking).
+pub struct JobRuntime {
+    /// Quantos jobs deste tipo rodam ao mesmo tempo em todo o servidor.
     pub slots: Arc<Semaphore>,
-    in_flight: Mutex<HashSet<Uuid>>,
+    in_flight: Arc<Mutex<HashSet<Uuid>>>,
 }
 
-/// Garante no máximo 1 OCR simultâneo por usuário.
+/// Garante no máximo 1 job simultâneo (do mesmo tipo) por usuário.
 pub struct UserGuard {
-    runtime: Arc<AppInner>,
+    in_flight: Arc<Mutex<HashSet<Uuid>>>,
     user: Uuid,
 }
 
 impl Drop for UserGuard {
     fn drop(&mut self) {
-        self.runtime
-            .ocr
-            .in_flight
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner)
-            .remove(&self.user);
+        self.in_flight.lock().unwrap_or_else(PoisonError::into_inner).remove(&self.user);
     }
 }
 
-impl OcrRuntime {
+impl JobRuntime {
     pub fn new(max_concurrent: usize) -> Self {
         Self {
             slots: Arc::new(Semaphore::new(max_concurrent)),
-            in_flight: Mutex::new(HashSet::new()),
+            in_flight: Arc::new(Mutex::new(HashSet::new())),
         }
+    }
+
+    /// `None` se o usuário já tem um job deste tipo em andamento.
+    pub fn try_user_guard(&self, user: Uuid) -> Option<UserGuard> {
+        if !self.in_flight.lock().unwrap_or_else(PoisonError::into_inner).insert(user) {
+            return None;
+        }
+        Some(UserGuard { in_flight: self.in_flight.clone(), user })
     }
 }
 
@@ -52,7 +56,10 @@ pub struct AppInner {
     pub passwords: PasswordService,
     pub tokens: TokenService,
     pub limiters: Limiters,
-    pub ocr: OcrRuntime,
+    pub ocr: JobRuntime,
+    pub chunk: JobRuntime,
+    /// Catálogo de estratégias de chunking, com a disponibilidade deste servidor.
+    pub chunk_catalog: crate::chunk::Catalog,
     pub memory: MemoryGuard,
     pub security: Monitor,
     pub mfa: MfaCipher,
@@ -75,10 +82,6 @@ impl AppState {
 
     /// `None` se o usuário já tem um OCR em andamento.
     pub fn try_user_guard(&self, user: Uuid) -> Option<UserGuard> {
-        let mut set = self.0.ocr.in_flight.lock().unwrap_or_else(PoisonError::into_inner);
-        if !set.insert(user) {
-            return None;
-        }
-        Some(UserGuard { runtime: self.0.clone(), user })
+        self.0.ocr.try_user_guard(user)
     }
 }

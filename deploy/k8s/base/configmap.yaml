@@ -33,4 +33,15 @@ data:
   RATE_GENERAL_PER_MIN: "300"
   RATE_AUTH_PER_MIN: "20"
   RATE_OCR_PER_MIN: "10"
+  # Chunking (/v1/chunk): cada pedido é um worker curto, só CPU. Texto por pedido, chunks
+  # devolvidos, pedidos simultâneos no pod e prazo (o worker é morto ao estourar).
+  CHUNK_MAX_TEXT_MB: "5"
+  CHUNK_MAX_CHUNKS: "20000"
+  CHUNK_MAX_CONCURRENT: "4"
+  CHUNK_TIMEOUT_SECS: "30"
+  CHUNK_WORKER_MAX_RSS_MB: "1024"
+  RATE_CHUNK_PER_MIN: "60"
+  # Estratégias medidas em tokens (token, semchunk, token_sentence_transformer, docling_hybrid):
+  # aponte para um tokenizer.json LOCAL montado no pod (o worker não tem rede).
+  # CHUNK_TOKENIZER: "/models/tokenizer"
   SECURITY_ALERT_LOGIN_FAILURES: "20"

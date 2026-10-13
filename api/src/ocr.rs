@@ -1,4 +1,4 @@
-//! `POST /v1/ocr`: recebe UM arquivo (multipart) e devolve o texto/tabelas extraídos.
+//! `POST /v1/data_preparation`: recebe UM arquivo (multipart) e devolve o texto/tabelas extraídos.
 //!
 //! Defesas (o OCR é a parte mais cara e a mais exposta do servidor):
 //! * limites de taxa por usuário, 1 OCR por vez por usuário e N globais;
@@ -26,7 +26,7 @@ use crate::auth::Auth;
 use crate::error::ApiError;
 use crate::models::{ErrorBody, OcrDocument, OcrResponse, OcrUpload};
 use crate::state::AppState;
-use crate::worker::{self, WorkerFailure};
+use crate::worker::{self, JobKind, WorkerFailure};
 
 const UPLOAD_TIMEOUT: Duration = Duration::from_secs(120);
 const MAX_PIXELS: u64 = 100_000_000;
@@ -290,7 +290,7 @@ async fn save_field(mut field: axum::extract::multipart::Field<'_>, dest: &Path,
 /// processamento; se o servidor estiver ocupado (ou com pouca memória) responde 503 com `Retry-After`.
 /// Cada usuário processa 1 documento por vez.
 #[utoipa::path(
-    post, path = "/v1/ocr", tag = "OCR",
+    post, path = "/v1/data_preparation", tag = "Preparação de dados",
     security(("bearer" = []), ("oauth2" = ["ocr"])),
     request_body(content = OcrUpload, content_type = "multipart/form-data"),
     responses(
@@ -398,7 +398,7 @@ pub async fn ocr(State(st): State<AppState>, auth: Auth, mut multipart: Multipar
         }
         Err(WorkerFailure::Timeout) => return Err(ApiError::Unavailable(Duration::from_secs(30))),
         Err(failure) => {
-            crate::security::event(&st, failure.event_kind(), Some(user), None, None, Some(&failure.to_string())).await;
+            crate::security::event(&st, failure.event_kind(JobKind::Ocr), Some(user), None, None, Some(&failure.to_string())).await;
             return Err(ApiError::Unprocessable(Rejection::ConversionFailed.message()));
         }
     };

@@ -11,6 +11,7 @@ log_format safe '$remote_addr $request_method $uri $status $body_bytes_sent ${re
 limit_req_zone  $binary_remote_addr zone=general:10m rate=20r/s;
 limit_req_zone  $binary_remote_addr zone=auth:10m    rate=5r/s;
 limit_req_zone  $binary_remote_addr zone=ocr:10m     rate=1r/s;
+limit_req_zone  $binary_remote_addr zone=chunk:10m   rate=5r/s;
 limit_conn_zone $binary_remote_addr zone=perip:10m;
 limit_req_status  429;
 limit_conn_status 429;
@@ -23,7 +24,7 @@ keepalive_requests    200;
 reset_timedout_connection on;
 client_header_buffer_size   2k;
 large_client_header_buffers 4 8k;
-client_max_body_size 16k;         # padrão; só o /v1/ocr sobe
+client_max_body_size 16k;         # padrão; só /v1/data_preparation e /v1/chunk sobem
 http2_max_concurrent_streams 32;
 
 upstream api_ocr_upstream {
@@ -93,7 +94,7 @@ server {
     }
     # Upload: o nginx recebe o corpo INTEIRO (com timeouts) antes de abrir a requisição ao app,
     # então uploads lentos não seguram threads/conexões do app.
-    location = /v1/ocr {
+    location = /v1/data_preparation {
         limit_req zone=general burst=40 nodelay;
         limit_req zone=ocr     burst=5  nodelay;
         client_max_body_size 26m;
@@ -102,6 +103,24 @@ server {
         proxy_request_buffering on;
         proxy_read_timeout 200s;       # > OCR_TIMEOUT_SECS do app
         proxy_send_timeout 60s;
+        include /etc/nginx/api-ocr-proxy.inc;
+    }
+    # Chunking: texto em JSON (CHUNK_MAX_TEXT_MB=5 no app; o corpo pode ter até o dobro por
+    # causa do escape do JSON). Mesmo buffer do upload: o app só recebe o corpo inteiro.
+    location = /v1/chunk {
+        limit_req zone=general burst=40 nodelay;
+        limit_req zone=chunk   burst=20 nodelay;
+        client_max_body_size 12m;
+        client_body_timeout  30s;
+        client_body_buffer_size 1m;
+        proxy_request_buffering on;
+        proxy_read_timeout 45s;        # > CHUNK_TIMEOUT_SECS do app
+        proxy_send_timeout 30s;
+        include /etc/nginx/api-ocr-proxy.inc;
+    }
+    location = /v1/chunk/strategies {
+        limit_req zone=general burst=40 nodelay;
+        client_max_body_size 1k;
         include /etc/nginx/api-ocr-proxy.inc;
     }
     # Documentação (Swagger UI). DESLIGADA por padrão no borda: descomente junto com ENABLE_DOCS=true

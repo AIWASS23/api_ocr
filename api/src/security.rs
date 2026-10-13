@@ -33,10 +33,12 @@ pub enum Severity {
 
 pub fn severity(kind: &str) -> Severity {
     match kind {
-        "refresh_reuse_detected" | "auth_code_reuse" | "account_locked" | "ocr_worker_crashed" => Severity::Alert,
+        "refresh_reuse_detected" | "auth_code_reuse" | "account_locked" | "ocr_worker_crashed" | "chunk_worker_crashed" => {
+            Severity::Alert
+        }
         "login_failed" | "login_failed_unknown" | "login_blocked" | "login_ip_locked" | "mfa_failed"
         | "token_exchange_failed" | "ocr_worker_failed" | "ocr_worker_bad_reply" | "ocr_worker_memory_killed"
-        | "sessions_revoked" => Severity::Warn,
+        | "chunk_worker_failed" | "chunk_worker_bad_reply" | "chunk_worker_memory_killed" | "sessions_revoked" => Severity::Warn,
         _ => Severity::Info,
     }
 }
@@ -156,7 +158,7 @@ mod tests {
 
     #[test]
     fn theft_indicators_are_alerts() {
-        for k in ["refresh_reuse_detected", "auth_code_reuse", "account_locked", "ocr_worker_crashed"] {
+        for k in ["refresh_reuse_detected", "auth_code_reuse", "account_locked", "ocr_worker_crashed", "chunk_worker_crashed"] {
             assert_eq!(severity(k), Severity::Alert, "{k}");
         }
         assert_eq!(severity("login_ok"), Severity::Info);

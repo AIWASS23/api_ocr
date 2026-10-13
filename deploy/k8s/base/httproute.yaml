@@ -10,13 +10,21 @@ spec:
       sectionName: https
   rules:
     - matches:
-        - path: { type: PathPrefix, value: /v1/ocr }
+        - path: { type: Exact, value: /v1/data_preparation }
       backendRefs:
         - name: api-ocr
           port: 8080
       # Upload (até 120 s) + processamento (OCR_TIMEOUT_SECS) com folga.
       timeouts:
         request: 320s
+    - matches:
+        - path: { type: Exact, value: /v1/chunk }
+      backendRefs:
+        - name: api-ocr
+          port: 8080
+      # Envio do texto (até 30 s) + processamento (CHUNK_TIMEOUT_SECS) com folga.
+      timeouts:
+        request: 75s
     - matches:
         - path: { type: PathPrefix, value: /oauth/ }
         - path: { type: PathPrefix, value: /auth/ }

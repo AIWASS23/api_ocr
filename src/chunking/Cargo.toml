@@ -1,0 +1,50 @@
+[package]
+name = "chunking"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "Estratégias de chunking para RAG (port em Rust do src/chunking do chatbot_rag + estratégias estruturais)"
+
+[features]
+default = ["html", "tiktoken", "hf-tokenizers"]
+# Estratégias html, html_header, html_section e html_semantic (parser HTML5 em Rust).
+html = ["dep:scraper", "dep:ego-tree"]
+# Estratégia token_tiktoken.
+tiktoken = ["dep:tiktoken-rs"]
+# Tokenizadores Hugging Face (token, token_sentence_transformer, semchunk, docling_hybrid),
+# carregados de arquivo local ou baixados do Hub.
+hf-tokenizers = ["dep:tokenizers", "dep:hf-hub"]
+# Embeddings locais (ONNX Runtime) para a estratégia semantic: fastembed.
+embeddings = ["dep:fastembed"]
+# Embeddings por token (ONNX Runtime) para a estratégia late_chunking.
+onnx = ["dep:ort", "dep:ndarray", "hf-tokenizers"]
+# Cliente HTTP OpenAI-compatível (Ollama, vLLM, OpenAI...) para contextual_retrieval.
+llm = ["dep:reqwest"]
+# Estratégia docling_hybrid (HybridChunker do docling.rs).
+docling = ["dep:docling", "hf-tokenizers"]
+# Contrato assíncrono (achunk/abatch/atransform_documents) sobre tokio.
+async = ["dep:tokio"]
+
+[dependencies]
+fancy-regex = "0.19"
+regex = "1.13"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+unicode-general-category = "1.1"
+indexmap = { version = "2", features = ["serde"] }
+
+scraper = { version = "0.27", optional = true }
+ego-tree = { version = "0.11", optional = true }
+tiktoken-rs = { version = "0.12", optional = true }
+tokenizers = { version = "0.23", default-features = false, features = ["fancy-regex"], optional = true }
+hf-hub = { version = "0.5", default-features = false, features = ["ureq", "rustls-tls"], optional = true }
+fastembed = { version = "7.1", default-features = false, features = ["ort-download-binaries-rustls-tls", "hf-hub-rustls-tls"], optional = true }
+ort = { version = "=2.0.0-rc.13", default-features = false, features = ["std", "ndarray", "download-binaries", "tls-rustls"], optional = true }
+ndarray = { version = "0.17", optional = true }
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"], optional = true }
+docling = { version = "=2.15.0", optional = true }
+tokio = { version = "1", features = ["rt", "macros"], optional = true }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }

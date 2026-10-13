@@ -123,7 +123,7 @@ async fn forged_and_malformed_tokens_are_rejected() {
     // Token assinado com OUTRO segredo.
     let other = api_ocr::tokens::TokenService::new(b"outro-segredo-outro-segredo-0000000000", ISSUER, Duration::from_secs(60));
     let t = other.issue(uuid::Uuid::new_v4(), CLIENT_ID, "ocr").unwrap();
-    assert_eq!(app.http.post(app.url("/v1/ocr")).bearer_auth(&t).send().await.unwrap().status(), 401);
+    assert_eq!(app.http.post(app.url("/v1/data_preparation")).bearer_auth(&t).send().await.unwrap().status(), 401);
 
     // Original continua válido.
     assert_eq!(app.http.get(app.url("/v1/me")).bearer_auth(&access).send().await.unwrap().status(), 200);
@@ -138,7 +138,7 @@ async fn scope_is_enforced_on_ocr() {
     let uid: uuid::Uuid = sqlx::query_scalar("SELECT id FROM users").fetch_one(&app.db).await.unwrap();
     let t = app.state.tokens.issue(uid, "so-profile", "profile").unwrap();
     let form = reqwest::multipart::Form::new().part("file", reqwest::multipart::Part::bytes(minimal_docx("oi")).file_name("a.docx"));
-    let r = app.http.post(app.url("/v1/ocr")).bearer_auth(&t).multipart(form).send().await.unwrap();
+    let r = app.http.post(app.url("/v1/data_preparation")).bearer_auth(&t).multipart(form).send().await.unwrap();
     assert_eq!(r.status(), 403);
 
     // E o cliente não consegue pedir um escopo que não possui.
@@ -208,7 +208,7 @@ async fn oversized_bodies_are_rejected() {
     // Upload de OCR acima do limite (2 MiB no teste).
     let (access, _) = app.tokens().await;
     let part = reqwest::multipart::Part::bytes(vec![b'%'; 3 * 1024 * 1024]).file_name("grande.pdf");
-    let r = app.http.post(app.url("/v1/ocr")).bearer_auth(&access).multipart(reqwest::multipart::Form::new().part("file", part)).send().await.unwrap();
+    let r = app.http.post(app.url("/v1/data_preparation")).bearer_auth(&access).multipart(reqwest::multipart::Form::new().part("file", part)).send().await.unwrap();
     assert_eq!(r.status(), 413);
 }
 

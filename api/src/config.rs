@@ -41,6 +41,9 @@ pub struct Config {
     /// limite do contêiner (o vigia mata o maior worker ao chegar a 90% dele).
     pub ocr_worker_max_rss_mb: u64,
 
+    /// Chunking (`/v1/chunk`).
+    pub chunk: ChunkSettings,
+
     // Limites de conexão / taxa
     pub max_connections: usize,
     pub max_connections_per_ip: usize,
@@ -48,12 +51,81 @@ pub struct Config {
     pub rate_general_per_min: u32,
     pub rate_auth_per_min: u32,
     pub rate_ocr_per_min: u32,
+    pub rate_chunk_per_min: u32,
     /// Redis (redis:// ou rediss://) para o limite de taxa global entre réplicas. Opcional.
     pub rate_limit_redis_url: Option<String>,
     pub rate_limit_redis_prefix: String,
 
     /// Falhas de login vindas de um mesmo IP, em 5 minutos, que disparam um alerta no log.
     pub security_alert_login_failures: u32,
+}
+
+/// Limites e modelos do chunking. Os padrões valem para a API e para os testes.
+#[derive(Clone, Debug)]
+pub struct ChunkSettings {
+    /// Maior texto aceito por requisição (soma de todos os documentos), em bytes de UTF-8.
+    pub max_text_bytes: usize,
+    pub max_documents: usize,
+    /// Mais chunks que uma requisição pode gerar (a resposta inteira trafega de uma vez).
+    pub max_chunks: usize,
+    /// Chunkings simultâneos no servidor (cada um é um processo worker).
+    pub max_concurrent: usize,
+    /// Prazo de cada chunking (o worker é morto ao estourar). Texto legítimo leva poucos
+    /// segundos; HTML/JSON patológico (aninhamento profundo deixa o parser HTML quadrático)
+    /// gasta no máximo isto de CPU de um worker.
+    pub timeout: Duration,
+    /// Teto de RSS por worker de chunking, em MiB (0 = só o limite do contêiner).
+    pub worker_max_rss_mb: u64,
+    /// Tokenizador Hugging Face LOCAL (diretório com `tokenizer.json`, ou o próprio arquivo) das
+    /// estratégias medidas em tokens. Sem ele, essas estratégias aparecem como indisponíveis. O
+    /// worker não tem rede: um id do Hub não funcionaria.
+    pub tokenizer: Option<PathBuf>,
+    /// Diretório de dados do NLTK com `tokenizers/punkt_tab` (além de `/usr/share/nltk_data` e
+    /// afins, que já são lidos). Sem o `punkt_tab`, a estratégia `nltk` usa `sentence`.
+    pub nltk_data: Option<PathBuf>,
+}
+
+impl Default for ChunkSettings {
+    fn default() -> Self {
+        Self {
+            max_text_bytes: 5 * 1024 * 1024,
+            max_documents: 10_000,
+            max_chunks: 20_000,
+            max_concurrent: 4,
+            timeout: Duration::from_secs(30),
+            worker_max_rss_mb: 1024,
+            tokenizer: None,
+            nltk_data: None,
+        }
+    }
+}
+
+impl ChunkSettings {
+    fn from_env() -> Result<Self, ConfigError> {
+        let d = Self::default();
+        let s = Self {
+            max_text_bytes: parse::<usize>("CHUNK_MAX_TEXT_MB", d.max_text_bytes / (1024 * 1024))? * 1024 * 1024,
+            max_documents: parse("CHUNK_MAX_DOCUMENTS", d.max_documents)?,
+            max_chunks: parse("CHUNK_MAX_CHUNKS", d.max_chunks)?,
+            max_concurrent: parse("CHUNK_MAX_CONCURRENT", d.max_concurrent)?,
+            timeout: Duration::from_secs(parse("CHUNK_TIMEOUT_SECS", d.timeout.as_secs())?),
+            worker_max_rss_mb: parse("CHUNK_WORKER_MAX_RSS_MB", d.worker_max_rss_mb)?,
+            tokenizer: var("CHUNK_TOKENIZER").map(PathBuf::from),
+            nltk_data: var("CHUNK_NLTK_DATA").map(PathBuf::from),
+        };
+        // Configurado e inexistente = erro de configuração: falha na partida, não na 1ª requisição.
+        if let Some(t) = &s.tokenizer
+            && !crate::chunk::tokenizer_json(t).is_file()
+        {
+            return Err(ConfigError("CHUNK_TOKENIZER precisa apontar para um tokenizer.json local (ou o diretório dele)".into()));
+        }
+        if let Some(d) = &s.nltk_data
+            && !d.is_dir()
+        {
+            return Err(ConfigError("CHUNK_NLTK_DATA precisa ser um diretório".into()));
+        }
+        Ok(s)
+    }
 }
 
 // Nunca imprime segredos.
@@ -176,6 +248,7 @@ impl Config {
             },
             ocr_worker_memory_mb: parse("OCR_WORKER_MEMORY_MB", 0)?,
             ocr_worker_max_rss_mb: parse("OCR_WORKER_MAX_RSS_MB", 0)?,
+            chunk: ChunkSettings::from_env()?,
 
             max_connections: parse("MAX_CONNECTIONS", 1024)?,
             max_connections_per_ip: parse("MAX_CONNECTIONS_PER_IP", 64)?,
@@ -183,6 +256,7 @@ impl Config {
             rate_general_per_min: parse("RATE_GENERAL_PER_MIN", 300)?,
             rate_auth_per_min: parse("RATE_AUTH_PER_MIN", 20)?,
             rate_ocr_per_min: parse("RATE_OCR_PER_MIN", 10)?,
+            rate_chunk_per_min: parse("RATE_CHUNK_PER_MIN", 60)?,
             rate_limit_redis_url: var("RATE_LIMIT_REDIS_URL"),
             rate_limit_redis_prefix: var("RATE_LIMIT_REDIS_PREFIX").unwrap_or_else(|| "api_ocr:".to_string()),
             security_alert_login_failures: parse("SECURITY_ALERT_LOGIN_FAILURES", 20)?,
@@ -201,10 +275,17 @@ impl Config {
             ("MAX_CONNECTIONS", self.max_connections),
             ("MAX_CONNECTIONS_PER_IP", self.max_connections_per_ip),
             ("MAX_IN_FLIGHT", self.max_in_flight),
+            ("CHUNK_MAX_TEXT_MB", self.chunk.max_text_bytes),
+            ("CHUNK_MAX_DOCUMENTS", self.chunk.max_documents),
+            ("CHUNK_MAX_CHUNKS", self.chunk.max_chunks),
+            ("CHUNK_MAX_CONCURRENT", self.chunk.max_concurrent),
         ] {
             if v == 0 {
                 return Err(ConfigError(format!("{name} precisa ser maior que 0")));
             }
+        }
+        if self.chunk.timeout.is_zero() {
+            return Err(ConfigError("CHUNK_TIMEOUT_SECS precisa ser maior que 0".into()));
         }
         if !(1..=100).contains(&self.ocr_memory_watermark_pct) {
             return Err(ConfigError("OCR_MEMORY_WATERMARK_PCT precisa estar entre 1 e 100".into()));
@@ -213,6 +294,7 @@ impl Config {
             ("RATE_GENERAL_PER_MIN", self.rate_general_per_min),
             ("RATE_AUTH_PER_MIN", self.rate_auth_per_min),
             ("RATE_OCR_PER_MIN", self.rate_ocr_per_min),
+            ("RATE_CHUNK_PER_MIN", self.rate_chunk_per_min),
             ("SECURITY_ALERT_LOGIN_FAILURES", self.security_alert_login_failures),
         ] {
             if v == 0 {

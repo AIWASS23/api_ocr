@@ -25,6 +25,21 @@ RUN curl -fsSL "$DL_URL" -o dl.sh \
  && echo "$DL_SHA256  dl.sh" | sha256sum -c - \
  && sh dl.sh --no-asr
 
+# ---------- dados do NLTK (estratégia de chunking `nltk`) ----------
+# Estágio próprio: não invalida o cache do download dos modelos acima.
+FROM debian:trixie-slim AS nltk
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates unzip \
+ && rm -rf /var/lib/apt/lists/*
+WORKDIR /nltk
+# punkt_tab num commit fixo do nltk_data, com hash fixado. Só o português (o idioma que a API usa).
+ARG PUNKT_URL=https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/tokenizers/punkt_tab.zip
+ARG PUNKT_SHA256=e57f64187974277726a3417ca6f181ec5403676c717672eef6a748a7b20e0106
+RUN curl -fsSL "$PUNKT_URL" -o /tmp/punkt_tab.zip \
+ && echo "$PUNKT_SHA256  /tmp/punkt_tab.zip" | sha256sum -c - \
+ && mkdir tokenizers \
+ && unzip -q /tmp/punkt_tab.zip 'punkt_tab/portuguese/*' -d tokenizers \
+ && rm /tmp/punkt_tab.zip
+
 # ---------- runtime ----------
 FROM debian:trixie-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
@@ -33,6 +48,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 WORKDIR /app
 COPY --from=build  /api_ocr /app/api_ocr
 COPY --from=models /models/.models /app/.models
+# Um dos diretórios padrão do NLTK (sob /usr: legível pelo sandbox, sem configuração).
+COPY --from=nltk /nltk /usr/share/nltk_data
 
 # Raiz somente leitura: tudo que o app grava vai para /tmp (tmpfs).
 ENV BIND_ADDR=0.0.0.0:8080 \

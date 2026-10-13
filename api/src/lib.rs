@@ -1,4 +1,5 @@
 pub mod auth;
+pub mod chunk;
 pub mod config;
 pub mod crypto;
 pub mod docs;
@@ -42,7 +43,7 @@ use tower_http::timeout::{RequestBodyTimeoutLayer, TimeoutLayer};
 use tower_http::trace::TraceLayer;
 
 use config::Config;
-use state::{AppInner, AppState, OcrRuntime};
+use state::{AppInner, AppState, JobRuntime};
 
 pub static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
@@ -64,7 +65,8 @@ pub async fn connect_db_with(url: &str, max_connections: u32) -> anyhow::Result<
 pub async fn build_state(cfg: Config, db: PgPool) -> anyhow::Result<AppState> {
     let passwords = crypto::PasswordService::new(cfg.password_pepper.clone(), 4).map_err(|e| anyhow::anyhow!("{e}"))?;
     let tokens = tokens::TokenService::with_previous(&cfg.jwt_secret, &cfg.jwt_verification_secrets()[1..], &cfg.issuer, cfg.access_token_ttl);
-    let mut limiters = limits::Limiters::new(cfg.rate_general_per_min, cfg.rate_auth_per_min, cfg.rate_ocr_per_min);
+    let mut limiters =
+        limits::Limiters::new(cfg.rate_general_per_min, cfg.rate_auth_per_min, cfg.rate_ocr_per_min, cfg.rate_chunk_per_min);
     if let Some(url) = &cfg.rate_limit_redis_url {
         // Configurado mas inalcançável na partida = erro de configuração: falha alto e cedo.
         let shared = shared_limit::SharedLimiter::connect(url, &cfg.rate_limit_redis_prefix)
@@ -73,11 +75,13 @@ pub async fn build_state(cfg: Config, db: PgPool) -> anyhow::Result<AppState> {
         tracing::info!("limite de taxa global (Redis) ativo");
         limiters = limiters.with_shared(shared);
     }
-    let ocr = OcrRuntime::new(cfg.ocr_max_concurrent);
+    let ocr = JobRuntime::new(cfg.ocr_max_concurrent);
+    let chunk = JobRuntime::new(cfg.chunk.max_concurrent);
+    let chunk_catalog = chunk::Catalog::new(&cfg.chunk);
     let memory = memory::MemoryGuard::new(cfg.ocr_memory_watermark_pct);
     let security = security::Monitor::new(cfg.security_alert_login_failures);
     let mfa = mfa::MfaCipher::from_pepper(&cfg.password_pepper);
-    Ok(AppState::new(AppInner { cfg, db, passwords, tokens, limiters, ocr, memory, security, mfa }))
+    Ok(AppState::new(AppInner { cfg, db, passwords, tokens, limiters, ocr, chunk, chunk_catalog, memory, security, mfa }))
 }
 
 /// Motor de conversão. Só é criado DENTRO do worker de OCR (ver `worker.rs`).
@@ -145,10 +149,16 @@ pub fn router(st: AppState) -> Router {
         .layer(DefaultBodyLimit::max(1024))
         .layer(general_timeout);
 
-    // O OCR cuida dos próprios prazos (upload e processamento).
+    // OCR e chunking cuidam dos próprios prazos (envio e processamento) e leem o corpo só depois
+    // dos limites por usuário.
     let ocr_routes = Router::new()
-        .route("/v1/ocr", post(ocr::ocr))
+        .route("/v1/data_preparation", post(ocr::ocr))
         .layer(DefaultBodyLimit::max(cfg.ocr_max_upload_bytes + 64 * 1024));
+    let chunk_routes = Router::new().route("/v1/chunk", post(chunk::chunk));
+    let chunk_catalog = Router::new()
+        .route("/v1/chunk/strategies", get(chunk::strategies))
+        .layer(DefaultBodyLimit::max(1024))
+        .layer(general_timeout);
 
     let public = Router::new()
         .route("/healthz", get(healthz))
@@ -165,6 +175,8 @@ pub fn router(st: AppState) -> Router {
         .merge(auth_routes)
         .merge(api_routes)
         .merge(ocr_routes)
+        .merge(chunk_routes)
+        .merge(chunk_catalog)
         .merge(public)
         .fallback(not_found)
         .with_state(st.clone());

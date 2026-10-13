@@ -17,8 +17,9 @@ base64 = "0.23.1"
 bytes = "1.12.1"
 chacha20poly1305 = "0.11.0"
 chrono = { version = "0.4.45", features = ["serde"] }
+chunking = { path = "../src/chunking", features = ["docling"] }
 clap = { version = "4.6.7", features = ["derive", "env"] }
-data_preparation = { path = ".." }
+data_preparation = { path = "../src/data_preparation" }
 governor = "0.10.4"
 hex = "0.4.3"
 hmac = "0.13"
@@ -27,7 +28,7 @@ hyper = { version = "1.12.0", features = ["http1", "http2", "server"] }
 hyper-util = { version = "0.1.21", features = ["tokio", "server-auto", "service", "server-graceful"] }
 imagesize = "0.15.0"
 infer = "0.22.0"
-jsonwebtoken = { version = "11.1.0", features = ["rust_crypto"] }
+jsonwebtoken = { version = "11.1.0", default-features = false, features = ["aws_lc_rs"] }
 landlock = "0.4.7"
 libc = "0.2.190"
 rand = "0.10.3"

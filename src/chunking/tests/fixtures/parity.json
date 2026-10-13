@@ -1,0 +1,3721 @@
+{
+ "inputs": {
+  "pt_prose": "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!",
+  "markdown": "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~\n",
+  "html": "<!DOCTYPE html>\n<html><head><title>Portal da Prefeitura</title><style>p{color:red}</style></head>\n<body>\n<div class=\"topo\">Bem-vindo ao portal <!-- comentário interno --> oficial.</div>\n<h1>Serviços</h1>\n<p>Consulte os serviços <a href=\"/servicos\">disponíveis</a> e emita certidões.</p>\n<div><h2>Certidões</h2>\n<p>A certidão negativa é <b>gratuita</b> e sai na hora.</p>\n<ul><li>CND municipal</li><li>Certidão de valor venal</li></ul>\n</div>\n<p style=\"font-size: 24px\">Aviso importante</p>\n<p>Texto depois do aviso grande.</p>\n<h2>Horários</h2>\n<table><tr><th>Dia</th><th>Horário</th></tr><tr><td>Seg–Sex</td><td>8h às 17h</td></tr></table>\n<img src=\"/img/mapa.png\" alt=\"mapa\">\n<h3>Feriados</h3>\n<p>Não há atendimento em feriados.</p>\n</body></html>",
+  "json": "{\"municipio\": \"São José\", \"codigo\": 4216602, \"populacao\": 250181.0,\n\"secretarias\": {\"financas\": {\"titular\": \"João\", \"telefones\": [\"156\", \"3381-0000\"], \"ativo\": true},\n\"saude\": {\"titular\": \"Maria\", \"unidades\": [{\"nome\": \"UBS Centro\", \"leitos\": 0}, {\"nome\": \"Hospital\", \"leitos\": 120}]},\n\"obras\": {\"titular\": null, \"orcamento\": 1.5e7}},\n\"descricao\": \"Município catarinense com serviços digitais — atendimento 24h 😀\", \"tags\": [\"a\", \"b\", \"c\"]}",
+  "json_list": "[{\"id\": 1, \"nome\": \"Alpha\"}, {\"id\": 2, \"nome\": \"Beta\"}, {\"id\": 3, \"nome\": \"Gamma\"}]",
+  "latex": "\\documentclass{article}\n\\begin{document}\n\\section{Introdução}\nO imposto $I = v \\cdot a$ incide sobre o valor venal.\n\\subsection{Base de cálculo}\n\\begin{itemize}\n\\item Valor venal do imóvel\n\\item Alíquota da faixa\n\\end{itemize}\n$$ total = \\sum_i v_i $$\n\\section{Conclusão}\nFim.\n\\end{document}",
+  "python_code": "import os\n\n\nclass Calculadora:\n    \"\"\"Calcula tributos.\"\"\"\n\n    def __init__(self, aliquota):\n        self.aliquota = aliquota\n\n    def calcula(self, valor):\n        if valor < 0:\n            raise ValueError(\"negativo\")\n        return valor * self.aliquota\n\n\ndef main():\n    c = Calculadora(0.05)\n    for v in [100, 200, 300]:\n        print(c.calcula(v))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+  "go_code": "package main\n\nimport \"fmt\"\n\ntype Imposto struct {\n\tAliquota float64\n}\n\nfunc (i Imposto) Calcula(v float64) float64 {\n\tif v < 0 {\n\t\treturn 0\n\t}\n\treturn v * i.Aliquota\n}\n\nfunc main() {\n\ti := Imposto{Aliquota: 0.05}\n\tfor _, v := range []float64{100, 200} {\n\t\tfmt.Println(i.Calcula(v))\n\t}\n}\n",
+  "jsx": "import React from \"react\";\n\nexport function Header({ title }) {\n  return <header className=\"topo\"><h1>{title}</h1></header>;\n}\n\nconst Card = ({ children }) => {\n  if (!children) return null;\n  return <div className=\"card\">{children}</div>;\n};\n\nexport default function App() {\n  const itens = [\"IPTU\", \"ISS\", \"ITBI\"];\n  return (\n    <main>\n      <Header title=\"Tributos\" />\n      {itens.map((i) => <Card key={i}>{i}</Card>)}\n    </main>\n  );\n}\n",
+  "no_spaces": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "blank": "   \n\t  "
+ },
+ "cases": [
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público",
+    "funciona de segunda a sexta-feira. O Sr. João da Silva, secr",
+    "etário de Finanças, explicou que o IPTU de 2026 pode ser pag",
+    "o em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal",
+    "e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156",
+    "... Ou procure a Dra. Ana Souza na sala 3, ao lado do protoc",
+    "olo geral (térreo).\n\n\nContribuintes com débitos “em aberto”",
+    "devem regularizar a situação até 31/12. O desconto é de 5% p",
+    "ara pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.\nPalavragi",
+    "gantesemespacosquenuncaacabaporqueninguemlembroudecolocaresp",
+    "acosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos munici",
+    "pais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descon",
+    "tos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor",
+    "venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5",
+    "% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000",
+    "| 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):",
+    "return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de ser",
+    "viço recolhem ISS mensalmente.\n#### Nível quatro sem espaço",
+    "antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 60,
+    "chunk_overlap": 0,
+    "options": {
+     "separator": "\n\n"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 60,
+    "chunk_overlap": 0,
+    "options": {
+     "separator": "\n\n"
+    }
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte",
+    "Este guia explica os tributos municipais.\n\n## IPTU",
+    "O **IPTU** é cobrado anualmente.\n\n### Descontos",
+    "- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```",
+    "---\n\n## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 60,
+    "chunk_overlap": 0,
+    "options": {
+     "separator": "(?<=\\.)\\s",
+     "is_separator_regex": true
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira.",
+    "O Sr.",
+    "João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária.",
+    "Dúvidas? Ligue 156...Ou procure a Dra.",
+    "Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.",
+    "Fim do aviso.Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 60,
+    "chunk_overlap": 0,
+    "options": {
+     "separator": ". ",
+     "keep_separator": "end"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira.",
+    "O Sr.",
+    "João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária.",
+    "Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto” devem regularizar a situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso.",
+    "Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público",
+    "funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "secretário de Finanças, explicou que o IPTU de 2026 pode ser",
+    "pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de",
+    "inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a",
+    "Dra. Ana Souza na sala 3, ao lado do protocolo geral",
+    "(térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a",
+    "situação até 31/12. O desconto é de 5% para pagamento à",
+    "vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudec",
+    "olocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte",
+    "Este guia explica os tributos municipais.\n\n## IPTU",
+    "O **IPTU** é cobrado anualmente.\n\n### Descontos",
+    "- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|",
+    "| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):",
+    "return valor * 0.05\n```",
+    "---\n\n## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "python_code",
+   "expected": [
+    "import os\n\n\nclass Calculadora:\n    \"\"\"Calcula tributos.\"\"\"",
+    "def __init__(self, aliquota):",
+    "self.aliquota = aliquota",
+    "def calcula(self, valor):\n        if valor < 0:",
+    "raise ValueError(\"negativo\")",
+    "return valor * self.aliquota",
+    "def main():\n    c = Calculadora(0.05)",
+    "for v in [100, 200, 300]:\n        print(c.calcula(v))",
+    "if __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 60,
+    "chunk_overlap": 0,
+    "language": "python"
+   },
+   "input": "python_code",
+   "expected": [
+    "import os",
+    "Calculadora:\n    \"\"\"Calcula tributos.\"\"\"",
+    "def __init__(self, aliquota):",
+    "self.aliquota = aliquota",
+    "def calcula(self, valor):\n        if valor < 0:",
+    "raise ValueError(\"negativo\")",
+    "return valor * self.aliquota",
+    "main():\n    c = Calculadora(0.05)",
+    "for v in [100, 200, 300]:\n        print(c.calcula(v))",
+    "if __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 60,
+    "chunk_overlap": 0,
+    "language": "go"
+   },
+   "input": "go_code",
+   "expected": [
+    "package main\n\nimport \"fmt\"",
+    "Imposto struct {\n\tAliquota float64\n}",
+    "(i Imposto) Calcula(v float64) float64 {\n\tif v < 0 {",
+    "return 0\n\t}\n\treturn v * i.Aliquota\n}",
+    "main() {\n\ti := Imposto{Aliquota: 0.05}",
+    "for _, v := range []float64{100, 200} {",
+    "fmt.Println(i.Calcula(v))\n\t}\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 60,
+    "chunk_overlap": 0,
+    "options": {
+     "separators": [
+      "\n",
+      ". ",
+      " ",
+      ""
+     ],
+     "keep_separator": "start"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público",
+    "funciona de segunda a sexta-feira",
+    ". O Sr",
+    ". João da Silva, secretário de Finanças, explicou que o IPTU",
+    "de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de",
+    "inscrição imobiliária",
+    ". Dúvidas? Ligue 156... Ou procure a Dra",
+    ". Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a",
+    "situação até 31/12",
+    ". O desconto é de 5% para pagamento à vista; já o",
+    "parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroude",
+    "colocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público",
+    "funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "secretário de Finanças, explicou que o IPTU de 2026 pode",
+    "ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse",
+    "o portal e informe o nº de inscrição imobiliária. Dúvidas?",
+    "Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado",
+    "do protocolo geral (térreo).\n\n\nContribuintes com débitos",
+    "“em aberto” devem regularizar a situação até 31/12. O",
+    "desconto é de 5% para pagamento à vista; já o parcelamento",
+    "não tem desconto.\r\nLinha com espaço inquebrável e",
+    "vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudec",
+    "olocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos",
+    "municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n###",
+    "Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa",
+    "| Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$",
+    "100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima",
+    "de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef",
+    "calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.\n#### Nível",
+    "quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com",
+    "til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público",
+    "funciona de segunda a sexta-feira.",
+    "O Sr.",
+    "João da Silva, secretário de Finanças, explicou que o IPTU",
+    "de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de",
+    "inscrição imobiliária.",
+    "Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a",
+    "situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o",
+    "parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudec",
+    "olocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte",
+    "Este guia explica os tributos municipais.",
+    "## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|",
+    "| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |\n\n```python",
+    "# isto não é título\ndef calcula(valor):",
+    "return valor * 0.05\n```\n\n---\n\n## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público",
+    "funciona de segunda a sexta-feira.",
+    "O Sr.",
+    "João da Silva, secretário de Finanças, explicou que o IPTU",
+    "de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de",
+    "inscrição imobiliária.",
+    "Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a",
+    "situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o",
+    "parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudec",
+    "olocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte",
+    "Este guia explica os tributos municipais.\n\n## IPTU",
+    "O **IPTU** é cobrado anualmente.\n\n### Descontos",
+    "- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até",
+    "R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 |",
+    "acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):",
+    "return valor * 0.05\n```",
+    "---\n\n## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público",
+    "funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "secretário de Finanças, explicou que o IPTU de 2026 pode",
+    "ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de",
+    "inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a",
+    "Dra. Ana Souza na sala 3, ao lado do protocolo geral",
+    "(térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a",
+    "situação até 31/12. O desconto é de 5% para pagamento à",
+    "vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudec",
+    "olocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte",
+    "Este guia explica os tributos municipais.\n\n## IPTU",
+    "O **IPTU** é cobrado anualmente.\n\n### Descontos",
+    "- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|",
+    "| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |\n\n```python",
+    "# isto não é título\ndef calcula(valor):",
+    "return valor * 0.05\n```\n\n---\n\n## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~",
+    "bloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 23,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr",
+    ". João da Silva, secretário de Finanças, explicou que o IPTU de 2026",
+    "pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o",
+    "portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue",
+    "156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (t",
+    "érreo).\n\n\nContribuintes com débitos “em aberto” devem regularizar a situação até",
+    "31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não",
+    "tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalav",
+    "ragigantesemespacosquenuncaacabaporqueninguemlembroudecolocares",
+    "pacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 23,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU",
+    "O **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à",
+    "vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |",
+    "|---|---|---|\n| 1 | até R$ 100.000 | 0,5",
+    "% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3",
+    "| acima de R$ 300.000 | 1,0% |\n\n```python\n# isto",
+    "não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes",
+    "Texto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 23,
+    "chunk_overlap": 0
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 23,
+    "chunk_overlap": 0,
+    "options": {
+     "encoding_name": "o200k_base"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dú",
+    "vidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral",
+    "(térreo).\n\n\nContribuintes com débitos “em aberto” devem regularizar a situação até 31",
+    "/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquen",
+    "uncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do",
+    "aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira.",
+    "O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária.",
+    "Dúvidas?\n\nLigue 156... Ou procure a Dra.",
+    "Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.",
+    "Fim do aviso.\n\nObrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.",
+    "## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público",
+    "funciona de segunda a sexta-feira.",
+    "O Sr. João da Silva, secretário de Finanças, explicou que o",
+    "IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de",
+    "inscrição imobiliária.",
+    "Dúvidas?\n\nLigue 156... Ou procure a Dra.",
+    "Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a",
+    "situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o",
+    "parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudec",
+    "olocarespacosnotextoinformativo.",
+    "Fim do aviso.\n\nObrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte",
+    "Este guia explica os tributos municipais.\n\n## IPTU",
+    "O **IPTU** é cobrado anualmente.\n\n### Descontos",
+    "- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|",
+    "| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):",
+    "return valor * 0.05\n```",
+    "---\n\n## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "markdown",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte",
+    "Este guia explica os tributos municipais.\n\n## IPTU",
+    "O **IPTU** é cobrado anualmente.\n\n### Descontos",
+    "- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|",
+    "| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):",
+    "return valor * 0.05",
+    "```\n\n---\n\n## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público",
+    "funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "secretário de Finanças, explicou que o IPTU de 2026 pode",
+    "ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de",
+    "inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a",
+    "Dra. Ana Souza na sala 3, ao lado do protocolo geral",
+    "(térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a",
+    "situação até 31/12. O desconto é de 5% para pagamento à",
+    "vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroude",
+    "colocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_header",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte",
+    "Este guia explica os tributos municipais.",
+    "## IPTU  \nO **IPTU** é cobrado anualmente.",
+    "### Descontos  \n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|",
+    "| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |  \n```python",
+    "# isto não é título\ndef calcula(valor):\nreturn valor * 0.05",
+    "```  \n---",
+    "## ISS  \nPrestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_header",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público",
+    "funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "secretário de Finanças, explicou que o IPTU de 2026 pode",
+    "ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de",
+    "inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a",
+    "Dra. Ana Souza na sala 3, ao lado do protocolo geral",
+    "(térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a",
+    "situação até 31/12. O desconto é de 5% para pagamento à",
+    "vista; já o parcelamento não tem desconto.",
+    "Linha com espaçoinquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudec",
+    "olocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_syntax",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte",
+    "Este guia explica os tributos municipais.",
+    "## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|",
+    "| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):",
+    "return valor * 0.05\n```",
+    "## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "html",
+   "expected": [
+    "<!DOCTYPE html>\n<html><head",
+    "><title>Portal da Prefeitura</title><style",
+    ">p{color:red}</style></head>\n<body",
+    ">\n<div",
+    "class=\"topo\">Bem-vindo ao portal <!-- comentário interno --",
+    "> oficial.</div>\n<h1",
+    ">Serviços</h1>\n<p",
+    ">Consulte os serviços <a href=\"/servicos\">disponíveis</a> e",
+    "emita certidões.</p>\n<div",
+    "><h2>Certidões</h2>\n<p",
+    ">A certidão negativa é <b>gratuita</b> e sai na hora.</p>\n<u",
+    "l",
+    "><li",
+    ">CND municipal</li><li",
+    ">Certidão de valor venal</li></ul>\n</div>\n<p",
+    "style=\"font-size: 24px\">Aviso importante</p>\n<p",
+    ">Texto depois do aviso grande.</p>\n<h2",
+    ">Horários</h2>\n<table",
+    "><tr><th>Dia</th><th>Horário</th></tr><tr",
+    "><td>Seg–Sex</td><td",
+    ">8h às 17h</td></tr></table>\n<img src=\"/img/mapa.png\" alt=\"m",
+    "apa\">\n<h3",
+    ">Feriados</h3>\n<p",
+    ">Não há atendimento em feriados.</p>\n</body></html>"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html_header",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "html",
+   "expected": [
+    "Bem-vindo ao portal comentário interno oficial.",
+    "Serviços\nServiços",
+    "Serviços\nConsulte os serviços e emita certidões.",
+    "disponíveis",
+    "Serviços > Certidões\nCertidões",
+    "Serviços\nA certidão negativa é e sai na hora.  \ngratuita",
+    "CND municipal  \nCertidão de valor venal",
+    "Aviso importante  \nTexto depois do aviso grande.",
+    "Serviços > Horários\nHorários",
+    "Serviços > Horários\nDia  \nHorário  \nSeg–Sex  \n8h às 17h",
+    "Serviços > Horários > Feriados\nFeriados",
+    "Serviços > Horários > Feriados",
+    "Não há atendimento em feriados."
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html_section",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "html",
+   "expected": [
+    "#TITLE#\nBem-vindo ao portal   comentário interno   oficial.",
+    "Serviços\nServiços",
+    "Consulte os serviços  disponíveis  e emita certidões.",
+    "Certidões\nCertidões",
+    "A certidão negativa é  gratuita  e sai na hora.",
+    "CND municipal \n Certidão de valor venal",
+    "Aviso importante\nAviso importante",
+    "Texto depois do aviso grande.",
+    "Horários\nHorários \n \n \n Dia \n Horário \n \n \n Seg–Sex",
+    "8h às 17h",
+    "Feriados\nFeriados \n Não há atendimento em feriados."
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html_semantic",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "html",
+   "expected": [
+    "Portal da Prefeitura p{color:red} Bem-vindo ao portal",
+    "comentário interno oficial.",
+    "Serviços",
+    "Consulte os serviços [disponíveis](/servicos) e emita",
+    "Serviços\ncertidões.",
+    "Certidões",
+    "gratuita A certidão negativa é e sai na hora. CND municipal",
+    "Certidão de valor venal",
+    "Certidões\nAviso importante Texto depois do aviso grande.",
+    "Horários",
+    "Dia Horário Seg–Sex 8h às 17h",
+    "![image:/img/mapa.png](/img/mapa.png)",
+    "Feriados\nNão há atendimento em feriados."
+   ]
+  },
+  {
+   "config": {
+    "strategy": "json",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "json",
+   "expected": [
+    "{\"municipio\": \"S\\u00e3o Jos\\u00e9\", \"codigo\": 4216602}",
+    "{\"populacao\": 250181.0, \"secretarias\": {\"financas\":",
+    "{\"titular\": \"Jo\\u00e3o\"}}}",
+    "{\"secretarias\": {\"financas\": {\"telefones\": [\"156\",",
+    "\"3381-0000\"]}}}",
+    "{\"secretarias\": {\"financas\": {\"ativo\": true}, \"saude\":",
+    "{\"titular\": \"Maria\"}}}",
+    "{\"secretarias\": {\"saude\": {\"unidades\": [{\"nome\": \"UBS",
+    "Centro\", \"leitos\": 0}, {\"nome\": \"Hospital\", \"leitos\":",
+    "120}]}}}",
+    "{\"secretarias\": {\"obras\": {\"titular\": null, \"orcamento\":",
+    "15000000.0}}}",
+    "{\"descricao\": \"Munic\\u00edpio catarinense com servi\\u00e7os",
+    "digitais \\u2014 atendimento 24h \\ud83d\\ude00\"}",
+    "{\"tags\": [\"a\", \"b\", \"c\"]}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "json",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "json_list",
+   "expected": [
+    "{\"items\": [{\"id\": 1, \"nome\": \"Alpha\"}, {\"id\": 2, \"nome\":",
+    "\"Beta\"}, {\"id\": 3, \"nome\": \"Gamma\"}]}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "json",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público",
+    "funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "secretário de Finanças, explicou que o IPTU de 2026 pode",
+    "ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de",
+    "inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a",
+    "Dra. Ana Souza na sala 3, ao lado do protocolo geral",
+    "(térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a",
+    "situação até 31/12. O desconto é de 5% para pagamento à",
+    "vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudec",
+    "olocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "latex",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "latex",
+   "expected": [
+    "\\documentclass{article}\n\\begin{document}\n\\section{Introdução",
+    "}\nO",
+    "imposto",
+    "$I = v \\cdot a",
+    "$ incide sobre o valor venal.\n\\subsection{Base de",
+    "cálculo}\n\\begin{itemize}\n\\item Valor venal do imóvel\n\\item",
+    "Alíquota da faixa\n\\end{itemize}",
+    "$$ total = \\sum_i v_i",
+    "$$\n\\section{Conclusão}\nFim.\n\\end{document}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "code",
+    "chunk_size": 60,
+    "chunk_overlap": 0,
+    "language": "go"
+   },
+   "input": "go_code",
+   "expected": [
+    "package main\n\nimport \"fmt\"\n\ntype",
+    "Imposto struct {\n\tAliquota float64\n}\n\nfunc",
+    "(i Imposto) Calcula(v float64) float64 {\n\tif v < 0 {",
+    "return 0\n\t}\n\treturn v * i.Aliquota\n}",
+    "func",
+    "main() {\n\ti := Imposto{Aliquota: 0.05}",
+    "for _, v := range []float64{100, 200} {",
+    "fmt.Println(i.Calcula(v))\n\t}\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "code",
+    "chunk_size": 60,
+    "chunk_overlap": 0,
+    "language": "js"
+   },
+   "input": "jsx",
+   "expected": [
+    "import React from \"react\";",
+    "export function Header({ title }) {",
+    "return <header",
+    "className=\"topo\"><h1>{title}</h1></header>;",
+    "}",
+    "const",
+    "Card = ({ children }) => {\n  if (!children) return null;",
+    "return <div className=\"card\">{children}</div>;\n};",
+    "export default function App() {",
+    "const itens = [\"IPTU\", \"ISS\", \"ITBI\"];\n  return (",
+    "<main>\n      <Header title=\"Tributos\" />",
+    "{itens.map((i) => <Card key={i}>{i}</Card>)}",
+    "</main>\n  );\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "python",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "python_code",
+   "expected": [
+    "import os\n\n\nclass",
+    "Calculadora:\n    \"\"\"Calcula tributos.\"\"\"",
+    "def __init__(self, aliquota):",
+    "self.aliquota = aliquota",
+    "def calcula(self, valor):\n        if valor < 0:",
+    "raise ValueError(\"negativo\")",
+    "return valor * self.aliquota",
+    "def",
+    "main():\n    c = Calculadora(0.05)",
+    "for v in [100, 200, 300]:\n        print(c.calcula(v))",
+    "if __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "javascript",
+    "chunk_size": 60,
+    "chunk_overlap": 0
+   },
+   "input": "jsx",
+   "expected": [
+    "import React from \"react\";",
+    "export function Header({ title }) {\n  return",
+    "<header className=\"topo\"><h1>{title}</h1></header>;\n}",
+    "const Card = ({ children }) => {",
+    "if (!children) return null;\n  return",
+    "<div className=\"card\">{children}</div>;\n};",
+    "export",
+    "default function App() {\n  const itens = [\"IPTU\", \"ISS\", \"ITBI\"];\n  return (",
+    "<main>",
+    "<Header title=\"Tributos\" />\n      {itens.map((i) =>",
+    "<Card key={i}>{i}</Card>)}\n    </main>\n  );\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secr",
+    "João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª",
+    "!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra",
+    "... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto”",
+    "débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento",
+    "a; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenu",
+    "gantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descon",
+    "almente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 |",
+    "|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python",
+    "| 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de ser",
+    "Prestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com",
+    "ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 120,
+    "chunk_overlap": 20,
+    "options": {
+     "separator": "\n\n"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 120,
+    "chunk_overlap": 20,
+    "options": {
+     "separator": "\n\n"
+    }
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 120,
+    "chunk_overlap": 20,
+    "options": {
+     "separator": "(?<=\\.)\\s",
+     "is_separator_regex": true
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira.O Sr.",
+    "João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária.",
+    "Dúvidas? Ligue 156...Ou procure a Dra.Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.Fim do aviso.",
+    "Fim do aviso.Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 120,
+    "chunk_overlap": 20,
+    "options": {
+     "separator": ". ",
+     "keep_separator": "end"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr.",
+    "João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária.",
+    "Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto” devem regularizar a situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso.",
+    "Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista;",
+    "pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "python_code",
+   "expected": [
+    "import os\n\n\nclass Calculadora:\n    \"\"\"Calcula tributos.\"\"\"",
+    "def __init__(self, aliquota):\n        self.aliquota = aliquota",
+    "def calcula(self, valor):\n        if valor < 0:\n            raise ValueError(\"negativo\")",
+    "return valor * self.aliquota",
+    "def main():\n    c = Calculadora(0.05)\n    for v in [100, 200, 300]:\n        print(c.calcula(v))",
+    "if __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 120,
+    "chunk_overlap": 20,
+    "language": "python"
+   },
+   "input": "python_code",
+   "expected": [
+    "import os",
+    "Calculadora:\n    \"\"\"Calcula tributos.\"\"\"\n\n    def __init__(self, aliquota):\n        self.aliquota = aliquota",
+    "def calcula(self, valor):\n        if valor < 0:\n            raise ValueError(\"negativo\")",
+    "return valor * self.aliquota",
+    "main():\n    c = Calculadora(0.05)\n    for v in [100, 200, 300]:\n        print(c.calcula(v))",
+    "if __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 120,
+    "chunk_overlap": 20,
+    "language": "go"
+   },
+   "input": "go_code",
+   "expected": [
+    "package main\n\nimport \"fmt\"\n\ntype Imposto struct {\n\tAliquota float64\n}",
+    "(i Imposto) Calcula(v float64) float64 {\n\tif v < 0 {\n\t\treturn 0\n\t}\n\treturn v * i.Aliquota\n}",
+    "main() {\n\ti := Imposto{Aliquota: 0.05}\n\tfor _, v := range []float64{100, 200} {\n\t\tfmt.Println(i.Calcula(v))\n\t}\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 120,
+    "chunk_overlap": 20,
+    "options": {
+     "separators": [
+      "\n",
+      ". ",
+      " ",
+      ""
+     ],
+     "keep_separator": "start"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr",
+    ". O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra",
+    ". Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12",
+    ". O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto”",
+    "débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o",
+    "à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.",
+    "vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n###",
+    "anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n|",
+    "|\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do",
+    "Texto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr.",
+    "O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|",
+    "|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr.",
+    "O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 |",
+    "| 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à",
+    "5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|",
+    "|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes",
+    "Texto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 38,
+    "chunk_overlap": 5
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou",
+    "anças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e",
+    "cesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala",
+    "Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto” devem regularizar a situação",
+    "regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço",
+    "Linha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembrou",
+    "eninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 38,
+    "chunk_overlap": 5
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Des",
+    "ualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---",
+    "íquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.",
+    "R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# ist",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem",
+    "de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 38,
+    "chunk_overlap": 5
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 38,
+    "chunk_overlap": 0,
+    "options": {
+     "encoding_name": "o200k_base"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode",
+    "ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou",
+    "procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto” devem regularizar a situação até",
+    "31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção",
+    "!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira.",
+    "O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária.\n\nDúvidas?\n\nLigue 156... Ou procure a Dra.",
+    "Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\n\nFim do aviso.",
+    "Fim do aviso.\n\nObrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira.",
+    "O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária.\n\nDúvidas?",
+    "Dúvidas?\n\nLigue 156... Ou procure a Dra.\n\nAna Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\n\nFim do aviso.",
+    "Fim do aviso.\n\nObrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n\n#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "markdown",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05",
+    "```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à",
+    "5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_header",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte  \nEste guia explica os tributos municipais.",
+    "## IPTU  \nO **IPTU** é cobrado anualmente.",
+    "### Descontos  \n- 5% à vista\n- Parcelamento em até 10x  \n| Faixa | Valor venal | Alíquota |\n|---|---|---|",
+    "|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\nreturn valor * 0.05\n```  \n---",
+    "## ISS  \nPrestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.  \n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_header",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à",
+    "5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaçoinquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_syntax",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.",
+    "## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```",
+    "## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "html",
+   "expected": [
+    "<!DOCTYPE html>\n<html><head><title>Portal da Prefeitura</title><style>p{color:red}</style></head>\n<body",
+    ">\n<div",
+    "class=\"topo\">Bem-vindo ao portal <!-- comentário interno --> oficial.</div>\n<h1>Serviços</h1>\n<p",
+    ">Consulte os serviços <a href=\"/servicos\">disponíveis</a> e emita certidões.</p>\n<div",
+    "><h2>Certidões</h2>\n<p",
+    ">A certidão negativa é <b>gratuita</b> e sai na hora.</p>\n<ul><li>CND municipal</li><li",
+    ">Certidão de valor venal</li></ul>\n</div>\n<p",
+    "style=\"font-size: 24px\">Aviso importante</p>\n<p",
+    ">Texto depois do aviso grande.</p>\n<h2",
+    ">Horários</h2>\n<table",
+    "><tr><th>Dia</th><th>Horário</th></tr><tr",
+    "><td>Seg–Sex</td><td>8h às 17h</td></tr></table>\n<img src=\"/img/mapa.png\" alt=\"mapa\">\n<h3",
+    ">Feriados</h3>\n<p",
+    ">Não há atendimento em feriados.</p>\n</body></html>"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html_header",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "html",
+   "expected": [
+    "Bem-vindo ao portal comentário interno oficial.",
+    "Serviços\nServiços",
+    "Serviços\nConsulte os serviços e emita certidões.  \ndisponíveis",
+    "Serviços > Certidões\nCertidões",
+    "Serviços\nA certidão negativa é e sai na hora.  \ngratuita  \nCND municipal  \nCertidão de valor venal  \nAviso importante",
+    "Aviso importante  \nTexto depois do aviso grande.",
+    "Serviços > Horários\nHorários",
+    "Serviços > Horários\nDia  \nHorário  \nSeg–Sex  \n8h às 17h",
+    "Serviços > Horários > Feriados\nFeriados",
+    "Serviços > Horários > Feriados\nNão há atendimento em feriados."
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html_section",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "html",
+   "expected": [
+    "#TITLE#\nBem-vindo ao portal   comentário interno   oficial.",
+    "Serviços\nServiços \n Consulte os serviços  disponíveis  e emita certidões.",
+    "Certidões\nCertidões \n A certidão negativa é  gratuita  e sai na hora. \n \n CND municipal \n Certidão de valor venal",
+    "Aviso importante\nAviso importante \n Texto depois do aviso grande.",
+    "Horários\nHorários \n \n \n Dia \n Horário \n \n \n Seg–Sex \n 8h às 17h",
+    "Feriados\nFeriados \n Não há atendimento em feriados."
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html_semantic",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "html",
+   "expected": [
+    "Portal da Prefeitura p{color:red} Bem-vindo ao portal comentário interno oficial.",
+    "Serviços\nConsulte os serviços [disponíveis](/servicos) e emita certidões.",
+    "Certidões",
+    "gratuita A certidão negativa é e sai na hora. CND municipal Certidão de valor venal Aviso importante Texto depois do",
+    "Texto depois do aviso grande.",
+    "Horários\nDia Horário Seg–Sex 8h às 17h ![image:/img/mapa.png](/img/mapa.png)",
+    "Feriados\nNão há atendimento em feriados."
+   ]
+  },
+  {
+   "config": {
+    "strategy": "json",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "json",
+   "expected": [
+    "{\"municipio\": \"S\\u00e3o Jos\\u00e9\", \"codigo\": 4216602, \"populacao\": 250181.0}",
+    "{\"secretarias\": {\"financas\": {\"titular\": \"Jo\\u00e3o\", \"telefones\": [\"156\", \"3381-0000\"], \"ativo\": true}}}",
+    "{\"secretarias\": {\"saude\": {\"titular\": \"Maria\", \"unidades\": [{\"nome\": \"UBS Centro\", \"leitos\": 0}, {\"nome\": \"Hospital\",",
+    "\"Hospital\", \"leitos\": 120}]}}}",
+    "{\"secretarias\": {\"obras\": {\"titular\": null, \"orcamento\": 15000000.0}}}",
+    "{\"descricao\": \"Munic\\u00edpio catarinense com servi\\u00e7os digitais \\u2014 atendimento 24h \\ud83d\\ude00\"}",
+    "{\"tags\": [\"a\", \"b\", \"c\"]}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "json",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "json_list",
+   "expected": [
+    "{\"items\": [{\"id\": 1, \"nome\": \"Alpha\"}, {\"id\": 2, \"nome\": \"Beta\"}, {\"id\": 3, \"nome\": \"Gamma\"}]}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "json",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva,",
+    "Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à",
+    "5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "latex",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "latex",
+   "expected": [
+    "\\documentclass{article}\n\\begin{document}\n\\section{Introdução}\nO imposto $I = v \\cdot a",
+    "$ incide sobre o valor venal.\n\\subsection{Base de cálculo}\n\\begin{itemize}\n\\item Valor venal do imóvel\n\\item Alíquota da",
+    "Alíquota da faixa\n\\end{itemize}",
+    "$$ total = \\sum_i v_i $$\n\\section{Conclusão}\nFim.\n\\end{document}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "code",
+    "chunk_size": 120,
+    "chunk_overlap": 20,
+    "language": "go"
+   },
+   "input": "go_code",
+   "expected": [
+    "package main\n\nimport \"fmt\"\n\ntype Imposto struct {\n\tAliquota float64\n}\n\nfunc",
+    "(i Imposto) Calcula(v float64) float64 {\n\tif v < 0 {\n\t\treturn 0\n\t}\n\treturn v * i.Aliquota\n}\n\nfunc",
+    "main() {\n\ti := Imposto{Aliquota: 0.05}\n\tfor _, v := range []float64{100, 200} {\n\t\tfmt.Println(i.Calcula(v))\n\t}\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "code",
+    "chunk_size": 120,
+    "chunk_overlap": 20,
+    "language": "js"
+   },
+   "input": "jsx",
+   "expected": [
+    "import React from \"react\";",
+    "export function Header({ title }) {\n  return <header className=\"topo\"><h1>{title}</h1></header>;\n}\n\nconst",
+    "Card = ({ children }) => {\n  if (!children) return null;\n  return <div className=\"card\">{children}</div>;\n};",
+    "export default function App() {\n  const itens = [\"IPTU\", \"ISS\", \"ITBI\"];\n  return (\n    <main>",
+    "<main>\n      <Header title=\"Tributos\" />\n      {itens.map((i) => <Card key={i}>{i}</Card>)}\n    </main>\n  );\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "python",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "python_code",
+   "expected": [
+    "import os\n\n\nclass",
+    "Calculadora:\n    \"\"\"Calcula tributos.\"\"\"\n\n    def __init__(self, aliquota):\n        self.aliquota = aliquota",
+    "def calcula(self, valor):\n        if valor < 0:\n            raise ValueError(\"negativo\")",
+    "return valor * self.aliquota",
+    "def",
+    "main():\n    c = Calculadora(0.05)\n    for v in [100, 200, 300]:\n        print(c.calcula(v))",
+    "if __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "javascript",
+    "chunk_size": 120,
+    "chunk_overlap": 20
+   },
+   "input": "jsx",
+   "expected": [
+    "import React from \"react\";",
+    "export function Header({ title }) {\n  return <header className=\"topo\"><h1>{title}</h1></header>;\n}",
+    "const Card = ({ children }) => {\n  if (!children) return null;\n  return <div className=\"card\">{children}</div>;\n};",
+    "export",
+    "default function App() {\n  const itens = [\"IPTU\", \"ISS\", \"ITBI\"];\n  return (",
+    "<main>\n      <Header title=\"Tributos\" />\n      {itens.map((i) => <Card key={i}>{i}</Card>)}\n    </main>\n  );\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com",
+    "do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "a(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 400,
+    "chunk_overlap": 50,
+    "options": {
+     "separator": "\n\n"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 400,
+    "chunk_overlap": 50,
+    "options": {
+     "separator": "\n\n"
+    }
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 400,
+    "chunk_overlap": 50,
+    "options": {
+     "separator": "(?<=\\.)\\s",
+     "is_separator_regex": true
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira.O Sr.João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária.Dúvidas? Ligue 156...Ou procure a Dra.Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12.O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\nLinha com espaço inquebrável e   vários   espaços.Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.Fim do aviso.Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 400,
+    "chunk_overlap": 50,
+    "options": {
+     "separator": ". ",
+     "keep_separator": "end"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto” devem regularizar a situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "python_code",
+   "expected": [
+    "import os\n\n\nclass Calculadora:\n    \"\"\"Calcula tributos.\"\"\"\n\n    def __init__(self, aliquota):\n        self.aliquota = aliquota\n\n    def calcula(self, valor):\n        if valor < 0:\n            raise ValueError(\"negativo\")\n        return valor * self.aliquota\n\n\ndef main():\n    c = Calculadora(0.05)\n    for v in [100, 200, 300]:\n        print(c.calcula(v))\n\n\nif __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 400,
+    "chunk_overlap": 50,
+    "language": "python"
+   },
+   "input": "python_code",
+   "expected": [
+    "import os\n\n\nclass Calculadora:\n    \"\"\"Calcula tributos.\"\"\"\n\n    def __init__(self, aliquota):\n        self.aliquota = aliquota\n\n    def calcula(self, valor):\n        if valor < 0:\n            raise ValueError(\"negativo\")\n        return valor * self.aliquota\n\n\ndef main():\n    c = Calculadora(0.05)\n    for v in [100, 200, 300]:\n        print(c.calcula(v))\n\n\nif __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 400,
+    "chunk_overlap": 50,
+    "language": "go"
+   },
+   "input": "go_code",
+   "expected": [
+    "package main\n\nimport \"fmt\"\n\ntype Imposto struct {\n\tAliquota float64\n}\n\nfunc (i Imposto) Calcula(v float64) float64 {\n\tif v < 0 {\n\t\treturn 0\n\t}\n\treturn v * i.Aliquota\n}\n\nfunc main() {\n\ti := Imposto{Aliquota: 0.05}\n\tfor _, v := range []float64{100, 200} {\n\t\tfmt.Println(i.Calcula(v))\n\t}\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 400,
+    "chunk_overlap": 50,
+    "options": {
+     "separators": [
+      "\n",
+      ". ",
+      " ",
+      ""
+     ],
+     "keep_separator": "start"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com",
+    "do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n##",
+    "return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "word",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "sentence",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "paragraph",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---",
+    "return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "line",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 108,
+    "chunk_overlap": 12
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao",
+    "a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroude",
+    "uncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 108,
+    "chunk_overlap": 12
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0",
+    "2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 108,
+    "chunk_overlap": 12
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "token_tiktoken",
+    "chunk_size": 108,
+    "chunk_overlap": 0,
+    "options": {
+     "encoding_name": "o200k_base"
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).\n\n\nContribuintes com débitos “em aberto” devem",
+    "regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira.\n\nO Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária.\n\nDúvidas?\n\nLigue 156... Ou procure a Dra.\n\nAna Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12.\n\nO desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\n\nLinha com espaço inquebrável e   vários   espaços.\n\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\n\nFim do aviso.\n\nObrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "nltk",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira.\n\nO Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária.\n\nDúvidas?\n\nLigue 156... Ou procure a Dra.\n\nAna Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12.\n\nO desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\n\nLinha com espaço inquebrável e   vários   espaços.\n\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\n\nFim do aviso.\n\nObrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "no_spaces",
+   "expected": [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "spacy",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "markdown",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05",
+    "```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_header",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte  \nEste guia explica os tributos municipais.",
+    "## IPTU  \nO **IPTU** é cobrado anualmente.",
+    "### Descontos  \n- 5% à vista\n- Parcelamento em até 10x  \n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |  \n```python\n# isto não é título\ndef calcula(valor):\nreturn valor * 0.05\n```  \n---",
+    "## ISS  \nPrestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.  \n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_header",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!  \nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\nLinha com espaçoinquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_syntax",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.",
+    "## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```",
+    "## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "html",
+   "expected": [
+    "<!DOCTYPE html>\n<html><head><title>Portal da Prefeitura</title><style>p{color:red}</style></head>\n<body",
+    ">\n<div class=\"topo\">Bem-vindo ao portal <!-- comentário interno --> oficial.</div>\n<h1>Serviços</h1>\n<p>Consulte os serviços <a href=\"/servicos\">disponíveis</a> e emita certidões.</p>\n<div",
+    "><h2>Certidões</h2>\n<p>A certidão negativa é <b>gratuita</b> e sai na hora.</p>\n<ul><li>CND municipal</li><li>Certidão de valor venal</li></ul>\n</div>\n<p style=\"font-size: 24px\">Aviso importante</p>\n<p",
+    "style=\"font-size: 24px\">Aviso importante</p>\n<p>Texto depois do aviso grande.</p>\n<h2>Horários</h2>\n<table><tr><th>Dia</th><th>Horário</th></tr><tr><td>Seg–Sex</td><td>8h às 17h</td></tr></table>\n<img src=\"/img/mapa.png\" alt=\"mapa\">\n<h3>Feriados</h3>\n<p>Não há atendimento em feriados.</p>\n</body></html>"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html_header",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "html",
+   "expected": [
+    "Bem-vindo ao portal comentário interno oficial.",
+    "Serviços\nServiços",
+    "Serviços\nConsulte os serviços e emita certidões.  \ndisponíveis",
+    "Serviços > Certidões\nCertidões",
+    "Serviços\nA certidão negativa é e sai na hora.  \ngratuita  \nCND municipal  \nCertidão de valor venal  \nAviso importante  \nTexto depois do aviso grande.",
+    "Serviços > Horários\nHorários",
+    "Serviços > Horários\nDia  \nHorário  \nSeg–Sex  \n8h às 17h",
+    "Serviços > Horários > Feriados\nFeriados",
+    "Serviços > Horários > Feriados\nNão há atendimento em feriados."
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html_section",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "html",
+   "expected": [
+    "#TITLE#\nBem-vindo ao portal   comentário interno   oficial.",
+    "Serviços\nServiços \n Consulte os serviços  disponíveis  e emita certidões.",
+    "Certidões\nCertidões \n A certidão negativa é  gratuita  e sai na hora. \n \n CND municipal \n Certidão de valor venal",
+    "Aviso importante\nAviso importante \n Texto depois do aviso grande.",
+    "Horários\nHorários \n \n \n Dia \n Horário \n \n \n Seg–Sex \n 8h às 17h",
+    "Feriados\nFeriados \n Não há atendimento em feriados."
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html_semantic",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "html",
+   "expected": [
+    "Portal da Prefeitura p{color:red} Bem-vindo ao portal comentário interno oficial.",
+    "Serviços\nConsulte os serviços [disponíveis](/servicos) e emita certidões.",
+    "Certidões\ngratuita A certidão negativa é e sai na hora. CND municipal Certidão de valor venal Aviso importante Texto depois do aviso grande.",
+    "Horários\nDia Horário Seg–Sex 8h às 17h ![image:/img/mapa.png](/img/mapa.png)",
+    "Feriados\nNão há atendimento em feriados."
+   ]
+  },
+  {
+   "config": {
+    "strategy": "json",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "json",
+   "expected": [
+    "{\"municipio\": \"S\\u00e3o Jos\\u00e9\", \"codigo\": 4216602, \"populacao\": 250181.0, \"secretarias\": {\"financas\": {\"titular\": \"Jo\\u00e3o\", \"telefones\": [\"156\", \"3381-0000\"], \"ativo\": true}, \"saude\": {\"titular\": \"Maria\", \"unidades\": [{\"nome\": \"UBS Centro\", \"leitos\": 0}, {\"nome\": \"Hospital\", \"leitos\": 120}]}, \"obras\": {\"titular\": null, \"orcamento\": 15000000.0}}}",
+    "{\"descricao\": \"Munic\\u00edpio catarinense com servi\\u00e7os digitais \\u2014 atendimento 24h \\ud83d\\ude00\", \"tags\": [\"a\", \"b\", \"c\"]}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "json",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "json_list",
+   "expected": [
+    "{\"items\": [{\"id\": 1, \"nome\": \"Alpha\"}, {\"id\": 2, \"nome\": \"Beta\"}, {\"id\": 3, \"nome\": \"Gamma\"}]}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "json",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "latex",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "latex",
+   "expected": [
+    "\\documentclass{article}\n\\begin{document}\n\\section{Introdução}\nO imposto $I = v \\cdot a$ incide sobre o valor venal.\n\\subsection{Base de cálculo}\n\\begin{itemize}\n\\item Valor venal do imóvel\n\\item Alíquota da faixa\n\\end{itemize}\n$$ total = \\sum_i v_i $$\n\\section{Conclusão}\nFim.\n\\end{document}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "code",
+    "chunk_size": 400,
+    "chunk_overlap": 50,
+    "language": "go"
+   },
+   "input": "go_code",
+   "expected": [
+    "package main\n\nimport \"fmt\"\n\ntype Imposto struct {\n\tAliquota float64\n}\n\nfunc (i Imposto) Calcula(v float64) float64 {\n\tif v < 0 {\n\t\treturn 0\n\t}\n\treturn v * i.Aliquota\n}\n\nfunc main() {\n\ti := Imposto{Aliquota: 0.05}\n\tfor _, v := range []float64{100, 200} {\n\t\tfmt.Println(i.Calcula(v))\n\t}\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "code",
+    "chunk_size": 400,
+    "chunk_overlap": 50,
+    "language": "js"
+   },
+   "input": "jsx",
+   "expected": [
+    "import React from \"react\";\n\nexport function Header({ title }) {\n  return <header className=\"topo\"><h1>{title}</h1></header>;\n}\n\nconst",
+    "Card = ({ children }) => {\n  if (!children) return null;\n  return <div className=\"card\">{children}</div>;\n};\n\nexport default function App() {\n  const itens = [\"IPTU\", \"ISS\", \"ITBI\"];\n  return (\n    <main>\n      <Header title=\"Tributos\" />\n      {itens.map((i) => <Card key={i}>{i}</Card>)}\n    </main>\n  );\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "python",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "python_code",
+   "expected": [
+    "import os\n\n\nclass Calculadora:\n    \"\"\"Calcula tributos.\"\"\"\n\n    def __init__(self, aliquota):\n        self.aliquota = aliquota\n\n    def calcula(self, valor):\n        if valor < 0:\n            raise ValueError(\"negativo\")\n        return valor * self.aliquota\n\n\ndef main():\n    c = Calculadora(0.05)\n    for v in [100, 200, 300]:\n        print(c.calcula(v))\n\n\nif __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "javascript",
+    "chunk_size": 400,
+    "chunk_overlap": 50
+   },
+   "input": "jsx",
+   "expected": [
+    "import React from \"react\";\n\nexport function Header({ title }) {\n  return <header className=\"topo\"><h1>{title}</h1></header>;\n}\n\nconst Card = ({ children }) => {\n  if (!children) return null;\n  return <div className=\"card\">{children}</div>;\n};",
+    "export default function App() {\n  const itens = [\"IPTU\", \"ISS\", \"ITBI\"];\n  return (\n    <main>\n      <Header title=\"Tributos\" />\n      {itens.map((i) => <Card key={i}>{i}</Card>)}\n    </main>\n  );\n}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token",
+    "chunk_size": 24,
+    "chunk_overlap": 0,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a",
+    "sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou",
+    "que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição",
+    "imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na",
+    "sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação",
+    "até 31/12. O desconto é de 5% para pagamento à vista; já o",
+    "parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacos",
+    "quenuncaacabaporqueningu",
+    "emlembroudecolocarespaco",
+    "snotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token",
+    "chunk_size": 24,
+    "chunk_overlap": 0,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.",
+    "## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |",
+    "|---|---|---|",
+    "| 1 | até R$ 100.000 | 0,5% |",
+    "| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):",
+    "return valor * 0.05\n```",
+    "---\n\n## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token",
+    "chunk_size": 24,
+    "chunk_overlap": 0,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 24,
+    "chunk_overlap": 0,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a",
+    "sexta-feira.",
+    "O Sr.",
+    "João da Silva, secretário de Finanças,",
+    "explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via,",
+    "acesse o portal e informe o nº de inscrição imobiliária.",
+    "Dúvidas? Ligue 156... Ou procure a Dra.",
+    "Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto”",
+    "devem regularizar a situação até 31/12.",
+    "O desconto é de 5% para pagamento à vista;",
+    "já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocares",
+    "pacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 24,
+    "chunk_overlap": 0,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.",
+    "## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |",
+    "|---|---|---|",
+    "| 1 | até R$ 100.000 | 0,5% |",
+    "| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):",
+    "return valor * 0.05\n```",
+    "---\n\n## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 24,
+    "chunk_overlap": 0,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "python_code",
+   "expected": [
+    "import os",
+    "class Calculadora:\n    \"\"\"Calcula tributos.\"\"\"",
+    "def __init__(self, aliquota):\n        self.aliquota = aliquota",
+    "def calcula(self, valor):\n        if valor < 0:",
+    "raise ValueError(\"negativo\")\n        return valor * self.aliquota",
+    "def main():\n    c = Calculadora(0.05)",
+    "for v in [100, 200, 300]:\n        print(c.calcula(v))",
+    "if __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 24,
+    "chunk_overlap": 0,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "token_sentence_transformer",
+    "chunk_size": 24,
+    "chunk_overlap": 0,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "a prefeitura municipal informa que o atendimento ao publico funciona de segunda a sexta -",
+    "feira. o sr. joao da silva, secretario de financas, explicou que o ip",
+    "##tu de 2026 pode ser pago em ate 10 parcelas! para emitir a 2ª via,",
+    "acesse o portal e informe o nº de inscricao imobiliaria. duvidas?",
+    "ligue 156... ou procure a dra. ana souza na sala 3, ao lado do protocol",
+    "##o geral ( terreo ). contribuintes com debitos “ em aberto ” dev",
+    "##em regularizar a situacao ate 31 / 12. o desconto e de 5 % para pagame",
+    "##nto a vista ; ja o parcelamento nao tem desconto. linha com espaco in",
+    "##quebravel e varios espacos. palavragigantesemespacosquenuncaacabapor",
+    "##queninguemlembroudecolocarespacosnotextoinformativo. fim do aviso",
+    ". obrigado pela atencao!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token_sentence_transformer",
+    "chunk_size": 24,
+    "chunk_overlap": 0,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "markdown",
+   "expected": [
+    "# guia do contribuinte este guia explica os tributos municipais.",
+    "# # iptu o * * iptu * * e cobrado anualmente. # # # descon",
+    "##tos - 5 % a vista - parcelamento em ate 10x | faixa | valor venal | aliqu",
+    "##ota | | - - - | - - - | - - - | | 1 | ate r $ 100. 000",
+    "| 0, 5 % | | 2 | ate r $ 300. 000 | 0, 8 % | | 3 |",
+    "acima de r $ 300. 000 | 1, 0 % | ` ` ` python # isto nao e",
+    "titulo def calcula ( valor ) : return valor * 0. 05 ` ` ` - - - # #",
+    "iss prestadores de servico recolhem iss mensalmente. # # # # nivel qu",
+    "##atro sem espaco antes texto final do iss. ~ ~ ~ bloco com til ~ ~",
+    "~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token",
+    "chunk_size": 48,
+    "chunk_overlap": 8,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o",
+    "explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na",
+    "a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o",
+    "pagamento à vista; já o parcelamento não tem desconto.",
+    "Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token",
+    "chunk_size": 48,
+    "chunk_overlap": 8,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.",
+    "### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |",
+    "| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token",
+    "chunk_size": 48,
+    "chunk_overlap": 8,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 48,
+    "chunk_overlap": 8,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr.",
+    "O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "pago em até 10 parcelas! Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156...",
+    "Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "geral (térreo). Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12.",
+    "situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "não tem desconto. Linha com espaço inquebrável e   vários   espaços.",
+    "e   vários   espaços. Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.",
+    "Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 48,
+    "chunk_overlap": 8,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU",
+    "## IPTU O **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "- Parcelamento em até 10x | Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |",
+    "| 0,5% | | 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "| 1,0% | ```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS Prestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "antes\nTexto final do ISS. ~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 48,
+    "chunk_overlap": 8,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "python_code",
+   "expected": [
+    "import os",
+    "import os class Calculadora:\n    \"\"\"Calcula tributos.\"\"\"",
+    "tributos.\"\"\"     def __init__(self, aliquota):\n        self.aliquota = aliquota",
+    "= aliquota     def calcula(self, valor):\n        if valor < 0:\n            raise ValueError(\"negativo\")\n        return valor * self.aliquota",
+    "return valor * self.aliquota def main():\n    c = Calculadora(0.05)\n    for v in [100, 200, 300]:\n        print(c.calcula(v))",
+    "if __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 48,
+    "chunk_overlap": 8,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "token_sentence_transformer",
+    "chunk_size": 48,
+    "chunk_overlap": 8,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "a prefeitura municipal informa que o atendimento ao publico funciona de segunda a sexta - feira. o sr. joao da silva, secretario de financas, explicou que o ip",
+    ", explicou que o iptu de 2026 pode ser pago em ate 10 parcelas! para emitir a 2ª via, acesse o portal e informe o nº de inscricao im",
+    "nº de inscricao imobiliaria. duvidas? ligue 156... ou procure a dra. ana souza na sala 3, ao lado do protocolo geral ( terreo ).",
+    "##o geral ( terreo ). contribuintes com debitos “ em aberto ” devem regularizar a situacao ate 31 / 12. o desconto e de 5 % para pagame",
+    "##to e de 5 % para pagamento a vista ; ja o parcelamento nao tem desconto. linha com espaco inquebravel e varios espacos. palavragiganteseme",
+    "##os. palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo. fim do aviso. obrigado pela ate",
+    ". obrigado pela atencao!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token_sentence_transformer",
+    "chunk_size": 48,
+    "chunk_overlap": 8,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "markdown",
+   "expected": [
+    "# guia do contribuinte este guia explica os tributos municipais. # # iptu o * * iptu * * e cobrado anualmente. # # # descon",
+    "##mente. # # # descontos - 5 % a vista - parcelamento em ate 10x | faixa | valor venal | aliquota | | - - - | - - - | - - - | |",
+    "- - | - - - | | 1 | ate r $ 100. 000 | 0, 5 % | | 2 | ate r $ 300. 000 | 0, 8 % | | 3 | acima de r $ 300. 000",
+    "acima de r $ 300. 000 | 1, 0 % | ` ` ` python # isto nao e titulo def calcula ( valor ) : return valor * 0. 05 ` ` ` - - - # #",
+    "` ` ` - - - # # iss prestadores de servico recolhem iss mensalmente. # # # # nivel quatro sem espaco antes texto final do iss. ~",
+    "##es texto final do iss. ~ ~ ~ bloco com til ~ ~ ~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token",
+    "chunk_size": 128,
+    "chunk_overlap": 16,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!\n\nPara emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.\r\nLinha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token",
+    "chunk_size": 128,
+    "chunk_overlap": 16,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "- 5% à vista\n- Parcelamento em até 10x\n\n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token",
+    "chunk_size": 128,
+    "chunk_overlap": 16,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 128,
+    "chunk_overlap": 16,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas!",
+    "IPTU de 2026 pode ser pago em até 10 parcelas! Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo).",
+    "3, ao lado do protocolo geral (térreo). Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto.",
+    "à vista; já o parcelamento não tem desconto. Linha com espaço inquebrável e   vários   espaços.\nPalavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo.\nFim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 128,
+    "chunk_overlap": 16,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.\n\n## IPTU\n\nO **IPTU** é cobrado anualmente.\n\n### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "Descontos\n\n- 5% à vista\n- Parcelamento em até 10x | Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |\n\n```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "return valor * 0.05\n```\n\n---\n\n## ISS Prestadores de serviço recolhem ISS mensalmente.\n#### Nível quatro sem espaço antes\nTexto final do ISS.\n\n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 128,
+    "chunk_overlap": 16,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "python_code",
+   "expected": [
+    "import os\n\n\nclass Calculadora:\n    \"\"\"Calcula tributos.\"\"\"\n\n    def __init__(self, aliquota):\n        self.aliquota = aliquota\n\n    def calcula(self, valor):\n        if valor < 0:\n            raise ValueError(\"negativo\")\n        return valor * self.aliquota\n\n\ndef main():\n    c = Calculadora(0.05)\n    for v in [100, 200, 300]:\n        print(c.calcula(v))",
+    "200, 300]:\n        print(c.calcula(v)) if __name__ == \"__main__\":\n    main()"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semchunk",
+    "chunk_size": 128,
+    "chunk_overlap": 16,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "blank",
+   "expected": []
+  },
+  {
+   "config": {
+    "strategy": "token_sentence_transformer",
+    "chunk_size": 128,
+    "chunk_overlap": 16,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "a prefeitura municipal informa que o atendimento ao publico funciona de segunda a sexta - feira. o sr. joao da silva, secretario de financas, explicou que o iptu de 2026 pode ser pago em ate 10 parcelas! para emitir a 2ª via, acesse o portal e informe o nº de inscricao imobiliaria. duvidas? ligue 156... ou procure a dra. ana souza na sala 3, ao lado do protocolo geral ( terreo ).",
+    "##a 3, ao lado do protocolo geral ( terreo ). contribuintes com debitos “ em aberto ” devem regularizar a situacao ate 31 / 12. o desconto e de 5 % para pagamento a vista ; ja o parcelamento nao tem desconto. linha com espaco inquebravel e varios espacos. palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo. fim do aviso",
+    "##ocarespacosnotextoinformativo. fim do aviso. obrigado pela atencao!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "token_sentence_transformer",
+    "chunk_size": 128,
+    "chunk_overlap": 16,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2"
+   },
+   "input": "markdown",
+   "expected": [
+    "# guia do contribuinte este guia explica os tributos municipais. # # iptu o * * iptu * * e cobrado anualmente. # # # descontos - 5 % a vista - parcelamento em ate 10x | faixa | valor venal | aliquota | | - - - | - - - | - - - | | 1 | ate r $ 100. 000 | 0, 5 % | | 2 | ate r $ 300. 000 | 0, 8 % | | 3 | acima de r $ 300. 000",
+    "0, 8 % | | 3 | acima de r $ 300. 000 | 1, 0 % | ` ` ` python # isto nao e titulo def calcula ( valor ) : return valor * 0. 05 ` ` ` - - - # # iss prestadores de servico recolhem iss mensalmente. # # # # nivel quatro sem espaco antes texto final do iss. ~ ~ ~ bloco com til ~ ~ ~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semantic",
+    "chunk_size": 200,
+    "chunk_overlap": 20,
+    "breakpoint_threshold_type": "percentile"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10",
+    "ser pago em até 10 parcelas! Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas?",
+    "Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo). Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para",
+    "é de 5% para pagamento à vista; já o parcelamento não tem desconto. Linha com espaço inquebrável e   vários   espaços.",
+    "vários   espaços. Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo. Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semantic",
+    "chunk_size": 200,
+    "chunk_overlap": 20,
+    "breakpoint_threshold_type": "percentile"
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais.",
+    "## IPTU\n\nO **IPTU** é cobrado anualmente. ### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente. #### Nível quatro sem espaço antes\nTexto final do ISS. ~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semantic",
+    "chunk_size": 200,
+    "chunk_overlap": 20,
+    "breakpoint_threshold_type": "standard_deviation"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10",
+    "ser pago em até 10 parcelas! Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral",
+    "do protocolo geral (térreo). Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto. Linha com",
+    "desconto. Linha com espaço inquebrável e   vários   espaços. Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo. Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semantic",
+    "chunk_size": 200,
+    "chunk_overlap": 20,
+    "breakpoint_threshold_type": "standard_deviation"
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais. ## IPTU\n\nO **IPTU** é cobrado anualmente. ### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente. #### Nível quatro sem espaço antes\nTexto final do ISS. ~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semantic",
+    "chunk_size": 200,
+    "chunk_overlap": 20,
+    "breakpoint_threshold_type": "interquartile"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10",
+    "ser pago em até 10 parcelas! Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas?",
+    "Ligue 156...",
+    "Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo). Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já",
+    "à vista; já o parcelamento não tem desconto. Linha com espaço inquebrável e   vários   espaços. Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo. Fim do",
+    "Fim do aviso.",
+    "Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semantic",
+    "chunk_size": 200,
+    "chunk_overlap": 20,
+    "breakpoint_threshold_type": "interquartile"
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais. ## IPTU\n\nO **IPTU** é cobrado anualmente. ### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS",
+    "---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente. #### Nível quatro sem espaço antes\nTexto final do ISS. ~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semantic",
+    "chunk_size": 200,
+    "chunk_overlap": 20,
+    "breakpoint_threshold_type": "gradient"
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10",
+    "ser pago em até 10 parcelas! Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária.",
+    "Dúvidas? Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo). Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para",
+    "é de 5% para pagamento à vista; já o parcelamento não tem desconto. Linha com espaço inquebrável e   vários   espaços.",
+    "vários   espaços. Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo. Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semantic",
+    "chunk_size": 200,
+    "chunk_overlap": 20,
+    "breakpoint_threshold_type": "gradient"
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte\n\nEste guia explica os tributos municipais. ## IPTU\n\nO **IPTU** é cobrado anualmente. ### Descontos\n\n- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\n    return valor * 0.05\n```\n\n---\n\n## ISS\n\nPrestadores de serviço recolhem ISS mensalmente. #### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semantic",
+    "chunk_size": 300,
+    "chunk_overlap": 0,
+    "breakpoint_threshold_type": "percentile",
+    "options": {
+     "number_of_chunks": 3
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas! Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas?",
+    "Ligue 156...",
+    "Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo). Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto. Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo. Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "semantic",
+    "chunk_size": 300,
+    "chunk_overlap": 0,
+    "breakpoint_threshold_type": "percentile",
+    "options": {
+     "min_chunk_size": 120,
+     "buffer_size": 2
+    }
+   },
+   "input": "pt_prose",
+   "expected": [
+    "A Prefeitura Municipal informa que o atendimento ao público funciona de segunda a sexta-feira. O Sr. João da Silva, secretário de Finanças, explicou que o IPTU de 2026 pode ser pago em até 10 parcelas! Para emitir a 2ª via, acesse o portal e informe o nº de inscrição imobiliária. Dúvidas?",
+    "Ligue 156... Ou procure a Dra. Ana Souza na sala 3, ao lado do protocolo geral (térreo). Contribuintes com débitos “em aberto” devem regularizar a situação até 31/12. O desconto é de 5% para pagamento à vista; já o parcelamento não tem desconto. Linha com espaço inquebrável e   vários   espaços.",
+    "Palavragigantesemespacosquenuncaacabaporqueninguemlembroudecolocarespacosnotextoinformativo. Fim do aviso. Obrigado pela atenção!"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_header",
+    "chunk_size": 200,
+    "chunk_overlap": 0,
+    "options": {
+     "strip_headers": true
+    }
+   },
+   "input": "markdown",
+   "expected": [
+    "Este guia explica os tributos municipais.",
+    "O **IPTU** é cobrado anualmente.",
+    "- 5% à vista\n- Parcelamento em até 10x  \n| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |  \n```python",
+    "# isto não é título\ndef calcula(valor):\nreturn valor * 0.05\n```  \n---",
+    "Prestadores de serviço recolhem ISS mensalmente.",
+    "Texto final do ISS.  \n~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_header",
+    "chunk_size": 200,
+    "chunk_overlap": 0,
+    "options": {
+     "return_each_line": true
+    }
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte",
+    "Este guia explica os tributos municipais.",
+    "## IPTU",
+    "O **IPTU** é cobrado anualmente.",
+    "### Descontos",
+    "- 5% à vista\n- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |\n|---|---|---|\n| 1 | até R$ 100.000 | 0,5% |\n| 2 | até R$ 300.000 | 0,8% |\n| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python\n# isto não é título\ndef calcula(valor):\nreturn valor * 0.05\n```",
+    "---",
+    "## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes\nTexto final do ISS.",
+    "~~~\nbloco com til\n~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "markdown_syntax",
+    "chunk_size": 200,
+    "chunk_overlap": 0,
+    "options": {
+     "return_each_line": true
+    }
+   },
+   "input": "markdown",
+   "expected": [
+    "# Guia do Contribuinte",
+    "Este guia explica os tributos municipais.",
+    "## IPTU",
+    "O **IPTU** é cobrado anualmente.",
+    "### Descontos",
+    "- 5% à vista",
+    "- Parcelamento em até 10x",
+    "| Faixa | Valor venal | Alíquota |",
+    "|---|---|---|",
+    "| 1 | até R$ 100.000 | 0,5% |",
+    "| 2 | até R$ 300.000 | 0,8% |",
+    "| 3 | acima de R$ 300.000 | 1,0% |",
+    "```python",
+    "# isto não é título",
+    "def calcula(valor):",
+    "return valor * 0.05",
+    "```",
+    "## ISS",
+    "Prestadores de serviço recolhem ISS mensalmente.",
+    "#### Nível quatro sem espaço antes",
+    "Texto final do ISS.",
+    "~~~",
+    "bloco com til",
+    "~~~"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "json",
+    "chunk_size": 120,
+    "chunk_overlap": 0,
+    "options": {
+     "convert_lists": true
+    }
+   },
+   "input": "json",
+   "expected": [
+    "{\"municipio\": \"S\\u00e3o Jos\\u00e9\", \"codigo\": 4216602, \"populacao\": 250181.0}",
+    "{\"secretarias\": {\"financas\": {\"titular\": \"Jo\\u00e3o\", \"telefones\": {\"0\": \"156\", \"1\": \"3381-0000\"}, \"ativo\": true}}}",
+    "{\"secretarias\": {\"saude\": {\"titular\": \"Maria\", \"unidades\": {\"0\": {\"nome\": \"UBS Centro\", \"leitos\": 0}}}}}",
+    "{\"secretarias\": {\"saude\": {\"unidades\": {\"1\": {\"nome\": \"Hospital\", \"leitos\": 120}}}}}",
+    "{\"secretarias\": {\"obras\": {\"titular\": null, \"orcamento\": 15000000.0}}}",
+    "{\"descricao\": \"Munic\\u00edpio catarinense com servi\\u00e7os digitais \\u2014 atendimento 24h \\ud83d\\ude00\"}",
+    "{\"tags\": {\"0\": \"a\", \"1\": \"b\", \"2\": \"c\"}}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "json",
+    "chunk_size": 120,
+    "chunk_overlap": 0,
+    "options": {
+     "ensure_ascii": false
+    }
+   },
+   "input": "json",
+   "expected": [
+    "{\"municipio\": \"São José\", \"codigo\": 4216602, \"populacao\": 250181.0}",
+    "{\"secretarias\": {\"financas\": {\"titular\": \"João\", \"telefones\": [\"156\", \"3381-0000\"], \"ativo\": true}}}",
+    "{\"secretarias\": {\"saude\": {\"titular\": \"Maria\", \"unidades\": [{\"nome\": \"UBS Centro\", \"leitos\": 0}, {\"nome\": \"Hospital\",",
+    "\"leitos\": 120}]}}}",
+    "{\"secretarias\": {\"obras\": {\"titular\": null, \"orcamento\": 15000000.0}}}",
+    "{\"descricao\": \"Município catarinense com serviços digitais — atendimento 24h 😀\"}",
+    "{\"tags\": [\"a\", \"b\", \"c\"]}"
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html_semantic",
+    "chunk_size": 300,
+    "chunk_overlap": 0,
+    "options": {
+     "preserve_links": false,
+     "preserve_images": false
+    }
+   },
+   "input": "html",
+   "expected": [
+    "Portal da Prefeitura p{color:red} Bem-vindo ao portal comentário interno oficial.",
+    "Serviços\ndisponíveis Consulte os serviços e emita certidões.",
+    "Certidões\ngratuita A certidão negativa é e sai na hora. CND municipal Certidão de valor venal Aviso importante Texto depois do aviso grande.",
+    "Horários\nDia Horário Seg–Sex 8h às 17h",
+    "Feriados\nNão há atendimento em feriados."
+   ]
+  },
+  {
+   "config": {
+    "strategy": "html_header",
+    "chunk_size": 300,
+    "chunk_overlap": 0,
+    "options": {
+     "return_each_element": true
+    }
+   },
+   "input": "html",
+   "expected": [
+    "Bem-vindo ao portal comentário interno oficial.",
+    "Serviços\nServiços",
+    "Serviços\nConsulte os serviços e emita certidões.",
+    "Serviços\ndisponíveis",
+    "Serviços > Certidões\nCertidões",
+    "Serviços > Certidões\nA certidão negativa é e sai na hora.",
+    "Serviços > Certidões\ngratuita",
+    "Serviços > Certidões\nCND municipal",
+    "Serviços > Certidões\nCertidão de valor venal",
+    "Serviços\nAviso importante",
+    "Serviços\nTexto depois do aviso grande.",
+    "Serviços > Horários\nHorários",
+    "Serviços > Horários\nDia",
+    "Serviços > Horários\nHorário",
+    "Serviços > Horários\nSeg–Sex",
+    "Serviços > Horários\n8h às 17h",
+    "Serviços > Horários > Feriados\nFeriados",
+    "Serviços > Horários > Feriados\nNão há atendimento em feriados."
+   ]
+  },
+  {
+   "config": {
+    "strategy": "code",
+    "chunk_size": 100,
+    "chunk_overlap": 0,
+    "language": "perl"
+   },
+   "input": "go_code",
+   "error": "ValueError: Unsupported source-code language 'perl'"
+  },
+  {
+   "config": {
+    "strategy": "strategy_inexistente",
+    "chunk_size": 100,
+    "chunk_overlap": 0
+   },
+   "input": "pt_prose",
+   "error": "ValueError: Unsupported chunking strategy 'strategy_inexistente'. Available: character, recursive, word, sentence, paragraph, line, token, token_tiktoken, token_sentence_transformer, semchunk, semantic, nltk, spacy, markdown, markdown_header, markdown_syntax, html, html_header, html_section, html_semantic, json, latex, code, python, javascript"
+  },
+  {
+   "config": {
+    "strategy": "recursive",
+    "chunk_size": 100,
+    "chunk_overlap": 100
+   },
+   "input": "pt_prose",
+   "error": "ValueError: chunk_overlap must be an integer between 0 and chunk_size - 1"
+  },
+  {
+   "config": {
+    "strategy": "character",
+    "chunk_size": 100,
+    "chunk_overlap": 0,
+    "options": {
+     "nao_existe": 1
+    }
+   },
+   "input": "pt_prose",
+   "error": "TypeError: ChunkCharacter.__init__() got an unexpected keyword argument 'nao_existe'"
+  }
+ ]
+}

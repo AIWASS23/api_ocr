@@ -7,3 +7,4 @@
 deploy/certs/
 .claude/
 deploy/k8s/overlays/*/secrets/
+.fastembed_cache/
