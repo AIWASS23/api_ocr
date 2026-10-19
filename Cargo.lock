@@ -176,7 +176,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha1",
- "sha2 0.11.0",
+ "sha2 0.11.1",
  "sqlx",
  "subtle",
  "tempfile",
@@ -193,7 +193,7 @@ dependencies = [
  "utoipa-swagger-ui",
  "uuid",
  "zeroize",
- "zip 9.0.1",
+ "zip 9.0.4",
 ]
 
 [[package]]
@@ -1466,7 +1466,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha1",
- "sha2 0.11.0",
+ "sha2 0.11.1",
  "snap",
  "ureq",
  "url",
@@ -1488,9 +1488,9 @@ dependencies = [
 
 [[package]]
 name = "docling-core"
-version = "2.15.0"
+version = "2.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45a33ce83e03d5724ba6a40bc7be32e40381e3b2b54c1a581a821c6c360120b6"
+checksum = "6da76e8575f5b8597d1ec7b7ef3f6be495c2894bdaf7fb56892887c8f51ed8e9"
 dependencies = [
  "png 0.18.1",
  "regex",
@@ -1501,9 +1501,9 @@ dependencies = [
 
 [[package]]
 name = "docling-onnx"
-version = "2.15.0"
+version = "2.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de723da045bb76e11f4d2bb360eb9c696684202515b36cecb1f4bb298110f7b3"
+checksum = "9cadd5ca98267904209b3bb07a7f5f0212353924fc258211d803f866fbc0b0e9"
 dependencies = [
  "docling-core",
  "ort",
@@ -1511,9 +1511,9 @@ dependencies = [
 
 [[package]]
 name = "docling-pdf"
-version = "2.15.0"
+version = "2.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85262c17db26195bd5a8d8c98b2a3510de062121a0c819d82ba6de797023931b"
+checksum = "6b82211bfaab559f9afc8b521d3e1b4c31a2475a225de27d4d3148264609cc18"
 dependencies = [
  "docling-core",
  "docling-onnx",
@@ -2957,7 +2957,7 @@ dependencies = [
  "rand 0.10.3",
  "rangemap",
  "rayon",
- "sha2 0.11.0",
+ "sha2 0.11.1",
  "stringprep",
  "thiserror 2.0.21",
  "time",
@@ -4606,9 +4606,9 @@ dependencies = [
 
 [[package]]
 name = "sha2"
-version = "0.11.0"
+version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "446ba717509524cb3f22f17ecc096f10f4822d76ab5c0b9822c5f9c284e825f4"
+checksum = "47d7069beb7d6ac7b9acd1039986e73443f24234f41074da099d6f994ac9ad19"
 dependencies = [
  "cfg-if",
  "cpufeatures 0.3.1",
@@ -4897,7 +4897,7 @@ dependencies = [
  "percent-encoding",
  "serde",
  "sha1",
- "sha2 0.11.0",
+ "sha2 0.11.1",
  "sqlx-core",
  "thiserror 2.0.21",
  "tracing",
@@ -4931,7 +4931,7 @@ dependencies = [
  "rand 0.10.3",
  "serde",
  "serde_json",
- "sha2 0.11.0",
+ "sha2 0.11.1",
  "smallvec",
  "sqlx-core",
  "stringprep",
@@ -5518,9 +5518,9 @@ dependencies = [
 
 [[package]]
 name = "tokio"
-version = "1.53.2"
+version = "1.53.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e95f91fcc7a621e8b030f6aa23c71fe9838ae2fb4d8118b75602a328f5144044"
+checksum = "ce3335fa71841cda333a58d7615b03901380ecf09d59b3296d21f8bbac0dde4e"
 dependencies = [
  "bytes",
  "libc",
@@ -6570,9 +6570,9 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "9.0.1"
+version = "9.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e49ade69c4434c55dd651d36fe05f38e0578db948b773cbc01c48c4b5e560692"
+checksum = "a954114b47a54df49f83d2722814e86b23d4bb1b54a1b90fb7d92b41619ddc22"
 dependencies = [
  "crc32fast",
  "flate2",
