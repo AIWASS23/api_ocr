@@ -2,7 +2,7 @@
 # Em produção use um banco gerenciado, com TLS e credenciais próprias.
 services:
   db:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     container_name: api_ocr_db
     restart: unless-stopped
     environment:
