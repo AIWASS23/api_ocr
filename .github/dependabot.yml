@@ -13,8 +13,8 @@ updates:
     # Inclui transitivas como ctutils, rustls-webpki, webpki-roots e zip.
     allow:
       - dependency-type: all
-    # Permite atualizar também manifestos/pins quando o lockfile não basta.
-    versioning-strategy: increase
+    # Cargo aceita auto ou lockfile-only; auto permite atualizar também manifestos/pins.
+    versioning-strategy: auto
     groups:
       rust-security:
         applies-to: security-updates
