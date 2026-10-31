@@ -1,17 +1,70 @@
-# Atualizações automáticas de dependências (PRs semanais). Correções de segurança chegam
-# independentemente do agendamento.
+# Verificação de atualizações todos os dias às 04:00 UTC; auditoria do CI às 06:00 UTC.
+# No GitHub, habilite Dependency graph, Dependabot alerts e Dependabot security
+# updates: os PRs de segurança dependem dessas opções e independem do agendamento.
 version: 2
 updates:
   - package-ecosystem: cargo
+    # O workspace inteiro compartilha o Cargo.lock da raiz.
     directory: /
-    schedule: { interval: weekly }
+    schedule:
+      interval: cron
+      cronjob: "0 4 * * *"
     open-pull-requests-limit: 10
+    # Inclui transitivas como ctutils, rustls-webpki, webpki-roots e zip.
+    allow:
+      - dependency-type: all
+    # Permite atualizar também manifestos/pins quando o lockfile não basta.
+    versioning-strategy: increase
     groups:
-      minor-and-patch:
+      rust-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      rust-minor-and-patch:
+        applies-to: version-updates
+        patterns: ["*"]
         update-types: [minor, patch]
+    # Majors continuam permitidos, em PRs individuais para revisão de compatibilidade.
+
+  # Imagens do Dockerfile e dos manifests Kubernetes (não atualiza a versão do cluster).
   - package-ecosystem: docker
+    directories:
+      - /deploy
+      - /deploy/k8s/base
+      - /deploy/k8s/overlays/local
+      - /deploy/k8s/overlays/production
+    schedule:
+      interval: cron
+      cronjob: "0 4 * * *"
+    open-pull-requests-limit: 10
+    # A imagem da aplicação é publicada pelo próprio projeto.
+    ignore:
+      - dependency-name: api-ocr
+    groups:
+      docker-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  # Compose tem um ecossistema próprio: inclui nginx, Postgres e Redis.
+  - package-ecosystem: docker-compose
     directory: /deploy
-    schedule: { interval: weekly }
+    schedule:
+      interval: cron
+      cronjob: "0 4 * * *"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: api-ocr
+    groups:
+      compose-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
   - package-ecosystem: github-actions
     directory: /
-    schedule: { interval: weekly }
+    schedule:
+      interval: cron
+      cronjob: "0 4 * * *"
+    open-pull-requests-limit: 10
+    groups:
+      actions-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]

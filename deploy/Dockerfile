@@ -14,20 +14,21 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
  && cp target/release/api_ocr /api_ocr
 
 # ---------- modelos ONNX (layout, tabelas, OCR) ----------
-FROM debian:trixie-slim AS models
+# Digest permite PRs do Dependabot quando a imagem da mesma tag é reconstruída.
+FROM debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4 AS models
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /models
-# Script oficial na tag v2.15.0, com hash fixado (cadeia de suprimentos).
-ARG DL_URL=https://raw.githubusercontent.com/docling-project/docling.rs/v2.15.0/scripts/install/download_dependencies.sh
-ARG DL_SHA256=78425527c90826c49ed38e859d240dab5f8469d941dff5ba3c360ca6bb2f4273
+# Script oficial na mesma tag do Docling, com hash fixado (cadeia de suprimentos).
+ARG DL_URL=https://raw.githubusercontent.com/docling-project/docling.rs/v2.53.1/scripts/install/download_dependencies.sh
+ARG DL_SHA256=d1fd9c10b524cf726ada3d5c846a1a8fee062c7285cedcef1ea7a3556fd932a4
 RUN curl -fsSL "$DL_URL" -o dl.sh \
  && echo "$DL_SHA256  dl.sh" | sha256sum -c - \
  && sh dl.sh --no-asr
 
 # ---------- dados do NLTK (estratégia de chunking `nltk`) ----------
 # Estágio próprio: não invalida o cache do download dos modelos acima.
-FROM debian:trixie-slim AS nltk
+FROM debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4 AS nltk
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates unzip \
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /nltk
@@ -41,7 +42,7 @@ RUN curl -fsSL "$PUNKT_URL" -o /tmp/punkt_tab.zip \
  && rm /tmp/punkt_tab.zip
 
 # ---------- runtime ----------
-FROM debian:trixie-slim
+FROM debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
  && rm -rf /var/lib/apt/lists/* \
  && useradd --system --uid 10001 --no-create-home --home-dir /nonexistent --shell /usr/sbin/nologin app

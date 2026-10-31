@@ -15,9 +15,9 @@ tiktoken = ["dep:tiktoken-rs"]
 # carregados de arquivo local ou baixados do Hub.
 hf-tokenizers = ["dep:tokenizers", "dep:hf-hub"]
 # Embeddings locais (ONNX Runtime) para a estratégia semantic: fastembed.
-embeddings = ["dep:fastembed"]
+embeddings = ["dep:fastembed", "dep:docling-onnx"]
 # Embeddings por token (ONNX Runtime) para a estratégia late_chunking.
-onnx = ["dep:ort", "dep:ndarray", "hf-tokenizers"]
+onnx = ["dep:ort", "dep:ndarray", "hf-tokenizers", "dep:docling-onnx"]
 # Cliente HTTP OpenAI-compatível (Ollama, vLLM, OpenAI...) para contextual_retrieval.
 llm = ["dep:reqwest"]
 # Estratégia docling_hybrid (HybridChunker do docling.rs).
@@ -39,11 +39,13 @@ ego-tree = { version = "0.11", optional = true }
 tiktoken-rs = { version = "0.12", optional = true }
 tokenizers = { version = "0.23", default-features = false, features = ["fancy-regex"], optional = true }
 hf-hub = { version = "0.5", default-features = false, features = ["ureq", "rustls-tls"], optional = true }
-fastembed = { version = "7.1", default-features = false, features = ["ort-download-binaries-rustls-tls", "hf-hub-rustls-tls"], optional = true }
-ort = { version = "=2.0.0-rc.13", default-features = false, features = ["std", "ndarray", "download-binaries", "tls-rustls"], optional = true }
+fastembed = { version = "7.5.0", default-features = false, features = ["ort-download-binaries-rustls-tls", "hf-hub-rustls-tls"], optional = true }
+ort = { version = "=2.0.0-rc.15", default-features = false, features = ["std", "ndarray", "download-binaries", "tls-rustls"], optional = true }
 ndarray = { version = "0.17", optional = true }
 reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"], optional = true }
-docling = { version = "=2.15.0", optional = true }
+docling = { version = "=2.53.1", optional = true }
+# Um único ambiente ONNX é compartilhado entre OCR e os dois motores de embeddings.
+docling-onnx = { version = "=2.53.1", optional = true }
 tokio = { version = "1", features = ["rt", "macros"], optional = true }
 
 [dev-dependencies]

@@ -59,7 +59,8 @@ mod onnx {
             let mut tokenizer = tokenizers::Tokenizer::from_file(&tokenizer_path).map_err(model_err)?;
             tokenizer.with_truncation(None).map_err(model_err)?.with_padding(None);
             let model_path = hf_model_file(name_or_path, "onnx/model.onnx").or_else(|_| hf_model_file(name_or_path, "model.onnx"))?;
-            let session = Session::builder().map_err(model_err)?.commit_from_file(&model_path).map_err(model_err)?;
+            let environment = docling_onnx::environment().map_err(model_err)?;
+            let session = Session::builder(environment).map_err(model_err)?.commit_from_file(&model_path).map_err(model_err)?;
             let needs_token_type_ids = session.inputs().iter().any(|i| i.name() == "token_type_ids");
             Ok(Self { session: Mutex::new(session), tokenizer, name: name_or_path.to_string(), max_tokens: max_tokens.max(8), needs_token_type_ids })
         }

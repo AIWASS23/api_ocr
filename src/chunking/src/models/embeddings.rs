@@ -61,7 +61,8 @@ mod local {
                     let names: Vec<&str> = supported.iter().map(|m| m.model_code.as_str()).collect();
                     ChunkError::Model(format!("modelo de embeddings '{model_name}' não suportado. Disponíveis: {}", names.join(", ")))
                 })?;
-            let options = TextInitOptions::new(info.model.clone()).with_cache_dir(cache_dir());
+            let environment = docling_onnx::environment().map_err(ChunkError::Model)?;
+            let options = TextInitOptions::new(info.model.clone()).with_cache_dir(cache_dir()).with_environment(environment.clone());
             let model = TextEmbedding::try_new(options)
                 .map_err(|e| ChunkError::Model(format!("Erro ao carregar modelo '{model_name}': {e}")))?;
             Ok(Self { model: Mutex::new(model) })

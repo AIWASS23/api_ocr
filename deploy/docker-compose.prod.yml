@@ -20,7 +20,8 @@ x-hardened: &hardened
 services:
   proxy:
     <<: *hardened
-    image: nginxinc/nginx-unprivileged:stable-alpine
+    # A tag acompanha o canal stable; o digest torna suas atualizações revisáveis em PRs.
+    image: nginxinc/nginx-unprivileged:stable-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03
     ports:
       - "${PROXY_BIND:-0.0.0.0}:${PROXY_HTTP_PORT:-80}:8080"
       - "${PROXY_BIND:-0.0.0.0}:${PROXY_HTTPS_PORT:-443}:8443"

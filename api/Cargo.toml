@@ -51,7 +51,7 @@ tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
 url = "2.5.8"
 utoipa = { version = "6.0.0", features = ["axum_extras", "uuid", "chrono"] }
-utoipa-swagger-ui = { version = "10.0.1", features = ["axum", "vendored"] }
+utoipa-swagger-ui = { version = "10.0.2", features = ["axum", "vendored"] }
 uuid = { version = "1.28.0", features = ["v4", "serde"] }
 zeroize = "1.9.1"
 zip = { version = "9.0.1", default-features = false, features = ["deflate"] }
