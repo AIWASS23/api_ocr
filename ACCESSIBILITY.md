@@ -1,91 +1,86 @@
-# Accessibility
+# Acessibilidade
 
-Include a brief statement describing why accessibility matters to your
-project, who should be able to use and contribute to it, and what this
-document covers, such as your accessibility commitments, contributor
-expectations, and issue-reporting process.
+O OCR API deve permitir que pessoas com diferentes formas de leitura, navegação
+e interação consigam usar sua documentação, autenticar-se e integrar a API.
+Este documento cobre a página de login OAuth2, o Swagger UI opcional, as
+respostas e exemplos da API e a participação no repositório.
 
-Write for people who may read this after encountering a barrier. Use plain
-language and describe user experiences rather than relying on legal
-language, technical jargon, or standards codes.
+## Situação atual e prioridades
 
+A maior parte do projeto é uma API HTTP com respostas JSON. As interfaces web
+mantidas aqui são o login em `/oauth/authorize` e a documentação em `/docs`,
+disponível apenas quando `ENABLE_DOCS=true`. A especificação `/openapi.json`
+também depende dessa configuração.
 
-## Priorities
+O login possui idioma `pt-BR`, rótulos associados aos campos de e-mail, senha
+e código de verificação, atributos de preenchimento automático e mensagens
+de erro em texto, anunciadas como alerta (`role="alert"`). Esses recursos ajudam
+a interação, mas não substituem uma avaliação com usuários e tecnologias assistivas.
 
+As respostas de erro da API trazem um código estável em `error` e uma mensagem
+em português em `error_description`. Clientes podem usar o código para mostrar
+mensagens próprias, no idioma e no formato adequados a quem usa a aplicação.
 
-Describe the outcomes the project prioritizes and how it works toward them.
-If you name a WCAG level as an accessibility target, make clear that it is
-an aspirational goal rather than a verified conformance claim. Only claim
-conformance after an evaluation, and identify the evaluated scope, date,
-method, and evaluator. Also describe the areas you prioritize, such as
-keyboard, screen reader, content, or language support.
+As prioridades para alterações nessas interfaces são:
 
+- Permitir navegação e envio de formulários pelo teclado, com foco visível.
+- Manter nomes claros para campos e botões e mensagens de erro compreensíveis.
+- Preservar leitura com ampliação de texto, contraste adequado e uso em telas pequenas.
+- Oferecer instruções em texto e exemplos copiáveis, sem depender só de imagens,
+  cores ou gravações para transmitir informação.
+- Documentar os campos e erros da API para facilitar clientes acessíveis.
 
-## Contributor expectations
+Não há avaliação formal de conformidade WCAG registrada no repositório nem
+matriz validada de navegadores, leitores de tela ou dispositivos. O CI atual
+valida contratos e comportamento da API, mas não faz auditoria de acessibilidade
+das interfaces web.
 
-<!--
-Describe the accessibility guardrails that apply to contributions,
-including relevant testing, documentation, and continuous integration
-checks. Name specific tools only when the project uses them, and explain
-what evidence contributors should include with user-facing changes.
--->
+## Orientações para contribuições
 
-## Reporting accessibility issues
+Ao alterar login ou documentação web, verifique a tarefa afetada usando apenas
+teclado e com zoom ampliado. Confira rótulos, ordem de foco, mensagens de erro
+e leitura em telas menores; quando possível, verifique também com leitor de tela.
+Registre no PR o fluxo, o navegador, o sistema e as tecnologias assistivas usados,
+os resultados e o que não foi testado; o [template de PR](.github/pull_request_template.md)
+tem um item para essa verificação.
 
+Em Markdown, use títulos em ordem lógica, links descritivos, texto alternativo
+para imagens informativas e blocos de código com comandos copiáveis. Capturas
+de tela devem complementar a explicação em texto. Siga também o
+[guia de contribuição](CONTRIBUTING.md).
 
-Provide a direct, accessible way to report a barrier or request help.
-Invite useful context such as the affected task, URL, observed behavior,
-browser, operating system, and assistive technology. Make screenshots or
-recordings optional and do not require disability disclosure.
+## Relatar uma barreira
 
+Abra uma [issue de acessibilidade](https://github.com/AIWASS23/api_ocr/issues/new?template=accessibility.md);
+o formulário pede só o necessário e nenhum campo é obrigatório.
+Se preferir um canal privado, escreva para
+[marceloaiwass666@gmail.com](mailto:marceloaiwass666@gmail.com) com o assunto
+`[api_ocr][acessibilidade]`.
 
-### Severity
+Descreva a tarefa que tentou realizar, a página ou trecho da documentação,
+o resultado esperado, a barreira encontrada e uma alternativa, se houver.
+Navegador, sistema e tecnologia assistiva ajudam a reprodução, quando conhecidos.
+Imagens e gravações são opcionais; não é necessário informar deficiência ou
+qualquer dado de saúde. Remova dados pessoais, documentos privados e credenciais.
 
+Os mantenedores avaliam o impacto na tarefa e priorizam barreiras que impedem
+autenticação, acesso à informação ou contribuição. O acompanhamento ocorre na
+issue ou pelo e-mail usado no relato, com possíveis alternativas e pedidos de
+verificação da correção. Não há prazo fixo de resposta ou resolução.
 
-If your project uses severity levels, define them and give practical
-examples based on how strongly a barrier affects a user's ability to
-complete a task. Keep labels consistent with your issue template and
-resolution targets if those processes exist. Maintainers can assign or
-confirm severity during triage; reporters do not need to.
+## Limitações e manutenção
 
-### How we respond
+Não há resultados documentados de testes sistemáticos com leitores de tela.
+O Swagger UI depende de um componente de terceiros e também precisa de
+verificação manual quando atualizado. Como alternativa à navegação nessa UI,
+a API pode ser consultada por um cliente HTTP e pelos exemplos no
+[README da API](api/README.md), respeitando a autenticação exigida.
 
-Explain what reporters can expect after submitting an accessibility issue,
-including acknowledgement, status updates, workarounds, expected timelines,
-and opportunities to verify a fix. Use commitments your project can
-consistently uphold.
+A extração por OCR não garante ordem de leitura correta, descrições de imagens
+ou documentos finais acessíveis. Revise o conteúdo extraído antes de usá-lo em
+interfaces ou materiais destinados a pessoas usuárias.
 
-
-## Ownership and maintenance
-
-
-Identify the team, role, or maintainer responsible for accessibility and
-describe their responsibilities to the project. Include the review cadence
-and how ownership transfers when responsibilities change.
-
-
-## Supported environments
-
-
-List the platforms, devices, browsers, input methods, and assistive
-technologies the project supports or has tested. Include versions where
-useful, note partial support, and avoid implying support for combinations
-that have not been evaluated.
-
-
-## Known limitations
-
-Describe known barriers in terms of the affected user experience, such as
-"videos do not have captions," rather than standards codes. Include
-available workarounds or equivalent access and link to tracked issues. If
-no limitations are currently documented, describe what has been tested
-instead of claiming that no barriers exist.
-
-
-## Feedback and improvements
-
-
-Explain how users and contributors can suggest improvements to this
-statement or the project's accessibility practices. Direct active
-accessibility barriers to the reporting process above.
+Os mantenedores do repositório são responsáveis pela triagem e por revisar este
+documento quando mudarem as interfaces, os canais de contato ou a cobertura de
+testes. Melhorias a esta política podem ser propostas por issue ou PR.
 

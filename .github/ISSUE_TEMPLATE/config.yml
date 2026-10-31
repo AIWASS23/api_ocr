@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Vulnerabilidade de segurança
+    url: https://github.com/AIWASS23/api_ocr/security/policy
+    about: Não abra issue pública. Siga a política de segurança e relate em privado por e-mail.
+  - name: Problema de conduta
+    url: https://github.com/AIWASS23/api_ocr/blob/main/CODE_OF_CONDUCT.md#relatar-um-incidente
+    about: Relate em privado ao mantenedor, como descreve o Código de Conduta.

@@ -1,128 +1,85 @@
-# Contributor Covenant Code of Conduct
+# Código de Conduta do OCR API
 
-## Our Pledge
+## Nosso compromisso
 
-We as members, contributors, and leaders pledge to make participation in our
-community a harassment-free experience for everyone, regardless of age, body
-size, visible or invisible disability, ethnicity, sex characteristics, gender
-identity and expression, level of experience, education, socio-economic status,
-nationality, personal appearance, race, religion, or sexual identity
-and orientation.
+Queremos que a participação no `api_ocr` seja livre de assédio para todas as
+pessoas, independentemente de idade, aparência, deficiência visível ou invisível,
+etnia, características sexuais, identidade ou expressão de gênero, experiência,
+escolaridade, condição socioeconômica, nacionalidade, raça, religião ou
+identidade e orientação sexual.
 
-We pledge to act and interact in ways that contribute to an open, welcoming,
-diverse, inclusive, and healthy community.
+Participantes e mantenedores se comprometem com uma comunidade aberta,
+acolhedora, diversa, inclusiva e saudável.
 
-## Our Standards
+## Comportamentos esperados
 
-Examples of behavior that contributes to a positive environment for our
-community include:
+- Trate as pessoas com respeito, empatia e gentileza.
+- Discuta código e decisões técnicas com argumentos, sem ataques pessoais.
+- Dê e receba críticas construtivas; respeite dúvidas, experiências e opiniões diferentes.
+- Aceite responsabilidade pelos seus erros e busque reparar seus efeitos.
+- Respeite o idioma, o tempo e as necessidades de acessibilidade de quem participa.
+- Proteja a privacidade: use exemplos sintéticos ou anonimizados ao discutir
+  documentos processados por OCR, logs e problemas de autenticação.
 
-* Demonstrating empathy and kindness toward other people
-* Being respectful of differing opinions, viewpoints, and experiences
-* Giving and gracefully accepting constructive feedback
-* Accepting responsibility and apologizing to those affected by our mistakes,
-  and learning from the experience
-* Focusing on what is best not just for us as individuals, but for the
-  overall community
+São inaceitáveis assédio público ou privado, ameaças, discriminação, insultos,
+provocações deliberadas, ataques pessoais ou políticos, linguagem ou imagens
+sexualizadas e atenção sexual indesejada. Também é inaceitável divulgar
+informações privadas de outras pessoas sem sua autorização, incluindo dados
+presentes em documentos, capturas de tela ou logs.
 
-Examples of unacceptable behavior include:
+## Abrangência e responsabilidades
 
-* The use of sexualized language or imagery, and sexual attention or
-  advances of any kind
-* Trolling, insulting or derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information, such as a physical or email
-  address, without their explicit permission
-* Other conduct which could reasonably be considered inappropriate in a
-  professional setting
+Este código se aplica às issues, pull requests, revisões, discussões e demais
+espaços do projeto. Também se aplica quando alguém representa oficialmente a
+comunidade em outros espaços, como eventos ou contas oficiais.
 
-## Enforcement Responsibilities
+Os mantenedores devem esclarecer e aplicar estas regras de maneira justa.
+Podem remover, editar ou rejeitar comentários e contribuições que as violem,
+além de restringir a participação. Os motivos de moderação devem ser comunicados
+às pessoas envolvidas quando isso puder ser feito sem expor informações privadas.
 
-Community leaders are responsible for clarifying and enforcing our standards of
-acceptable behavior and will take appropriate and fair corrective action in
-response to any behavior that they deem inappropriate, threatening, offensive,
-or harmful.
+## Relatar um incidente
 
-Community leaders have the right and responsibility to remove, edit, or reject
-comments, commits, code, wiki edits, issues, and other contributions that are
-not aligned to this Code of Conduct, and will communicate reasons for moderation
-decisions when appropriate.
+Envie relatos ao mantenedor Marcelo De Araújo pelo e-mail
+[marceloaiwass666@gmail.com](mailto:marceloaiwass666@gmail.com), com o assunto
+`[api_ocr][conduta]`. Prefira esse canal a uma issue pública, especialmente quando
+houver informações pessoais.
 
-## Scope
+Inclua uma descrição do ocorrido, o local e a data aproximada, links ou evidências
+que se sinta confortável em compartilhar e uma forma de contato. Não é necessário
+confrontar a pessoa envolvida antes de relatar. Retaliação contra quem faz um
+relato ou participa de sua análise também viola este código.
 
-This Code of Conduct applies within all community spaces, and also applies when
-an individual is officially representing the community in public spaces.
-Examples of representing our community include using an official e-mail address,
-posting via an official social media account, or acting as an appointed
-representative at an online or offline event.
+Os relatos serão avaliados com respeito à privacidade e à segurança das pessoas
+envolvidas. Informações devem ser compartilhadas apenas com quem precisar delas
+para tratar o caso. O responsável pela análise pode solicitar contexto adicional
+e comunicará o encaminhamento possível; não há prazo fixo de atendimento.
+Se houver conflito de interesses, a análise deve ser encaminhada a outro
+mantenedor sem envolvimento, quando disponível.
 
-## Enforcement
+## Medidas de moderação
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-marceloaiwass666@gmail.com.
-All complaints will be reviewed and investigated promptly and fairly.
+As medidas consideram a gravidade, o impacto e a recorrência. Um incidente grave
+pode levar diretamente a uma restrição de participação, sem seguir todas as etapas.
 
-All community leaders are obligated to respect the privacy and security of the
-reporter of any incident.
+1. **Correção:** orientação ou advertência privada explicando o comportamento
+   inadequado e a mudança esperada. Pode ser solicitado um pedido de desculpas.
+2. **Advertência:** aviso formal com consequências para novas violações e,
+   quando necessário, restrição de contato com as pessoas envolvidas por um
+   período definido.
+3. **Suspensão temporária:** afastamento da participação e das interações com
+   a comunidade por um período definido, inclusive contato não solicitado com
+   as pessoas envolvidas no caso.
+4. **Banimento permanente:** exclusão da participação pública no projeto em
+   casos de violações graves ou persistentes, assédio ou discriminação.
 
-## Enforcement Guidelines
+Descumprir uma restrição pode resultar em medidas adicionais. Pedidos de revisão
+podem ser enviados ao mesmo e-mail, apresentando o contexto e o motivo do pedido.
 
-Community leaders will follow these Community Impact Guidelines in determining
-the consequences for any action they deem in violation of this Code of Conduct:
+## Atribuição
 
-### 1. Correction
-
-**Community Impact**: Use of inappropriate language or other behavior deemed
-unprofessional or unwelcome in the community.
-
-**Consequence**: A private, written warning from community leaders, providing
-clarity around the nature of the violation and an explanation of why the
-behavior was inappropriate. A public apology may be requested.
-
-### 2. Warning
-
-**Community Impact**: A violation through a single incident or series
-of actions.
-
-**Consequence**: A warning with consequences for continued behavior. No
-interaction with the people involved, including unsolicited interaction with
-those enforcing the Code of Conduct, for a specified period of time. This
-includes avoiding interactions in community spaces as well as external channels
-like social media. Violating these terms may lead to a temporary or
-permanent ban.
-
-### 3. Temporary Ban
-
-**Community Impact**: A serious violation of community standards, including
-sustained inappropriate behavior.
-
-**Consequence**: A temporary ban from any sort of interaction or public
-communication with the community for a specified period of time. No public or
-private interaction with the people involved, including unsolicited interaction
-with those enforcing the Code of Conduct, is allowed during this period.
-Violating these terms may lead to a permanent ban.
-
-### 4. Permanent Ban
-
-**Community Impact**: Demonstrating a pattern of violation of community
-standards, including sustained inappropriate behavior,  harassment of an
-individual, or aggression toward or disparagement of classes of individuals.
-
-**Consequence**: A permanent ban from any sort of public interaction within
-the community.
-
-## Attribution
-
-This Code of Conduct is adapted from the [Contributor Covenant][homepage],
-version 2.0, available at
-https://www.contributor-covenant.org/version/2/0/code_of_conduct.html.
-
-Community Impact Guidelines were inspired by [Mozilla's code of conduct
-enforcement ladder](https://github.com/mozilla/diversity).
-
-[homepage]: https://www.contributor-covenant.org
-
-For answers to common questions about this code of conduct, see the FAQ at
-https://www.contributor-covenant.org/faq. Translations are available at
-https://www.contributor-covenant.org/translations.
+Adaptado do [Contributor Covenant, versão 2.0](https://www.contributor-covenant.org/version/2/0/code_of_conduct.html).
+As diretrizes de impacto e moderação foram inspiradas na
+[escala de aplicação do código de conduta da Mozilla](https://github.com/mozilla/diversity).
+Consulte também as [perguntas frequentes](https://www.contributor-covenant.org/faq)
+e as [traduções do Contributor Covenant](https://www.contributor-covenant.org/translations).

@@ -1,38 +1,62 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
+name: Relatar bug
+about: Comportamento incorreto da API, da extração, do chunking ou do deploy
+title: "[bug] "
+labels: bug
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+<!--
+Vulnerabilidade de segurança? Não use este formulário: siga o SECURITY.md e relate em privado.
+Não cole tokens, cookies, senhas, arquivos .env, URLs com credenciais, dados pessoais nem
+documentos reais. Use arquivos sintéticos ou anonimizados.
+-->
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+## O que aconteceu
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## O que era esperado
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+## Como reproduzir
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+1.
+2.
+3.
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+<!--
+Inclua a requisição sem o cabeçalho Authorization e sem cookies, e a resposta (status e corpo).
+Para extração: tipo, tamanho e número de páginas do arquivo. Para chunking: estratégia,
+chunk_size, chunk_overlap e um texto curto que reproduza o problema.
+-->
 
-**Additional context**
-Add any other context about the problem here.
+```text
+```
+
+## Componente
+
+- [ ] API HTTP (rotas, validação, limites, OpenAPI)
+- [ ] OAuth2, login, sessões ou MFA
+- [ ] Extração de documentos (`/v1/data_preparation`, `src/data_preparation`)
+- [ ] Chunking (`/v1/chunk`, `src/chunking`)
+- [ ] Worker isolado (Landlock, seccomp, prazo, limite de memória)
+- [ ] Deploy (Docker, Compose, nginx, Kubernetes)
+- [ ] Documentação
+- [ ] Outro:
+
+## Ambiente
+
+- Commit, tag ou digest da imagem:
+- Execução (local com `cargo`, Docker Compose, Kubernetes, outro):
+- Sistema e kernel (`uname -r`):
+- CPU ou GPU (feature `cuda`):
+- `SANDBOX` (`off`, `auto` ou `required`):
+
+## Logs
+
+<!-- Trecho do log da API; o request_id (cabeçalho X-Request-Id) ajuda a achar a requisição.
+Remova tokens, e-mails e conteúdo de documentos. -->
+
+```text
+```
+
+## Contexto adicional
