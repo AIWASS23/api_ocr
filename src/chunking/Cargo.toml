@@ -45,7 +45,7 @@ ndarray = { version = "0.17", optional = true }
 reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"], optional = true }
 docling = { version = "=2.53.1", optional = true }
 # Um único ambiente ONNX é compartilhado entre OCR e os dois motores de embeddings.
-docling-onnx = { version = "=2.53.1", optional = true }
+docling-onnx = { version = "=2.53.3", optional = true }
 tokio = { version = "1", features = ["rt", "macros"], optional = true }
 
 [dev-dependencies]
