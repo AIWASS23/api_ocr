@@ -6,7 +6,7 @@ publish = false
 
 [features]
 default = []
-cuda = ["data_preparation/cuda"]
+cuda = ["data_preparation/cuda", "embedding/cuda"]
 
 [dependencies]
 anyhow = "1.0.104"
@@ -20,6 +20,7 @@ chrono = { version = "0.4.45", features = ["serde"] }
 chunking = { path = "../src/chunking", features = ["docling"] }
 clap = { version = "4.6.7", features = ["derive", "env"] }
 data_preparation = { path = "../src/data_preparation" }
+embedding = { path = "../src/embedding" }
 governor = "0.10.4"
 hex = "0.4.3"
 hmac = "0.13"

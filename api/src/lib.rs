@@ -3,6 +3,7 @@ pub mod chunk;
 pub mod config;
 pub mod crypto;
 pub mod docs;
+pub mod embed;
 pub mod error;
 pub mod hardening;
 pub mod limits;
@@ -66,7 +67,7 @@ pub async fn build_state(cfg: Config, db: PgPool) -> anyhow::Result<AppState> {
     let passwords = crypto::PasswordService::new(cfg.password_pepper.clone(), 4).map_err(|e| anyhow::anyhow!("{e}"))?;
     let tokens = tokens::TokenService::with_previous(&cfg.jwt_secret, &cfg.jwt_verification_secrets()[1..], &cfg.issuer, cfg.access_token_ttl);
     let mut limiters =
-        limits::Limiters::new(cfg.rate_general_per_min, cfg.rate_auth_per_min, cfg.rate_ocr_per_min, cfg.rate_chunk_per_min);
+        limits::Limiters::new(cfg.rate_general_per_min, cfg.rate_auth_per_min, cfg.rate_ocr_per_min, cfg.rate_chunk_per_min, cfg.rate_embedding_per_min);
     if let Some(url) = &cfg.rate_limit_redis_url {
         // Configurado mas inalcançável na partida = erro de configuração: falha alto e cedo.
         let shared = shared_limit::SharedLimiter::connect(url, &cfg.rate_limit_redis_prefix)
@@ -78,10 +79,12 @@ pub async fn build_state(cfg: Config, db: PgPool) -> anyhow::Result<AppState> {
     let ocr = JobRuntime::new(cfg.ocr_max_concurrent);
     let chunk = JobRuntime::new(cfg.chunk.max_concurrent);
     let chunk_catalog = chunk::Catalog::new(&cfg.chunk);
+    let embedding = JobRuntime::new(cfg.embedding.max_concurrent);
+    let embedding_catalog = embed::Catalog::new(&cfg.embedding);
     let memory = memory::MemoryGuard::new(cfg.ocr_memory_watermark_pct);
     let security = security::Monitor::new(cfg.security_alert_login_failures);
     let mfa = mfa::MfaCipher::from_pepper(&cfg.password_pepper);
-    Ok(AppState::new(AppInner { cfg, db, passwords, tokens, limiters, ocr, chunk, chunk_catalog, memory, security, mfa }))
+    Ok(AppState::new(AppInner { cfg, db, passwords, tokens, limiters, ocr, chunk, chunk_catalog, embedding, embedding_catalog, memory, security, mfa }))
 }
 
 /// Motor de conversão. Só é criado DENTRO do worker de OCR (ver `worker.rs`).
@@ -157,8 +160,10 @@ pub fn router(st: AppState) -> Router {
     let chunk_routes = Router::new().route("/v1/chunk", post(chunk::chunk));
     let chunk_catalog = Router::new()
         .route("/v1/chunk/strategies", get(chunk::strategies))
+        .route("/v1/embedding/strategies", get(embed::strategies))
         .layer(DefaultBodyLimit::max(1024))
         .layer(general_timeout);
+    let embedding_routes = Router::new().route("/v1/embedding", post(embed::embed));
 
     let public = Router::new()
         .route("/healthz", get(healthz))
@@ -177,6 +182,7 @@ pub fn router(st: AppState) -> Router {
         .merge(ocr_routes)
         .merge(chunk_routes)
         .merge(chunk_catalog)
+        .merge(embedding_routes)
         .merge(public)
         .fallback(not_found)
         .with_state(st.clone());

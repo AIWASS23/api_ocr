@@ -3,7 +3,7 @@ name = "chunking"
 version = "0.1.0"
 edition = "2024"
 publish = false
-description = "Estratégias de chunking para RAG (port em Rust do src/chunking do chatbot_rag + estratégias estruturais)"
+description = "Estratégias de chunking para RAG"
 
 [features]
 default = ["html", "tiktoken", "hf-tokenizers"]

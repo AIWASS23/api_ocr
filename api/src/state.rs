@@ -58,6 +58,9 @@ pub struct AppInner {
     pub limiters: Limiters,
     pub ocr: JobRuntime,
     pub chunk: JobRuntime,
+    pub embedding: JobRuntime,
+    /// Catálogo de estratégias de embedding, com a disponibilidade deste servidor.
+    pub embedding_catalog: crate::embed::Catalog,
     /// Catálogo de estratégias de chunking, com a disponibilidade deste servidor.
     pub chunk_catalog: crate::chunk::Catalog,
     pub memory: MemoryGuard,

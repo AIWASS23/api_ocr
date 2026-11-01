@@ -81,7 +81,7 @@ services:
     read_only: false                  # o Postgres grava em PGDATA e /run
     cap_drop: [ALL]
     cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
-    image: postgres:18-alpine
+    image: postgres:17-alpine
     environment:
       POSTGRES_USER: api_ocr
       POSTGRES_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD}

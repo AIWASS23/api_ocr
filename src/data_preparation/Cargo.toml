@@ -3,7 +3,7 @@ name = "data_preparation"
 version = "0.1.0"
 edition = "2024"
 publish = false
-description = "Port em Rust do DataPreparation do chatbot_rag (Docling + Document do LangChain)"
+description = "Port em Rust do DataPreparation"
 
 [features]
 default = []

@@ -36,9 +36,13 @@ updates:
       interval: cron
       cronjob: "0 4 * * *"
     open-pull-requests-limit: 10
-    # A imagem da aplicação é publicada pelo próprio projeto.
+    # A imagem da aplicação é publicada pelo próprio projeto. O Postgres fica na 17: uma major
+    # nova não abre o volume da anterior ("database files are incompatible with server") e exige
+    # migrar os dados (pg_upgrade ou dump/restore); minor e patch da 17 continuam chegando.
     ignore:
       - dependency-name: api-ocr
+      - dependency-name: postgres
+        update-types: ["version-update:semver-major"]
     groups:
       docker-minor-and-patch:
         patterns: ["*"]
@@ -53,6 +57,9 @@ updates:
     open-pull-requests-limit: 10
     ignore:
       - dependency-name: api-ocr
+      # Postgres fixo na 17 (ver acima).
+      - dependency-name: postgres
+        update-types: ["version-update:semver-major"]
     groups:
       compose-minor-and-patch:
         patterns: ["*"]

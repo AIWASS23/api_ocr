@@ -32,6 +32,7 @@ campos da API, comandos e variáveis de ambiente ao traduzir explicações.
 | [`api/migrations/`](api/migrations/) | Migrações PostgreSQL via SQLx |
 | [`src/data_preparation/`](src/data_preparation/) | Conversão de documentos e OCR com Docling |
 | [`src/chunking/`](src/chunking/README.md) | Estratégias de chunking, modelos e testes de paridade |
+| [`src/embedding/`](src/embedding/README.md) | Estratégias de embeddings (modelos locais em ONNX e estratégias sem modelo) e testes de paridade |
 | [`deploy/`](deploy/) | Docker, Compose, nginx e configurações do host |
 | [`deploy/k8s/`](deploy/k8s/README.md) | Manifests e instruções de Kubernetes |
 | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Build, testes e auditoria de dependências |
@@ -113,6 +114,7 @@ Durante o desenvolvimento, execute primeiro a suíte relacionada à alteração:
 
 ```bash
 cargo test -p chunking --locked
+cargo test -p embedding --locked
 cargo test -p data_preparation --locked
 cargo test -p api_ocr --test chunk --locked
 cargo test -p api_ocr --test oauth_flow --locked
@@ -121,7 +123,8 @@ cargo test -p api_ocr --test oauth_flow --locked
 Esses comandos não substituem a suíte completa ao alterar código compartilhado.
 Features opcionais e testes marcados como ignorados não são todos exercitados
 pelo CI padrão. Se alterar modelos ou integrações opcionais, consulte os
-[testes de chunking](src/chunking/README.md#testes) e registre as features,
+[testes de chunking](src/chunking/README.md#testes) e de
+[embeddings](src/embedding/README.md#testes) e registre as features,
 os serviços externos e os modelos usados. Informe também testes pulados por
 falta de suporte do kernel. Para mudanças só de documentação, confira links,
 comandos e exemplos; não é necessário executar OCR.

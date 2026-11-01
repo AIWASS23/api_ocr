@@ -80,6 +80,17 @@ enum Cmd {
         #[arg(long)]
         nltk_data: Option<std::path::PathBuf>,
     },
+    /// (interno) Calcula embeddings num processo isolado. Executado pela própria API.
+    #[command(hide = true)]
+    EmbedWorker {
+        #[arg(long)]
+        file: std::path::PathBuf,
+        #[arg(long, default_value_t = 120)]
+        timeout_secs: u64,
+        /// Diretório local do modelo (liberado para leitura no sandbox).
+        #[arg(long)]
+        model_dir: Option<std::path::PathBuf>,
+    },
     /// Ativa o segundo fator (TOTP) de um usuário e mostra a URI para o app autenticador.
     MfaEnable {
         #[arg(long)]
@@ -169,6 +180,13 @@ fn main() -> anyhow::Result<ExitCode> {
                 max_pages,
                 timeout: std::time::Duration::from_secs(timeout_secs),
                 memory_mb,
+            }));
+        }
+        Cmd::EmbedWorker { file, timeout_secs, model_dir } => {
+            return Ok(worker::embed_main(worker::EmbedWorkerArgs {
+                file,
+                timeout: std::time::Duration::from_secs(timeout_secs),
+                model_dir,
             }));
         }
         Cmd::ChunkWorker { file, timeout_secs, tokenizer, nltk_data } => {
@@ -273,7 +291,7 @@ async fn user_by_email(db: &sqlx::PgPool, email: &str) -> anyhow::Result<uuid::U
 
 async fn run(cmd: Cmd) -> anyhow::Result<()> {
     match cmd {
-        Cmd::Serve { .. } | Cmd::SandboxCheck { .. } | Cmd::OcrWorker { .. } | Cmd::ChunkWorker { .. } => {
+        Cmd::Serve { .. } | Cmd::SandboxCheck { .. } | Cmd::OcrWorker { .. } | Cmd::ChunkWorker { .. } | Cmd::EmbedWorker { .. } => {
             unreachable!("tratados em main")
         }
         Cmd::MfaEnable { email } => {

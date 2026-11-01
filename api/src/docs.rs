@@ -34,16 +34,20 @@ pub const DOCS_CLIENT_ID: &str = "swagger-ui";
         crate::ocr::ocr,
         crate::chunk::strategies,
         crate::chunk::chunk,
+        crate::embed::strategies,
+        crate::embed::embed,
     ),
     components(schemas(
         ErrorBody, OAuthErrorBody, MeResponse, RegisterResponse, OcrDocument, OcrResponse, OcrUpload,
         ChunkRequest, InputDocument, ChunkResponse, ChunkOut, StrategiesResponse, StrategyInfo, SizeParam, OverlapParam, ChunkLimits,
+        EmbeddingRequest, EmbeddingResponse, SparseVectorOut, EmbeddingStrategiesResponse, EmbeddingStrategyInfo, EmbeddingLimits,
         LoginForm, AuthServerMetadata, TokenResponse,
         crate::oauth::TokenForm, crate::oauth::RevokeForm, crate::users::RegisterBody,
     )),
     tags(
         (name = "Preparação de dados", description = "Extração de texto e tabelas de documentos (PDF, imagens, Office). Exige escopo `ocr`."),
         (name = "Chunking", description = "Divisão de texto em chunks para RAG, com a estratégia escolhida. Exige escopo `ocr`."),
+        (name = "Embeddings", description = "Vetores de textos, chunks e imagens com modelos locais ou estratégias sem modelo. Exige escopo `ocr`."),
         (name = "Conta", description = "Usuário autenticado e cadastro."),
         (name = "OAuth2", description = "Servidor de autorização: Authorization Code + PKCE (S256), refresh token com rotação."),
         (name = "Saúde", description = "Sondas para balanceador/orquestrador."),
@@ -76,7 +80,7 @@ pub fn openapi(issuer: &str) -> utoipa::openapi::OpenApi {
     let flow = Flow::AuthorizationCode(AuthorizationCode::new(
         format!("{issuer}/oauth/authorize"),
         format!("{issuer}/oauth/token"),
-        Scopes::from_iter([("ocr", "Preparar documentos (OCR) e dividir textos (chunking)"), ("profile", "Ler o próprio perfil")]),
+        Scopes::from_iter([("ocr", "Preparar documentos (OCR), dividir textos (chunking) e gerar embeddings"), ("profile", "Ler o próprio perfil")]),
     ));
     let components = api.components.get_or_insert_with(Default::default);
     components.add_security_scheme("oauth2", SecurityScheme::OAuth2(OAuth2::new([flow])));

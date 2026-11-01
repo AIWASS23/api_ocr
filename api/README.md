@@ -41,6 +41,8 @@ GPU: compile com `--features cuda` e use `source scripts/cuda-env.sh` antes de s
 | `POST /v1/data_preparation` | Bearer, escopo `ocr` | Multipart com **um** campo `file` (pdf, png, jpg, tif, bmp, webp, docx, pptx, xlsx); devolve `documents` (`page_content` + `metadata`) |
 | `GET /v1/chunk/strategies` | Bearer, escopo `ocr` | Estratégias de chunking: apelidos, disponibilidade neste servidor, unidade e intervalo do `chunk_size`, padrão e máximo do `chunk_overlap` (ou `null`), limites |
 | `POST /v1/chunk` | Bearer, escopo `ocr` | JSON `{strategy, chunk_size?, chunk_overlap?, text}` ou `{..., documents}` (a saída do `/v1/data_preparation`); devolve os chunks com metadados |
+| `GET /v1/embedding/strategies` | Bearer, escopo `ocr` | Estratégias de embedding: tipo (`dense`, `sparse`, `multimodal`), disponibilidade neste servidor, modelo configurado, formato padrão, se aceita imagens e se aprende o vocabulário na própria requisição; limites |
+| `POST /v1/embedding` | Bearer, escopo `ocr` | JSON `{strategy, texts \| documents \| images, input_type?, queries?, dimensions?, normalize?, format?}`; devolve um vetor por entrada (denso ou esparso) |
 | `GET /healthz`, `GET /readyz` | — | Liveness / readiness (checa o banco) |
 | `GET /docs`, `GET /openapi.json` | — | **Swagger UI** e OpenAPI 3.1 (só com `ENABLE_DOCS=true`; veja abaixo) |
 
@@ -60,6 +62,42 @@ curl -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json
      -d '{"strategy": "sentence", "chunk_size": 500, "text": "Primeira frase. Segunda frase..."}' \
      http://localhost:8080/v1/chunk
 ```
+
+### Embeddings
+
+```bash
+# Os chunks vão direto para o embedding (só o texto de cada um é usado; a ordem é mantida).
+jq '{strategy: "e5", documents: .chunks}' chunks.json |
+  curl -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" --data-binary @- \
+       http://localhost:8080/v1/embedding
+
+# Consulta no modo de consulta do modelo (prefixo `query: ` no E5):
+curl -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" \
+     -d '{"strategy": "e5", "texts": ["praias de Fortaleza"], "input_type": "query"}' \
+     http://localhost:8080/v1/embedding
+
+# BM25 sem modelo: acervo e consultas no mesmo pedido; a nota é o produto escalar dos esparsos.
+curl -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" \
+     -d '{"strategy": "bm25", "texts": ["doc 1...", "doc 2..."], "queries": ["minha busca"]}' \
+     http://localhost:8080/v1/embedding
+```
+
+- **Sem rede, nada é baixado:** o cálculo roda num worker igual ao do OCR (sem rede). Os modelos são
+  diretórios LOCAIS por estratégia em `EMBEDDING_MODELS` (`e5=/models/e5,bge=/models/bge-m3,...`), com o
+  `tokenizer.json`, o ONNX (`onnx/model.onnx`) e a configuração do sentence-transformers. Para modelos
+  sem ONNX no repositório original (CLIP, SigLIP, INSTRUCTOR, GTE multilíngue), junte no mesmo diretório
+  o ONNX do espelho (`Xenova/...`, `onnx-community/...`). Um snapshot do cache do Hugging Face também
+  serve. Sem modelos, ficam `hashing`, `tfidf`, `bm25` e `lsa`.
+- **Por pedido:** o modelo é carregado a cada pedido (de ~0,1 s no MiniLM a alguns segundos nos grandes);
+  mande lotes (até `EMBEDDING_MAX_TEXTS`). `tfidf`, `bm25` e `lsa` aprendem o vocabulário com os
+  documentos do próprio pedido: envie acervo e consultas juntos (`queries`).
+- **Parâmetros do cliente:** só `strategy`, `input_type`, `dimensions`, `normalize` e `format`. Caminhos de
+  modelo, hosts e opções internas não são aceitos (campo desconhecido = 400). `ollama` (precisa de rede)
+  e `custom` aparecem como indisponíveis; provedores pagos são recusados.
+- **Formato:** `sparse` (índices e valores) por padrão nas estratégias esparsas, `dense` nas outras.
+- **Isolamento e limites:** mesmo worker, prazo (`EMBEDDING_TIMEOUT_SECS`), teto de memória, 1 pedido por
+  usuário, vagas globais (`EMBEDDING_MAX_CONCURRENT`), limites de textos, bytes, imagens (base64,
+  cabeçalho conferido antes de decodificar) e tamanho da resposta.
 
 ### Chunking
 
@@ -90,7 +128,7 @@ ENABLE_DOCS=true ./target/release/api_ocr serve     # http://localhost:8080/docs
   (`script-src 'self'`, sem scripts inline); o resto da API mantém `default-src 'none'`.
 - O botão **Authorize** faz Authorization Code + PKCE de verdade. Ao ligar as docs, o cliente `swagger-ui`
   é registrado sozinho, com redirect apenas para `ISSUER/docs/oauth2-redirect.html`.
-- As respostas de `/v1/me`, `/v1/data_preparation`, `/v1/chunk`, token etc. usam os **mesmos tipos Rust** que geram o schema, e
+- As respostas de `/v1/me`, `/v1/data_preparation`, `/v1/chunk`, `/v1/embedding`, token etc. usam os **mesmos tipos Rust** que geram o schema, e
   os testes (`tests/docs.rs`) conferem que as rotas documentadas são exatamente as reais, que todo `$ref`
   resolve e que os campos das respostas reais batem com o schema.
 - Atrás do nginx de produção, `/docs` fica **bloqueado por padrão** (bloco comentado no template);

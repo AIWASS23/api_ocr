@@ -81,6 +81,7 @@ pub enum WorkerFailure {
 pub enum JobKind {
     Ocr,
     Chunk,
+    Embedding,
 }
 
 impl WorkerFailure {
@@ -96,6 +97,10 @@ impl WorkerFailure {
             (JobKind::Chunk, WorkerFailure::ReplyTooLarge | WorkerFailure::BadReply) => "chunk_worker_bad_reply",
             (JobKind::Chunk, WorkerFailure::MemoryLimit(_)) => "chunk_worker_memory_killed",
             (JobKind::Chunk, _) => "chunk_worker_failed",
+            (JobKind::Embedding, WorkerFailure::Signaled(_)) => "embedding_worker_crashed",
+            (JobKind::Embedding, WorkerFailure::ReplyTooLarge | WorkerFailure::BadReply) => "embedding_worker_bad_reply",
+            (JobKind::Embedding, WorkerFailure::MemoryLimit(_)) => "embedding_worker_memory_killed",
+            (JobKind::Embedding, _) => "embedding_worker_failed",
         }
     }
 }
@@ -351,6 +356,19 @@ pub async fn run_chunk_job(cfg: &Config, job_dir: &Path, file: &Path) -> Result<
     serde_json::from_slice(&out).map_err(|_| WorkerFailure::BadReply)
 }
 
+/// Calcula os embeddings do job `file` (dentro de `job_dir`). `model_dir`: liberado para leitura
+/// no Landlock do worker.
+pub async fn run_embedding_job(cfg: &Config, job_dir: &Path, file: &Path, model_dir: Option<&Path>) -> Result<crate::embed::Reply, WorkerFailure> {
+    debug_assert!(file.starts_with(job_dir));
+    let mut cmd = base_command(cfg, "embed-worker");
+    cmd.arg("--file").arg(file).args(["--timeout-secs", &cfg.embedding.timeout.as_secs().to_string()]);
+    if let Some(d) = model_dir {
+        cmd.arg("--model-dir").arg(d);
+    }
+    let out = run(cmd, cfg.embedding.timeout, cfg.embedding.worker_max_rss_mb * 1024 * 1024).await?;
+    serde_json::from_slice(&out).map_err(|_| WorkerFailure::BadReply)
+}
+
 /// Pré-carrega os modelos num worker confiável (sem entrada de usuário), o único autorizado a
 /// gravar o cache de grafos. Roda em segundo plano na subida do servidor.
 pub fn spawn_warmup(cfg: Config) {
@@ -552,6 +570,50 @@ pub fn chunk_main(args: ChunkWorkerArgs) -> ExitCode {
     match chunk::execute_job(&args.file, args.tokenizer.as_deref(), args.nltk_data.as_deref()) {
         Ok(mut reply) => {
             if let chunk::Reply::Ok { timings, .. } = &mut reply {
+                timings.confine_ms = confine_ms;
+            }
+            write_reply(&reply)
+        }
+        Err(e) => {
+            eprintln!("{e}");
+            ExitCode::from(1)
+        }
+    }
+}
+
+// ------------------------------------------------------------------ worker de embeddings
+
+pub struct EmbedWorkerArgs {
+    pub file: PathBuf,
+    pub timeout: Duration,
+    pub model_dir: Option<PathBuf>,
+}
+
+/// Ponto de entrada do subcomando `embed-worker`. Confina antes de ler o job; o modelo é lido
+/// só do diretório local configurado (sem rede: nada é baixado).
+pub fn embed_main(args: EmbedWorkerArgs) -> ExitCode {
+    let Some(job_dir) = args.file.parent() else {
+        eprintln!("--file sem diretório");
+        return ExitCode::from(2);
+    };
+    let extra: Vec<PathBuf> = args.model_dir.as_deref().map(crate::embed::model_read_paths).unwrap_or_default();
+    let cores = std::thread::available_parallelism().map_or(4, |n| n.get() as u64);
+    let limits = Limits {
+        address_space: None,
+        cpu_secs: (args.timeout.as_secs() + 30) * cores,
+        // O worker não grava arquivos (a resposta sai pelo pipe).
+        file_size: 16 * 1024 * 1024,
+        open_files: 1024,
+    };
+    let t = std::time::Instant::now();
+    if let Err(e) = confine(Some(job_dir), None, false, &extra, &limits) {
+        eprintln!("confinamento do worker falhou: {e}");
+        return ExitCode::from(3);
+    }
+    let confine_ms = t.elapsed().as_millis() as u64;
+    match crate::embed::execute_job(&args.file) {
+        Ok(mut reply) => {
+            if let crate::embed::Reply::Ok { timings, .. } = &mut reply {
                 timings.confine_ms = confine_ms;
             }
             write_reply(&reply)

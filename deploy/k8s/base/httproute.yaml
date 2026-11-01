@@ -26,6 +26,14 @@ spec:
       timeouts:
         request: 75s
     - matches:
+        - path: { type: Exact, value: /v1/embedding }
+      backendRefs:
+        - name: api-ocr
+          port: 8080
+      # Envio (até 30 s) + carga do modelo e cálculo (EMBEDDING_TIMEOUT_SECS) com folga.
+      timeouts:
+        request: 165s
+    - matches:
         - path: { type: PathPrefix, value: /oauth/ }
         - path: { type: PathPrefix, value: /auth/ }
         - path: { type: PathPrefix, value: /v1/ }

@@ -19,6 +19,8 @@ const REAL_ROUTES: &[(&str, &str)] = &[
     ("post", "/v1/data_preparation"),
     ("get", "/v1/chunk/strategies"),
     ("post", "/v1/chunk"),
+    ("get", "/v1/embedding/strategies"),
+    ("post", "/v1/embedding"),
 ];
 
 async fn docs_app() -> TestApp {
@@ -121,6 +123,8 @@ async fn security_schemes_use_the_real_issuer_and_protected_routes_require_them(
         ("/v1/data_preparation", "post", true),
         ("/v1/chunk/strategies", "get", true),
         ("/v1/chunk", "post", true),
+        ("/v1/embedding/strategies", "get", true),
+        ("/v1/embedding", "post", true),
         ("/oauth/token", "post", false),
         ("/auth/register", "post", false),
     ] {
@@ -172,6 +176,18 @@ async fn documented_schemas_match_real_responses() {
     let chunked: Value = app.http.post(app.url("/v1/chunk")).bearer_auth(access).json(&body).send().await.unwrap().json().await.unwrap();
     assert_eq!(keys(&chunked), props("ChunkResponse"));
     assert_eq!(keys(&chunked["chunks"][0]), props("ChunkOut"));
+
+    // /v1/embedding/strategies e /v1/embedding (com os chunks como entrada)
+    let cat: Value = app.http.get(app.url("/v1/embedding/strategies")).bearer_auth(access).send().await.unwrap().json().await.unwrap();
+    assert_eq!(keys(&cat), props("EmbeddingStrategiesResponse"));
+    assert_eq!(keys(&cat["limits"]), props("EmbeddingLimits"));
+    for s in cat["strategies"].as_array().unwrap() {
+        assert!(keys(s).is_subset(&props("EmbeddingStrategyInfo")), "{s}");
+    }
+    let body = serde_json::json!({"strategy": "hashing", "documents": chunked["chunks"]});
+    let emb: Value = app.http.post(app.url("/v1/embedding")).bearer_auth(access).json(&body).send().await.unwrap().json().await.unwrap();
+    assert_eq!(keys(&emb), props("EmbeddingResponse"));
+    assert_eq!(keys(&emb["sparse_embeddings"][0]), props("SparseVectorOut"));
 
     // Erro e metadados
     let err: Value = app.http.get(app.url("/v1/me")).send().await.unwrap().json().await.unwrap();

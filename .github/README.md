@@ -26,7 +26,9 @@ faz merge automático; uma falha permanece até a correção ser integrada.
 Debian e nginx usam tag com digest para permitir PRs quando o conteúdo de
 `trixie-slim` ou `stable-alpine` mudar. Tags numéricas parciais como `17-alpine` e
 `7-alpine` permitem propostas de novas versões, mas não registram reconstruções da
-mesma tag sem um digest. A imagem `api-ocr` segue o processo de release do projeto.
+mesma tag sem um digest. O Postgres fica fixo na major 17: o Dependabot ignora majors
+dele, porque uma major nova não abre o volume da anterior e exige migrar os dados
+(`pg_upgrade` ou dump/restore). A imagem `api-ocr` segue o processo de release do projeto.
 O Dependabot não atualiza o cluster Kubernetes, configurações nginx, pacotes
 instalados por `apt`, imagens de serviços do workflow nem comandos Helm escritos
 no README. Suporte dos ecossistemas:

@@ -404,7 +404,7 @@ fn body_limit(settings: &ChunkSettings) -> usize {
 }
 
 /// Lê o corpo JSON com teto de tamanho e prazo. Erros de JSON não ecoam o conteúdo enviado.
-async fn read_json<T: DeserializeOwned>(headers: &HeaderMap, body: Body, limit: usize) -> Result<T, ApiError> {
+pub(crate) async fn read_json<T: DeserializeOwned>(headers: &HeaderMap, body: Body, limit: usize) -> Result<T, ApiError> {
     let is_json = headers
         .get(header::CONTENT_TYPE)
         .and_then(|v| v.to_str().ok())

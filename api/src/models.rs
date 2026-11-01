@@ -176,6 +176,97 @@ pub struct StrategiesResponse {
     pub limits: ChunkLimits,
 }
 
+/// Corpo de `POST /v1/embedding`. Envie UM de `texts`, `documents` ou `images`.
+#[derive(Deserialize, ToSchema)]
+#[serde(deny_unknown_fields)]
+pub struct EmbeddingRequest {
+    /// Estratégia: nome ou apelido (ver `GET /v1/embedding/strategies`).
+    #[schema(example = "e5")]
+    pub strategy: String,
+    /// `document` (padrão) ou `query`: modo de documento ou de consulta do modelo.
+    pub input_type: Option<String>,
+    pub texts: Option<Vec<String>>,
+    /// Documentos (ex.: a lista `chunks` de `POST /v1/chunk`); só o `page_content` é usado.
+    pub documents: Option<Vec<InputDocument>>,
+    /// Imagens em base64 (PNG, JPEG, WebP, BMP, TIFF, GIF); só em `clip`/`siglip`.
+    pub images: Option<Vec<String>>,
+    /// Consultas, só em `tfidf`/`bm25`/`lsa` (vetorizadas com o vocabulário dos documentos).
+    pub queries: Option<Vec<String>>,
+    /// Corta os vetores (Matryoshka); nas esparsas, tamanho do vocabulário/hash.
+    pub dimensions: Option<usize>,
+    /// Vetores com norma 1. Padrão: `false`.
+    pub normalize: Option<bool>,
+    /// `dense` ou `sparse` (padrão: o da estratégia).
+    pub format: Option<String>,
+}
+
+/// Vetor esparso: posições não nulas e seus valores.
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct SparseVectorOut {
+    pub indices: Vec<u32>,
+    pub values: Vec<f32>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct EmbeddingResponse {
+    /// Nome canônico da estratégia usada.
+    pub strategy: String,
+    /// Modelo configurado no servidor (ou o nome da estratégia, quando ela não usa modelo).
+    pub model: String,
+    pub input_type: String,
+    /// `dense` ou `sparse`.
+    pub format: String,
+    /// Tamanho dos vetores (nas esparsas, do vocabulário/hash).
+    pub dimension: usize,
+    pub count: usize,
+    /// Um vetor por entrada (formato `dense`).
+    pub embeddings: Option<Vec<Vec<f32>>>,
+    /// Um vetor esparso por entrada (formato `sparse`).
+    pub sparse_embeddings: Option<Vec<SparseVectorOut>>,
+    /// Vetores de `queries` (`tfidf`, `bm25`, `lsa`).
+    pub query_embeddings: Option<Vec<Vec<f32>>>,
+    pub sparse_query_embeddings: Option<Vec<SparseVectorOut>>,
+}
+
+#[derive(Clone, Serialize, Deserialize, ToSchema)]
+pub struct EmbeddingStrategyInfo {
+    pub name: String,
+    pub aliases: Vec<String>,
+    pub description: String,
+    /// `dense`, `sparse` ou `multimodal`.
+    pub kind: String,
+    pub available: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub unavailable_reason: Option<String>,
+    /// Modelo configurado neste servidor (sem o caminho).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
+    /// `dense` ou `sparse`.
+    pub default_format: String,
+    pub accepts_images: bool,
+    /// Aprende o vocabulário com os documentos da própria requisição (envie `queries` junto).
+    pub fitted_per_request: bool,
+}
+
+/// Limites de `POST /v1/embedding` neste servidor.
+#[derive(Clone, Serialize, Deserialize, ToSchema)]
+pub struct EmbeddingLimits {
+    pub max_texts: usize,
+    /// Soma de textos e consultas, em bytes UTF-8.
+    pub max_text_bytes: usize,
+    pub max_images: usize,
+    /// Soma das imagens decodificadas, em bytes.
+    pub max_image_bytes: usize,
+    pub max_dimensions: usize,
+}
+
+#[derive(Clone, Serialize, Deserialize, ToSchema)]
+pub struct EmbeddingStrategiesResponse {
+    pub count: usize,
+    pub strategies: Vec<EmbeddingStrategyInfo>,
+    pub limits: EmbeddingLimits,
+}
+
 /// Formulário de login enviado pela página de `/oauth/authorize`.
 #[derive(ToSchema)]
 pub struct LoginForm {

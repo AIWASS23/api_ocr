@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -43,6 +44,8 @@ pub struct Config {
 
     /// Chunking (`/v1/chunk`).
     pub chunk: ChunkSettings,
+    /// Embeddings (`/v1/embedding`).
+    pub embedding: EmbeddingSettings,
 
     // Limites de conexão / taxa
     pub max_connections: usize,
@@ -52,6 +55,7 @@ pub struct Config {
     pub rate_auth_per_min: u32,
     pub rate_ocr_per_min: u32,
     pub rate_chunk_per_min: u32,
+    pub rate_embedding_per_min: u32,
     /// Redis (redis:// ou rediss://) para o limite de taxa global entre réplicas. Opcional.
     pub rate_limit_redis_url: Option<String>,
     pub rate_limit_redis_prefix: String,
@@ -124,6 +128,86 @@ impl ChunkSettings {
         {
             return Err(ConfigError("CHUNK_NLTK_DATA precisa ser um diretório".into()));
         }
+        Ok(s)
+    }
+}
+
+/// Limites e modelos dos embeddings. O worker não tem rede: só modelos LOCAIS.
+#[derive(Clone, Debug)]
+pub struct EmbeddingSettings {
+    /// Textos (ou documentos) por requisição; vale também para `queries`.
+    pub max_texts: usize,
+    /// Soma dos textos e consultas, em bytes de UTF-8.
+    pub max_text_bytes: usize,
+    pub max_images: usize,
+    /// Soma das imagens decodificadas, em bytes.
+    pub max_image_bytes: usize,
+    pub max_concurrent: usize,
+    /// Prazo de cada pedido (carga do modelo + cálculo); o worker é morto ao estourar.
+    pub timeout: Duration,
+    /// Teto de RSS por worker, em MiB (0 = só o limite do contêiner).
+    pub worker_max_rss_mb: u64,
+    pub batch_size: usize,
+    /// `cpu`, ou `cuda`/`auto` com a feature `cuda`.
+    pub device: String,
+    /// Diretório local do modelo de cada estratégia (`EMBEDDING_MODELS=e5=/models/e5,...`).
+    pub models: HashMap<String, PathBuf>,
+}
+
+impl Default for EmbeddingSettings {
+    fn default() -> Self {
+        Self {
+            max_texts: 256,
+            max_text_bytes: 2 * 1024 * 1024,
+            max_images: 16,
+            max_image_bytes: 20 * 1024 * 1024,
+            max_concurrent: 2,
+            timeout: Duration::from_secs(120),
+            worker_max_rss_mb: 0,
+            batch_size: 32,
+            device: "cpu".into(),
+            models: HashMap::new(),
+        }
+    }
+}
+
+/// `estrategia=/caminho,...`: estratégia com modelo e diretório local com `tokenizer.json`.
+pub fn parse_embedding_models(raw: &str) -> Result<HashMap<String, PathBuf>, ConfigError> {
+    let mut out = HashMap::new();
+    for item in raw.split(',').map(str::trim).filter(|s| !s.is_empty()) {
+        let (k, v) = item
+            .split_once('=')
+            .ok_or_else(|| ConfigError(format!("EMBEDDING_MODELS: '{item}' deve ser estrategia=/caminho")))?;
+        let strategy = embedding::normalize_strategy(k.trim()).map_err(|e| ConfigError(format!("EMBEDDING_MODELS: {e}")))?;
+        if !embedding::MODEL_STRATEGIES.contains(&strategy) || strategy == "ollama" {
+            return Err(ConfigError(format!("EMBEDDING_MODELS: a estratégia '{strategy}' não usa diretório de modelo")));
+        }
+        let dir = PathBuf::from(v.trim());
+        if !dir.join("tokenizer.json").is_file() {
+            return Err(ConfigError(format!("EMBEDDING_MODELS: {} não é um diretório de modelo (sem tokenizer.json)", dir.display())));
+        }
+        out.insert(strategy.to_string(), dir);
+    }
+    Ok(out)
+}
+
+impl EmbeddingSettings {
+    fn from_env() -> Result<Self, ConfigError> {
+        let d = Self::default();
+        let mb = 1024 * 1024;
+        let s = Self {
+            max_texts: parse("EMBEDDING_MAX_TEXTS", d.max_texts)?,
+            max_text_bytes: parse::<usize>("EMBEDDING_MAX_TEXT_MB", d.max_text_bytes / mb)? * mb,
+            max_images: parse("EMBEDDING_MAX_IMAGES", d.max_images)?,
+            max_image_bytes: parse::<usize>("EMBEDDING_MAX_IMAGE_MB", d.max_image_bytes / mb)? * mb,
+            max_concurrent: parse("EMBEDDING_MAX_CONCURRENT", d.max_concurrent)?,
+            timeout: Duration::from_secs(parse("EMBEDDING_TIMEOUT_SECS", d.timeout.as_secs())?),
+            worker_max_rss_mb: parse("EMBEDDING_WORKER_MAX_RSS_MB", d.worker_max_rss_mb)?,
+            batch_size: parse("EMBEDDING_BATCH_SIZE", d.batch_size)?,
+            device: var("EMBEDDING_DEVICE").unwrap_or(d.device),
+            models: var("EMBEDDING_MODELS").map_or_else(|| Ok(HashMap::new()), |v| parse_embedding_models(&v))?,
+        };
+        embedding::core::onnx::check_device(&s.device).map_err(|e| ConfigError(format!("EMBEDDING_DEVICE: {e}")))?;
         Ok(s)
     }
 }
@@ -249,6 +333,7 @@ impl Config {
             ocr_worker_memory_mb: parse("OCR_WORKER_MEMORY_MB", 0)?,
             ocr_worker_max_rss_mb: parse("OCR_WORKER_MAX_RSS_MB", 0)?,
             chunk: ChunkSettings::from_env()?,
+            embedding: EmbeddingSettings::from_env()?,
 
             max_connections: parse("MAX_CONNECTIONS", 1024)?,
             max_connections_per_ip: parse("MAX_CONNECTIONS_PER_IP", 64)?,
@@ -257,6 +342,7 @@ impl Config {
             rate_auth_per_min: parse("RATE_AUTH_PER_MIN", 20)?,
             rate_ocr_per_min: parse("RATE_OCR_PER_MIN", 10)?,
             rate_chunk_per_min: parse("RATE_CHUNK_PER_MIN", 60)?,
+            rate_embedding_per_min: parse("RATE_EMBEDDING_PER_MIN", 30)?,
             rate_limit_redis_url: var("RATE_LIMIT_REDIS_URL"),
             rate_limit_redis_prefix: var("RATE_LIMIT_REDIS_PREFIX").unwrap_or_else(|| "api_ocr:".to_string()),
             security_alert_login_failures: parse("SECURITY_ALERT_LOGIN_FAILURES", 20)?,
@@ -279,10 +365,17 @@ impl Config {
             ("CHUNK_MAX_DOCUMENTS", self.chunk.max_documents),
             ("CHUNK_MAX_CHUNKS", self.chunk.max_chunks),
             ("CHUNK_MAX_CONCURRENT", self.chunk.max_concurrent),
+            ("EMBEDDING_MAX_TEXTS", self.embedding.max_texts),
+            ("EMBEDDING_MAX_TEXT_MB", self.embedding.max_text_bytes),
+            ("EMBEDDING_MAX_CONCURRENT", self.embedding.max_concurrent),
+            ("EMBEDDING_BATCH_SIZE", self.embedding.batch_size),
         ] {
             if v == 0 {
                 return Err(ConfigError(format!("{name} precisa ser maior que 0")));
             }
+        }
+        if self.embedding.timeout.is_zero() {
+            return Err(ConfigError("EMBEDDING_TIMEOUT_SECS precisa ser maior que 0".into()));
         }
         if self.chunk.timeout.is_zero() {
             return Err(ConfigError("CHUNK_TIMEOUT_SECS precisa ser maior que 0".into()));
@@ -295,6 +388,7 @@ impl Config {
             ("RATE_AUTH_PER_MIN", self.rate_auth_per_min),
             ("RATE_OCR_PER_MIN", self.rate_ocr_per_min),
             ("RATE_CHUNK_PER_MIN", self.rate_chunk_per_min),
+            ("RATE_EMBEDDING_PER_MIN", self.rate_embedding_per_min),
             ("SECURITY_ALERT_LOGIN_FAILURES", self.security_alert_login_failures),
         ] {
             if v == 0 {

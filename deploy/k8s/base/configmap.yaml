@@ -44,4 +44,15 @@ data:
   # Estratégias medidas em tokens (token, semchunk, token_sentence_transformer, docling_hybrid):
   # aponte para um tokenizer.json LOCAL montado no pod (o worker não tem rede).
   # CHUNK_TOKENIZER: "/models/tokenizer"
+  # Embeddings (/v1/embedding): worker isolado e SEM rede; o modelo é carregado a cada pedido.
+  EMBEDDING_MAX_TEXTS: "256"
+  EMBEDDING_MAX_TEXT_MB: "2"
+  EMBEDDING_MAX_IMAGES: "16"
+  EMBEDDING_MAX_IMAGE_MB: "20"
+  EMBEDDING_MAX_CONCURRENT: "2"
+  EMBEDDING_TIMEOUT_SECS: "120"
+  EMBEDDING_WORKER_MAX_RSS_MB: "0"
+  RATE_EMBEDDING_PER_MIN: "30"
+  # Modelos LOCAIS montados no pod (sem eles, só hashing, tfidf, bm25 e lsa):
+  # EMBEDDING_MODELS: "e5=/models/multilingual-e5-base,bge=/models/bge-m3,clip=/models/clip-vit-base-patch32"
   SECURITY_ALERT_LOGIN_FAILURES: "20"

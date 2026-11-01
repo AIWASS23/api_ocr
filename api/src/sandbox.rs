@@ -107,6 +107,15 @@ fn base_read_paths() -> Vec<PathBuf> {
             read.push(v.into());
         }
     }
+    // Modelos de embedding (`EMBEDDING_MODELS=estrategia=/caminho,...`), com a raiz do repositório
+    // quando o diretório é um snapshot do cache do Hugging Face.
+    if let Ok(models) = std::env::var("EMBEDDING_MODELS") {
+        for dir in models.split(',').filter_map(|item| item.split_once('=')).map(|(_, v)| PathBuf::from(v.trim())) {
+            if dir.exists() {
+                read.extend(crate::embed::model_read_paths(&dir));
+            }
+        }
+    }
     // Bibliotecas CUDA e afins.
     read.extend(split_paths("LD_LIBRARY_PATH"));
     if let Some(h) = home() {

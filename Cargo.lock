@@ -171,6 +171,7 @@ dependencies = [
  "chunking",
  "clap",
  "data_preparation",
+ "embedding",
  "governor",
  "h2",
  "hex",
@@ -1615,6 +1616,27 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0e9c71c2167ca323c882b99918929403426e2373ea17242ff5653e0d5e1058be"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "embedding"
+version = "0.1.0"
+dependencies = [
+ "chunking",
+ "docling-onnx",
+ "hf-hub",
+ "image",
+ "ort",
+ "reqwest 0.12.28",
+ "safetensors",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokenizers 0.23.2",
+ "tokio",
+ "unicode-general-category",
+ "unicode-normalization",
+ "zip",
 ]
 
 [[package]]

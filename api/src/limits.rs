@@ -48,7 +48,9 @@ pub struct Limiters {
     ocr: KeyedLimiter<uuid::Uuid>,
     /// Chunking, por usuário.
     chunk: KeyedLimiter<uuid::Uuid>,
-    quotas: [(u32, u32); 4],
+    /// Embeddings, por usuário.
+    embedding: KeyedLimiter<uuid::Uuid>,
+    quotas: [(u32, u32); 5],
     shared: Option<crate::shared_limit::SharedLimiter>,
 }
 
@@ -62,14 +64,15 @@ fn burst_of(kind: usize, per_min: u32) -> u32 {
 }
 
 impl Limiters {
-    pub fn new(general_per_min: u32, auth_per_min: u32, ocr_per_min: u32, chunk_per_min: u32) -> Self {
-        let per = [general_per_min, auth_per_min, ocr_per_min, chunk_per_min];
-        let quotas: [(u32, u32); 4] = std::array::from_fn(|k| (per[k], burst_of(k, per[k])));
+    pub fn new(general_per_min: u32, auth_per_min: u32, ocr_per_min: u32, chunk_per_min: u32, embedding_per_min: u32) -> Self {
+        let per = [general_per_min, auth_per_min, ocr_per_min, chunk_per_min, embedding_per_min];
+        let quotas: [(u32, u32); 5] = std::array::from_fn(|k| (per[k], burst_of(k, per[k])));
         Self {
             general: KeyedLimiter::new(quotas[0].0, quotas[0].1),
             auth: KeyedLimiter::new(quotas[1].0, quotas[1].1),
             ocr: KeyedLimiter::new(quotas[2].0, quotas[2].1),
             chunk: KeyedLimiter::new(quotas[3].0, quotas[3].1),
+            embedding: KeyedLimiter::new(quotas[4].0, quotas[4].1),
             quotas,
             shared: None,
         }
@@ -109,11 +112,17 @@ impl Limiters {
         self.global(3, "chunk", &user.to_string()).await
     }
 
+    pub async fn check_embedding(&self, user: uuid::Uuid) -> Result<(), Duration> {
+        self.embedding.check(&user)?;
+        self.global(4, "embedding", &user.to_string()).await
+    }
+
     pub fn prune(&self) {
         self.general.prune();
         self.auth.prune();
         self.ocr.prune();
         self.chunk.prune();
+        self.embedding.prune();
     }
 }
 
