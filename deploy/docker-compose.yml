@@ -19,7 +19,7 @@ services:
       timeout: 3s
       retries: 10
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: api_ocr_redis
     restart: unless-stopped
     # Só contadores de limite de taxa: sem persistência, com senha, limitado em memória.

@@ -98,7 +98,7 @@ services:
 
   redis:
     <<: *hardened
-    image: redis:7-alpine
+    image: redis:8-alpine
     user: "999:1000"                  # já sobe como `redis`: sem troca de usuário, sem capacidades
     # Só contadores de limite de taxa: sem persistência, com senha e teto de memória.
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?defina REDIS_PASSWORD}", "--save", "", "--appendonly", "no", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru"]
