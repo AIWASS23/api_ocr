@@ -30,7 +30,7 @@ unicode-normalization = "0.1"
 
 ort = { version = "=2.0.0-rc.15", default-features = false, features = ["std", "download-binaries", "tls-rustls"], optional = true }
 # O mesmo ambiente ONNX do OCR (docling) e do chunking: um processo, um ambiente.
-docling-onnx = { version = "=2.53.1", optional = true }
+docling-onnx = { version = "=2.53.3", optional = true }
 tokenizers = { version = "0.23", default-features = false, features = ["fancy-regex"], optional = true }
 hf-hub = { version = "0.5", default-features = false, features = ["ureq", "rustls-tls"], optional = true }
 safetensors = { version = "0.8", optional = true }
