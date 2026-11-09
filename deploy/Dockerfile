@@ -15,7 +15,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 
 # ---------- modelos ONNX (layout, tabelas, OCR) ----------
 # Digest permite PRs do Dependabot quando a imagem da mesma tag é reconstruída.
-FROM debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4 AS models
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS models
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /models
@@ -28,7 +28,7 @@ RUN curl -fsSL "$DL_URL" -o dl.sh \
 
 # ---------- dados do NLTK (estratégia de chunking `nltk`) ----------
 # Estágio próprio: não invalida o cache do download dos modelos acima.
-FROM debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4 AS nltk
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS nltk
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates unzip \
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /nltk
@@ -42,7 +42,7 @@ RUN curl -fsSL "$PUNKT_URL" -o /tmp/punkt_tab.zip \
  && rm /tmp/punkt_tab.zip
 
 # ---------- runtime ----------
-FROM debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
  && rm -rf /var/lib/apt/lists/* \
  && useradd --system --uid 10001 --no-create-home --home-dir /nonexistent --shell /usr/sbin/nologin app
