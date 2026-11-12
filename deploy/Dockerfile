@@ -20,8 +20,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certifi
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /models
 # Script oficial na mesma tag do Docling, com hash fixado (cadeia de suprimentos).
-ARG DL_URL=https://raw.githubusercontent.com/docling-project/docling.rs/v2.53.1/scripts/install/download_dependencies.sh
-ARG DL_SHA256=d1fd9c10b524cf726ada3d5c846a1a8fee062c7285cedcef1ea7a3556fd932a4
+ARG DL_URL=https://raw.githubusercontent.com/docling-project/docling.rs/v2.82.1/scripts/install/download_dependencies.sh
+ARG DL_SHA256=dd9b7a4090bf76e78c667889997530c82f09f81ea3f929a669371f9f4930cd1e
 RUN curl -fsSL "$DL_URL" -o dl.sh \
  && echo "$DL_SHA256  dl.sh" | sha256sum -c - \
  && sh dl.sh --no-asr

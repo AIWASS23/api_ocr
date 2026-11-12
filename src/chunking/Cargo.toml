@@ -43,9 +43,9 @@ fastembed = { version = "7.5.0", default-features = false, features = ["ort-down
 ort = { version = "=2.0.0-rc.15", default-features = false, features = ["std", "ndarray", "download-binaries", "tls-rustls"], optional = true }
 ndarray = { version = "0.17", optional = true }
 reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"], optional = true }
-docling = { version = "=2.53.1", optional = true }
+docling = { version = "=2.82.1", optional = true }
 # Um único ambiente ONNX é compartilhado entre OCR e os dois motores de embeddings.
-docling-onnx = { version = "=2.53.1", optional = true }
+docling-onnx = { version = "=2.82.1", optional = true }
 tokio = { version = "1", features = ["rt", "macros"], optional = true }
 
 [dev-dependencies]

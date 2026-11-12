@@ -26,8 +26,9 @@
 //! * um processo novo por documento: um job comprometido não contamina o próximo;
 //! * prazo estourado ou cliente desconectado => SIGKILL (antes, a thread seguia rodando).
 //!
-//! Protocolo: a API executa `<binário> ocr-worker --file <caminho> ...` (ou `chunk-worker`); o
-//! worker escreve UMA resposta JSON (`ocr::Reply` / `chunk::Reply`) no stdout. O stdout e o
+//! Protocolo: a API executa `<binário> ocr-worker --file <caminho> ...` (ou `chunk-worker`,
+//! `embed-worker`, `retrieve-worker`); o worker escreve UMA resposta JSON (`ocr::Reply`,
+//! `chunk::Reply`, `embed::Reply`, `retrieve::Reply`) no stdout. O stdout e o
 //! stderr são lidos com teto de tamanho.
 
 use std::collections::HashMap;
@@ -82,6 +83,7 @@ pub enum JobKind {
     Ocr,
     Chunk,
     Embedding,
+    Retrieval,
 }
 
 impl WorkerFailure {
@@ -101,6 +103,10 @@ impl WorkerFailure {
             (JobKind::Embedding, WorkerFailure::ReplyTooLarge | WorkerFailure::BadReply) => "embedding_worker_bad_reply",
             (JobKind::Embedding, WorkerFailure::MemoryLimit(_)) => "embedding_worker_memory_killed",
             (JobKind::Embedding, _) => "embedding_worker_failed",
+            (JobKind::Retrieval, WorkerFailure::Signaled(_)) => "retrieval_worker_crashed",
+            (JobKind::Retrieval, WorkerFailure::ReplyTooLarge | WorkerFailure::BadReply) => "retrieval_worker_bad_reply",
+            (JobKind::Retrieval, WorkerFailure::MemoryLimit(_)) => "retrieval_worker_memory_killed",
+            (JobKind::Retrieval, _) => "retrieval_worker_failed",
         }
     }
 }
@@ -369,6 +375,22 @@ pub async fn run_embedding_job(cfg: &Config, job_dir: &Path, file: &Path, model_
     serde_json::from_slice(&out).map_err(|_| WorkerFailure::BadReply)
 }
 
+/// Busca do job `file` (dentro de `job_dir`). `model_dir` (embedding) e o cross-encoder de
+/// `RETRIEVAL_RERANK_MODEL`: liberados para leitura no Landlock do worker.
+pub async fn run_retrieval_job(cfg: &Config, job_dir: &Path, file: &Path, model_dir: Option<&Path>) -> Result<crate::retrieve::Reply, WorkerFailure> {
+    debug_assert!(file.starts_with(job_dir));
+    let mut cmd = base_command(cfg, "retrieve-worker");
+    cmd.arg("--file").arg(file).args(["--timeout-secs", &cfg.retrieval.timeout.as_secs().to_string()]);
+    if let Some(d) = model_dir {
+        cmd.arg("--model-dir").arg(d);
+    }
+    if let Some(d) = &cfg.retrieval.rerank_model {
+        cmd.arg("--rerank-model").arg(d);
+    }
+    let out = run(cmd, cfg.retrieval.timeout, cfg.retrieval.worker_max_rss_mb * 1024 * 1024).await?;
+    serde_json::from_slice(&out).map_err(|_| WorkerFailure::BadReply)
+}
+
 /// Pré-carrega os modelos num worker confiável (sem entrada de usuário), o único autorizado a
 /// gravar o cache de grafos. Roda em segundo plano na subida do servidor.
 pub fn spawn_warmup(cfg: Config) {
@@ -614,6 +636,51 @@ pub fn embed_main(args: EmbedWorkerArgs) -> ExitCode {
     match crate::embed::execute_job(&args.file) {
         Ok(mut reply) => {
             if let crate::embed::Reply::Ok { timings, .. } = &mut reply {
+                timings.confine_ms = confine_ms;
+            }
+            write_reply(&reply)
+        }
+        Err(e) => {
+            eprintln!("{e}");
+            ExitCode::from(1)
+        }
+    }
+}
+
+// ------------------------------------------------------------------ worker de recuperação
+
+pub struct RetrieveWorkerArgs {
+    pub file: PathBuf,
+    pub timeout: Duration,
+    pub model_dir: Option<PathBuf>,
+    pub rerank_model: Option<PathBuf>,
+}
+
+/// Ponto de entrada do subcomando `retrieve-worker`. Confina antes de ler o job; os modelos
+/// (embedding e cross-encoder) são lidos só dos diretórios locais configurados.
+pub fn retrieve_main(args: RetrieveWorkerArgs) -> ExitCode {
+    let Some(job_dir) = args.file.parent() else {
+        eprintln!("--file sem diretório");
+        return ExitCode::from(2);
+    };
+    let extra: Vec<PathBuf> = args.model_dir.iter().chain(args.rerank_model.iter()).flat_map(|d| crate::embed::model_read_paths(d)).collect();
+    let cores = std::thread::available_parallelism().map_or(4, |n| n.get() as u64);
+    let limits = Limits {
+        address_space: None,
+        cpu_secs: (args.timeout.as_secs() + 30) * cores,
+        // O worker não grava arquivos (a resposta sai pelo pipe).
+        file_size: 16 * 1024 * 1024,
+        open_files: 1024,
+    };
+    let t = std::time::Instant::now();
+    if let Err(e) = confine(Some(job_dir), None, false, &extra, &limits) {
+        eprintln!("confinamento do worker falhou: {e}");
+        return ExitCode::from(3);
+    }
+    let confine_ms = t.elapsed().as_millis() as u64;
+    match crate::retrieve::execute_job(&args.file) {
+        Ok(mut reply) => {
+            if let crate::retrieve::Reply::Ok { timings, .. } = &mut reply {
                 timings.confine_ms = confine_ms;
             }
             write_reply(&reply)

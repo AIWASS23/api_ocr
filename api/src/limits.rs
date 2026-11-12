@@ -50,7 +50,9 @@ pub struct Limiters {
     chunk: KeyedLimiter<uuid::Uuid>,
     /// Embeddings, por usuário.
     embedding: KeyedLimiter<uuid::Uuid>,
-    quotas: [(u32, u32); 5],
+    /// Recuperação, por usuário.
+    retrieval: KeyedLimiter<uuid::Uuid>,
+    quotas: [(u32, u32); 6],
     shared: Option<crate::shared_limit::SharedLimiter>,
 }
 
@@ -64,15 +66,16 @@ fn burst_of(kind: usize, per_min: u32) -> u32 {
 }
 
 impl Limiters {
-    pub fn new(general_per_min: u32, auth_per_min: u32, ocr_per_min: u32, chunk_per_min: u32, embedding_per_min: u32) -> Self {
-        let per = [general_per_min, auth_per_min, ocr_per_min, chunk_per_min, embedding_per_min];
-        let quotas: [(u32, u32); 5] = std::array::from_fn(|k| (per[k], burst_of(k, per[k])));
+    pub fn new(general_per_min: u32, auth_per_min: u32, ocr_per_min: u32, chunk_per_min: u32, embedding_per_min: u32, retrieval_per_min: u32) -> Self {
+        let per = [general_per_min, auth_per_min, ocr_per_min, chunk_per_min, embedding_per_min, retrieval_per_min];
+        let quotas: [(u32, u32); 6] = std::array::from_fn(|k| (per[k], burst_of(k, per[k])));
         Self {
             general: KeyedLimiter::new(quotas[0].0, quotas[0].1),
             auth: KeyedLimiter::new(quotas[1].0, quotas[1].1),
             ocr: KeyedLimiter::new(quotas[2].0, quotas[2].1),
             chunk: KeyedLimiter::new(quotas[3].0, quotas[3].1),
             embedding: KeyedLimiter::new(quotas[4].0, quotas[4].1),
+            retrieval: KeyedLimiter::new(quotas[5].0, quotas[5].1),
             quotas,
             shared: None,
         }
@@ -117,12 +120,18 @@ impl Limiters {
         self.global(4, "embedding", &user.to_string()).await
     }
 
+    pub async fn check_retrieval(&self, user: uuid::Uuid) -> Result<(), Duration> {
+        self.retrieval.check(&user)?;
+        self.global(5, "retrieval", &user.to_string()).await
+    }
+
     pub fn prune(&self) {
         self.general.prune();
         self.auth.prune();
         self.ocr.prune();
         self.chunk.prune();
         self.embedding.prune();
+        self.retrieval.prune();
     }
 }
 

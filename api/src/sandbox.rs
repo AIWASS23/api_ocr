@@ -102,7 +102,7 @@ fn base_read_paths() -> Vec<PathBuf> {
     // chunking (tokenizador, dados do NLTK). O worker herda o domínio da API: o que ele precisa
     // ler tem de estar liberado aqui também.
     for (k, v) in std::env::vars() {
-        let model = k.starts_with("DOCLING_") || matches!(k.as_str(), "CHUNK_TOKENIZER" | "CHUNK_NLTK_DATA");
+        let model = k.starts_with("DOCLING_") || matches!(k.as_str(), "CHUNK_TOKENIZER" | "CHUNK_NLTK_DATA" | "RETRIEVAL_RERANK_MODEL");
         if model && Path::new(&v).exists() {
             read.push(v.into());
         }

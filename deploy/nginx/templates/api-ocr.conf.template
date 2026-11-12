@@ -13,6 +13,7 @@ limit_req_zone  $binary_remote_addr zone=auth:10m    rate=5r/s;
 limit_req_zone  $binary_remote_addr zone=ocr:10m     rate=1r/s;
 limit_req_zone  $binary_remote_addr zone=chunk:10m   rate=5r/s;
 limit_req_zone  $binary_remote_addr zone=embedding:10m rate=2r/s;
+limit_req_zone  $binary_remote_addr zone=retrieval:10m rate=2r/s;
 limit_conn_zone $binary_remote_addr zone=perip:10m;
 limit_req_status  429;
 limit_conn_status 429;
@@ -25,7 +26,7 @@ keepalive_requests    200;
 reset_timedout_connection on;
 client_header_buffer_size   2k;
 large_client_header_buffers 4 8k;
-client_max_body_size 16k;         # padrão; só /v1/data_preparation, /v1/chunk e /v1/embedding sobem
+client_max_body_size 16k;         # padrão; só /v1/data_preparation, /v1/chunk, /v1/embedding e /v1/retrieval sobem
 http2_max_concurrent_streams 32;
 
 upstream api_ocr_upstream {
@@ -130,6 +131,24 @@ server {
         proxy_request_buffering on;
         proxy_read_timeout 135s;       # > EMBEDDING_TIMEOUT_SECS do app
         proxy_send_timeout 30s;
+        include /etc/nginx/api-ocr-proxy.inc;
+    }
+    # Recuperação: acervo em JSON (RETRIEVAL_MAX_TEXT_MB=5, até o dobro com o escape) e consultas.
+    # Modelos e embeddings do acervo a cada pedido: prazo maior.
+    location = /v1/retrieval {
+        limit_req zone=general   burst=40 nodelay;
+        limit_req zone=retrieval burst=10 nodelay;
+        client_max_body_size 12m;
+        client_body_timeout  30s;
+        client_body_buffer_size 1m;
+        proxy_request_buffering on;
+        proxy_read_timeout 135s;       # > RETRIEVAL_TIMEOUT_SECS do app
+        proxy_send_timeout 30s;
+        include /etc/nginx/api-ocr-proxy.inc;
+    }
+    location = /v1/retrieval/strategies {
+        limit_req zone=general burst=40 nodelay;
+        client_max_body_size 1k;
         include /etc/nginx/api-ocr-proxy.inc;
     }
     location = /v1/embedding/strategies {

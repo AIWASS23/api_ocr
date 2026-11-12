@@ -121,7 +121,7 @@ pub struct Catalog {
     response: EmbeddingStrategiesResponse,
 }
 
-fn display_model(dir: &Path) -> String {
+pub(crate) fn display_model(dir: &Path) -> String {
     // Só o nome final: o caminho do servidor não sai na resposta.
     let name = dir.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
     // Snapshot do cache do Hugging Face: o nome do repositório (`models--dono--nome`).
@@ -171,8 +171,14 @@ impl Catalog {
         }
     }
 
-    fn get(&self, name: &str) -> Option<&EmbeddingStrategyInfo> {
+    pub(crate) fn get(&self, name: &str) -> Option<&EmbeddingStrategyInfo> {
         self.response.strategies.iter().find(|s| s.name == name)
+    }
+
+    /// Estratégias disponíveis que servem de embedding da busca densa (`/v1/retrieval`): todas
+    /// menos o SPLADE (`sparse`), cujos vetores têm o tamanho do vocabulário do modelo.
+    pub(crate) fn text_strategies(&self) -> Vec<String> {
+        self.response.strategies.iter().filter(|s| s.available && s.name != "sparse").map(|s| s.name.clone()).collect()
     }
 }
 

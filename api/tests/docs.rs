@@ -21,6 +21,8 @@ const REAL_ROUTES: &[(&str, &str)] = &[
     ("post", "/v1/chunk"),
     ("get", "/v1/embedding/strategies"),
     ("post", "/v1/embedding"),
+    ("get", "/v1/retrieval/strategies"),
+    ("post", "/v1/retrieval"),
 ];
 
 async fn docs_app() -> TestApp {
@@ -125,6 +127,8 @@ async fn security_schemes_use_the_real_issuer_and_protected_routes_require_them(
         ("/v1/chunk", "post", true),
         ("/v1/embedding/strategies", "get", true),
         ("/v1/embedding", "post", true),
+        ("/v1/retrieval/strategies", "get", true),
+        ("/v1/retrieval", "post", true),
         ("/oauth/token", "post", false),
         ("/auth/register", "post", false),
     ] {
@@ -188,6 +192,19 @@ async fn documented_schemas_match_real_responses() {
     let emb: Value = app.http.post(app.url("/v1/embedding")).bearer_auth(access).json(&body).send().await.unwrap().json().await.unwrap();
     assert_eq!(keys(&emb), props("EmbeddingResponse"));
     assert_eq!(keys(&emb["sparse_embeddings"][0]), props("SparseVectorOut"));
+
+    // /v1/retrieval/strategies e /v1/retrieval (com os chunks como acervo)
+    let cat: Value = app.http.get(app.url("/v1/retrieval/strategies")).bearer_auth(access).send().await.unwrap().json().await.unwrap();
+    assert_eq!(keys(&cat), props("RetrievalStrategiesResponse"));
+    assert_eq!(keys(&cat["limits"]), props("RetrievalLimits"));
+    for s in cat["strategies"].as_array().unwrap() {
+        assert!(keys(s).is_subset(&props("RetrievalStrategyInfo")), "{s}");
+    }
+    let body = serde_json::json!({"strategy": "dense", "query": "doc", "documents": chunked["chunks"], "embedding": {"strategy": "hashing"}});
+    let found: Value = app.http.post(app.url("/v1/retrieval")).bearer_auth(access).json(&body).send().await.unwrap().json().await.unwrap();
+    assert_eq!(keys(&found), props("RetrievalResponse"));
+    assert_eq!(keys(&found["results"][0]), props("RetrievalResult"));
+    assert_eq!(keys(&found["results"][0]["documents"][0]), props("RetrievedDocument"));
 
     // Erro e metadados
     let err: Value = app.http.get(app.url("/v1/me")).send().await.unwrap().json().await.unwrap();

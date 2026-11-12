@@ -43,6 +43,8 @@ GPU: compile com `--features cuda` e use `source scripts/cuda-env.sh` antes de s
 | `POST /v1/chunk` | Bearer, escopo `ocr` | JSON `{strategy, chunk_size?, chunk_overlap?, text}` ou `{..., documents}` (a saída do `/v1/data_preparation`); devolve os chunks com metadados |
 | `GET /v1/embedding/strategies` | Bearer, escopo `ocr` | Estratégias de embedding: tipo (`dense`, `sparse`, `multimodal`), disponibilidade neste servidor, modelo configurado, formato padrão, se aceita imagens e se aprende o vocabulário na própria requisição; limites |
 | `POST /v1/embedding` | Bearer, escopo `ocr` | JSON `{strategy, texts \| documents \| images, input_type?, queries?, dimensions?, normalize?, format?}`; devolve um vetor por entrada (denso ou esparso) |
+| `GET /v1/retrieval/strategies` | Bearer, escopo `ocr` | Estratégias de recuperação: família, disponibilidade neste servidor (e motivo), o que cada uma usa (`embedding`, `generated_queries`, `rerank_model`), estratégias aceitas em `embedding`, modelo de reranking e limites |
+| `POST /v1/retrieval` | Bearer, escopo `ocr` | JSON `{strategy, query \| queries, documents, k?, fetch_k?, top_n?, score_threshold?, filters?, components?, weights?, embedding?, generated_queries?, options?}`; devolve os documentos mais relevantes de cada consulta, com nota e posição |
 | `GET /healthz`, `GET /readyz` | — | Liveness / readiness (checa o banco) |
 | `GET /docs`, `GET /openapi.json` | — | **Swagger UI** e OpenAPI 3.1 (só com `ENABLE_DOCS=true`; veja abaixo) |
 
@@ -98,6 +100,51 @@ curl -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json
 - **Isolamento e limites:** mesmo worker, prazo (`EMBEDDING_TIMEOUT_SECS`), teto de memória, 1 pedido por
   usuário, vagas globais (`EMBEDDING_MAX_CONCURRENT`), limites de textos, bytes, imagens (base64,
   cabeçalho conferido antes de decodificar) e tamanho da resposta.
+
+### Recuperação (retrieval)
+
+A API não guarda índice: o acervo vai no pedido (por exemplo, os `chunks` do `/v1/chunk`) e a busca
+roda no worker isolado, com o crate [`retriever`](../src/retriever/README.md).
+
+```bash
+# BM25 sobre os chunks (sem modelo):
+jq '{strategy: "bm25", query: "praias de Fortaleza", k: 3, documents: .chunks}' chunks.json |
+  curl -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" --data-binary @- \
+       http://localhost:8080/v1/retrieval
+
+# Híbrida (densa + BM25, RRF com pesos) com o modelo local do E5, várias consultas no mesmo acervo:
+jq '{strategy: "weighted_hybrid", queries: ["praias", "lei do consumidor"], weights: [0.6, 0.4],
+     embedding: {strategy: "e5"}, documents: .chunks}' chunks.json |
+  curl -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" --data-binary @- \
+       http://localhost:8080/v1/retrieval
+
+# multi_query com as variações geradas pelo SEU LLM:
+curl -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" \
+     -d '{"strategy": "multi_query", "query": "doce", "generated_queries": ["receita de bolo", "sobremesa"],
+          "options": {"base_strategy": "bm25"}, "documents": [{"page_content": "..."}]}' \
+     http://localhost:8080/v1/retrieval
+```
+
+- **Resposta:** um resultado por consulta (`results[i].documents`), cada documento com `metadata`
+  original mais `retrieval_score` (quando a estratégia dá nota), `retrieval_rank` e `retrieval_strategy`.
+- **Embeddings:** as estratégias densas, as fusões com `dense` e as que refinam candidatos
+  (`options.base_strategy`, padrão `dense`) pedem `embedding`: uma estratégia disponível em
+  `GET /v1/embedding/strategies`, com os mesmos modelos LOCAIS de `EMBEDDING_MODELS`. Sem modelo, servem
+  `hashing`, `tfidf`, `bm25` e `lsa`. Os embeddings do acervo são calculados uma vez por pedido, para todas
+  as consultas.
+- **Sem LLM no servidor:** `multi_query`, `query_expansion`, `decomposition`, `rephrase_query`, `hyde` e
+  `step_back` recebem o texto gerado pelo seu LLM em `generated_queries`. `contextual_compression`,
+  `llm_rerank` e `self_query` ficam indisponíveis.
+- **Reranking:** `rerank` e `cross_encoder_rerank` usam o cross-encoder LOCAL de `RETRIEVAL_RERANK_MODEL`
+  (diretório com `tokenizer.json` e `onnx/model.onnx`); sem ele, ficam indisponíveis.
+- **Só na biblioteca:** fontes externas (`graph`, `knowledge_graph`, `sql`, `web_search`,
+  `knowledge_base`), `router`, `custom`, `colbert_rerank` e `multimodal` (imagens por caminho de arquivo).
+- **Parâmetros do cliente:** só os campos da tabela; em `options`, apenas `lambda_mult`, `k1`, `b`, `delta`,
+  `operator`, `rrf_k`, `query_count`, `base_strategy`, `parent_id_key`, `parent_store`, `time_key`,
+  `decay_rate`, `strategies` e `stages`. Provider, caminhos de modelo e dispositivo são do servidor.
+- **Isolamento e limites:** mesmo worker, prazo (`RETRIEVAL_TIMEOUT_SECS`), teto de memória, 1 pedido por
+  usuário, vagas globais (`RETRIEVAL_MAX_CONCURRENT`), limites de documentos, bytes, consultas, `k` e
+  `fetch_k`.
 
 ### Chunking
 

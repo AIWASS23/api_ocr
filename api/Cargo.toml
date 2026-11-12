@@ -21,6 +21,7 @@ chunking = { path = "../src/chunking", features = ["docling"] }
 clap = { version = "4.6.7", features = ["derive", "env"] }
 data_preparation = { path = "../src/data_preparation" }
 embedding = { path = "../src/embedding" }
+retriever = { path = "../src/retriever" }
 governor = "0.10.4"
 hex = "0.4.3"
 hmac = "0.13"

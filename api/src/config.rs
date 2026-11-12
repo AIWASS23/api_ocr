@@ -46,6 +46,8 @@ pub struct Config {
     pub chunk: ChunkSettings,
     /// Embeddings (`/v1/embedding`).
     pub embedding: EmbeddingSettings,
+    /// Recuperação (`/v1/retrieval`).
+    pub retrieval: RetrievalSettings,
 
     // Limites de conexão / taxa
     pub max_connections: usize,
@@ -56,6 +58,7 @@ pub struct Config {
     pub rate_ocr_per_min: u32,
     pub rate_chunk_per_min: u32,
     pub rate_embedding_per_min: u32,
+    pub rate_retrieval_per_min: u32,
     /// Redis (redis:// ou rediss://) para o limite de taxa global entre réplicas. Opcional.
     pub rate_limit_redis_url: Option<String>,
     pub rate_limit_redis_prefix: String,
@@ -212,6 +215,78 @@ impl EmbeddingSettings {
     }
 }
 
+/// Limites da recuperação (`/v1/retrieval`). O acervo vem na própria requisição; os embeddings
+/// usam os modelos LOCAIS de `EMBEDDING_MODELS` e o reranking, `RETRIEVAL_RERANK_MODEL`.
+#[derive(Clone, Debug)]
+pub struct RetrievalSettings {
+    pub max_documents: usize,
+    /// Soma dos documentos (texto e metadados em JSON) e de `options`, em bytes.
+    pub max_text_bytes: usize,
+    /// Consultas por requisição (e `generated_queries`).
+    pub max_queries: usize,
+    /// Tamanho de cada consulta, em bytes UTF-8.
+    pub max_query_bytes: usize,
+    /// Maior `k` e `top_n`.
+    pub max_k: usize,
+    pub max_fetch_k: usize,
+    pub max_concurrent: usize,
+    /// Prazo de cada pedido (carga dos modelos, embeddings do acervo e buscas).
+    pub timeout: Duration,
+    /// Teto de RSS por worker, em MiB (0 = só o limite do contêiner).
+    pub worker_max_rss_mb: u64,
+    /// Cross-encoder LOCAL (diretório com `tokenizer.json` e `onnx/model.onnx` ou `model.onnx`) de
+    /// `rerank` e `cross_encoder_rerank`. Sem ele, essas estratégias ficam indisponíveis.
+    pub rerank_model: Option<PathBuf>,
+}
+
+impl Default for RetrievalSettings {
+    fn default() -> Self {
+        Self {
+            max_documents: 2_000,
+            max_text_bytes: 5 * 1024 * 1024,
+            max_queries: 16,
+            max_query_bytes: 4 * 1024,
+            max_k: 100,
+            max_fetch_k: 500,
+            max_concurrent: 2,
+            timeout: Duration::from_secs(120),
+            worker_max_rss_mb: 0,
+            rerank_model: None,
+        }
+    }
+}
+
+/// Diretório de cross-encoder em ONNX: `tokenizer.json` e o grafo.
+pub fn is_rerank_model_dir(dir: &std::path::Path) -> bool {
+    dir.join("tokenizer.json").is_file() && (dir.join("onnx/model.onnx").is_file() || dir.join("model.onnx").is_file())
+}
+
+impl RetrievalSettings {
+    fn from_env() -> Result<Self, ConfigError> {
+        let d = Self::default();
+        let s = Self {
+            max_documents: parse("RETRIEVAL_MAX_DOCUMENTS", d.max_documents)?,
+            max_text_bytes: parse::<usize>("RETRIEVAL_MAX_TEXT_MB", d.max_text_bytes / (1024 * 1024))? * 1024 * 1024,
+            max_queries: parse("RETRIEVAL_MAX_QUERIES", d.max_queries)?,
+            max_query_bytes: parse("RETRIEVAL_MAX_QUERY_BYTES", d.max_query_bytes)?,
+            max_k: parse("RETRIEVAL_MAX_K", d.max_k)?,
+            max_fetch_k: parse("RETRIEVAL_MAX_FETCH_K", d.max_fetch_k)?,
+            max_concurrent: parse("RETRIEVAL_MAX_CONCURRENT", d.max_concurrent)?,
+            timeout: Duration::from_secs(parse("RETRIEVAL_TIMEOUT_SECS", d.timeout.as_secs())?),
+            worker_max_rss_mb: parse("RETRIEVAL_WORKER_MAX_RSS_MB", d.worker_max_rss_mb)?,
+            rerank_model: var("RETRIEVAL_RERANK_MODEL").map(PathBuf::from),
+        };
+        if let Some(dir) = &s.rerank_model
+            && !is_rerank_model_dir(dir)
+        {
+            return Err(ConfigError(
+                "RETRIEVAL_RERANK_MODEL precisa ser um diretório local com tokenizer.json e onnx/model.onnx (ou model.onnx)".into(),
+            ));
+        }
+        Ok(s)
+    }
+}
+
 // Nunca imprime segredos.
 impl std::fmt::Debug for Config {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -334,6 +409,7 @@ impl Config {
             ocr_worker_max_rss_mb: parse("OCR_WORKER_MAX_RSS_MB", 0)?,
             chunk: ChunkSettings::from_env()?,
             embedding: EmbeddingSettings::from_env()?,
+            retrieval: RetrievalSettings::from_env()?,
 
             max_connections: parse("MAX_CONNECTIONS", 1024)?,
             max_connections_per_ip: parse("MAX_CONNECTIONS_PER_IP", 64)?,
@@ -343,6 +419,7 @@ impl Config {
             rate_ocr_per_min: parse("RATE_OCR_PER_MIN", 10)?,
             rate_chunk_per_min: parse("RATE_CHUNK_PER_MIN", 60)?,
             rate_embedding_per_min: parse("RATE_EMBEDDING_PER_MIN", 30)?,
+            rate_retrieval_per_min: parse("RATE_RETRIEVAL_PER_MIN", 30)?,
             rate_limit_redis_url: var("RATE_LIMIT_REDIS_URL"),
             rate_limit_redis_prefix: var("RATE_LIMIT_REDIS_PREFIX").unwrap_or_else(|| "api_ocr:".to_string()),
             security_alert_login_failures: parse("SECURITY_ALERT_LOGIN_FAILURES", 20)?,
@@ -369,6 +446,13 @@ impl Config {
             ("EMBEDDING_MAX_TEXT_MB", self.embedding.max_text_bytes),
             ("EMBEDDING_MAX_CONCURRENT", self.embedding.max_concurrent),
             ("EMBEDDING_BATCH_SIZE", self.embedding.batch_size),
+            ("RETRIEVAL_MAX_DOCUMENTS", self.retrieval.max_documents),
+            ("RETRIEVAL_MAX_TEXT_MB", self.retrieval.max_text_bytes),
+            ("RETRIEVAL_MAX_QUERIES", self.retrieval.max_queries),
+            ("RETRIEVAL_MAX_QUERY_BYTES", self.retrieval.max_query_bytes),
+            ("RETRIEVAL_MAX_K", self.retrieval.max_k),
+            ("RETRIEVAL_MAX_FETCH_K", self.retrieval.max_fetch_k),
+            ("RETRIEVAL_MAX_CONCURRENT", self.retrieval.max_concurrent),
         ] {
             if v == 0 {
                 return Err(ConfigError(format!("{name} precisa ser maior que 0")));
@@ -376,6 +460,9 @@ impl Config {
         }
         if self.embedding.timeout.is_zero() {
             return Err(ConfigError("EMBEDDING_TIMEOUT_SECS precisa ser maior que 0".into()));
+        }
+        if self.retrieval.timeout.is_zero() {
+            return Err(ConfigError("RETRIEVAL_TIMEOUT_SECS precisa ser maior que 0".into()));
         }
         if self.chunk.timeout.is_zero() {
             return Err(ConfigError("CHUNK_TIMEOUT_SECS precisa ser maior que 0".into()));
@@ -389,6 +476,7 @@ impl Config {
             ("RATE_OCR_PER_MIN", self.rate_ocr_per_min),
             ("RATE_CHUNK_PER_MIN", self.rate_chunk_per_min),
             ("RATE_EMBEDDING_PER_MIN", self.rate_embedding_per_min),
+            ("RATE_RETRIEVAL_PER_MIN", self.rate_retrieval_per_min),
             ("SECURITY_ALERT_LOGIN_FAILURES", self.security_alert_login_failures),
         ] {
             if v == 0 {

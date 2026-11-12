@@ -61,6 +61,9 @@ pub struct AppInner {
     pub embedding: JobRuntime,
     /// Catálogo de estratégias de embedding, com a disponibilidade deste servidor.
     pub embedding_catalog: crate::embed::Catalog,
+    pub retrieval: JobRuntime,
+    /// Catálogo de estratégias de recuperação, com a disponibilidade deste servidor.
+    pub retrieval_catalog: crate::retrieve::Catalog,
     /// Catálogo de estratégias de chunking, com a disponibilidade deste servidor.
     pub chunk_catalog: crate::chunk::Catalog,
     pub memory: MemoryGuard,

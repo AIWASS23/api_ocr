@@ -1,0 +1,3513 @@
+{
+ "documents": [
+  {
+   "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+   "metadata": {
+    "id": "python",
+    "kind": "code",
+    "parent_id": "guide",
+    "timestamp": "2026-11-01T12:00:00+00:00"
+   }
+  },
+  {
+   "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+   "metadata": {
+    "id": "banana",
+    "kind": "food",
+    "timestamp": "2026-09-15T08:30:00Z"
+   }
+  },
+  {
+   "page_content": "Busca híbrida combina recuperação densa e lexical.",
+   "metadata": {
+    "id": "search",
+    "kind": "search",
+    "parent_id": "guide-search",
+    "timestamp": 1793000000
+   }
+  },
+  {
+   "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+   "metadata": {
+    "id": "rust",
+    "kind": "code",
+    "parent_id": "guide",
+    "timestamp": "2026-10-20T00:00:00-03:00"
+   }
+  },
+  {
+   "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+   "metadata": {
+    "id": "bm25",
+    "kind": "search",
+    "parent_id": "guide-search"
+   }
+  },
+  {
+   "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+   "metadata": {
+    "id": "fortaleza",
+    "kind": "travel",
+    "timestamp": "2025-12-31T23:59:59+00:00"
+   }
+  },
+  {
+   "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+   "metadata": {
+    "id": "compare",
+    "kind": "code",
+    "parent_id": "guide",
+    "timestamp": 0
+   }
+  }
+ ],
+ "parent_store": {
+  "guide": {
+   "page_content": "Guia completo de linguagens: Python e Rust.",
+   "metadata": {
+    "id": "guide"
+   }
+  },
+  "guide-search": {
+   "page_content": "Guia de busca: densa, lexical e híbrida.",
+   "metadata": {
+    "id": "guide-search"
+   }
+  }
+ },
+ "base": {
+  "provider": "local",
+  "k": 3,
+  "fetch_k": 5,
+  "top_n": 2
+ },
+ "cases": [
+  {
+   "name": "dense",
+   "strategy": "dense",
+   "query": "python sintaxe",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.8164966106414795,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.3535533845424652,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.3535533845424652,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "dense_threshold",
+   "strategy": "dense",
+   "query": "python sintaxe",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "score_threshold": 0.3
+   },
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.8164966106414795,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.3535533845424652,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.3535533845424652,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "dense_filters",
+   "strategy": "dense",
+   "query": "busca python",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "filters": {
+     "kind": "code"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.7071067690849304,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.40824830532073975,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "dense_filter_list",
+   "strategy": "dense",
+   "query": "busca",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "filters": {
+     "kind": [
+      "code",
+      "travel"
+     ]
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.5,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "dense_mmr",
+   "strategy": "dense_mmr",
+   "query": "busca densa lexical",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "lambda_mult": 0.3
+    }
+   },
+   "expected": [
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.942808985710144,
+      "retrieval_strategy": "dense_mmr",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense_mmr",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense_mmr",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "similarity_threshold",
+   "strategy": "similarity_threshold",
+   "query": "rust",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "score_threshold": 0.2
+   },
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.5,
+      "retrieval_strategy": "similarity_threshold",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.5,
+      "retrieval_strategy": "similarity_threshold",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "diversity",
+   "strategy": "diversity",
+   "query": "python rust busca",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "k": 4
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.866025447845459,
+      "retrieval_strategy": "diversity",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.471404492855072,
+      "retrieval_strategy": "diversity",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.3333333432674408,
+      "retrieval_strategy": "diversity",
+      "retrieval_rank": 3
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "diversity",
+      "retrieval_rank": 4
+     }
+    }
+   ]
+  },
+  {
+   "name": "sparse",
+   "strategy": "sparse",
+   "query": "busca densa",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 2.25070675710968,
+      "retrieval_strategy": "sparse",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 2.1217915525574558,
+      "retrieval_strategy": "sparse",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.8047313544273581,
+      "retrieval_strategy": "sparse",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "bm25",
+   "strategy": "bm25",
+   "query": "busca híbrida densa",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 4.1441505380133705,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 2.1217915525574558,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.8047313544273581,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "bm25_params",
+   "strategy": "bm25",
+   "query": "busca python",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "k1": 1.2,
+     "b": 0.5
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 1.957474433673236,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 1.2132866205731672,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 1.0813849443818446,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "bm25_plus",
+   "strategy": "bm25_plus",
+   "query": "busca lexical termos",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 7.276588524527242,
+      "retrieval_strategy": "bm25_plus",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 4.240536140099829,
+      "retrieval_strategy": "bm25_plus",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 1.6314099276118261,
+      "retrieval_strategy": "bm25_plus",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "tfidf",
+   "strategy": "tfidf",
+   "query": "busca densa lexical",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.4652738958066035,
+      "retrieval_strategy": "tfidf",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.4006260846615135,
+      "retrieval_strategy": "tfidf",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.06936521100313973,
+      "retrieval_strategy": "tfidf",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "tfidf_bigram",
+   "strategy": "tfidf",
+   "query": "tipagem estática",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "k": 2
+   },
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.45033279896639045,
+      "retrieval_strategy": "tfidf",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.12352931049835547,
+      "retrieval_strategy": "tfidf",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "keyword",
+   "strategy": "keyword",
+   "query": "fruta praia",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_score": 2.0,
+      "retrieval_strategy": "keyword",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 1.0,
+      "retrieval_strategy": "keyword",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "boolean_and",
+   "strategy": "boolean",
+   "query": "python sintaxe",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_strategy": "boolean",
+      "retrieval_rank": 1
+     }
+    }
+   ]
+  },
+  {
+   "name": "boolean_or",
+   "strategy": "boolean",
+   "query": "banana rust",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "operator": "or"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_strategy": "boolean",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_strategy": "boolean",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_strategy": "boolean",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "fuzzy",
+   "strategy": "fuzzy",
+   "query": "fruta amarela",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.40625,
+      "retrieval_strategy": "fuzzy",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.31746031746031744,
+      "retrieval_strategy": "fuzzy",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.3055555555555556,
+      "retrieval_strategy": "fuzzy",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "metadata",
+   "strategy": "metadata",
+   "query": "ignorada",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "filters": {
+     "kind": "search"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_strategy": "metadata",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_strategy": "metadata",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "hybrid",
+   "strategy": "hybrid",
+   "query": "python busca",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.03278688524590164,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.03200204813108039,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.03200204813108039,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "weighted_hybrid",
+   "strategy": "weighted_hybrid",
+   "query": "python busca",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "weights": [
+     0.7,
+     0.3
+    ]
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.016393442622950817,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.01605222734254992,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.015949820788530467,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "rrf",
+   "strategy": "rrf",
+   "query": "busca densa",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "weights": [
+     1.0,
+     2.0,
+     0.5
+    ],
+    "options": {
+     "components": [
+      "dense",
+      "bm25",
+      "tfidf"
+     ],
+     "rrf_k": 10
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.3068181818181818,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.30303030303030304,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.2692307692307693,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "ensemble",
+   "strategy": "ensemble",
+   "query": "rust tipagem",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "retrievers": [
+     "bm25",
+     "keyword"
+    ]
+   },
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.03278688524590164,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.03225806451612903,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.031746031746031744,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "multi_query_gen",
+   "strategy": "multi_query",
+   "query": "python",
+   "deps": [
+    "embedder",
+    "query_generator"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.048131080389144903,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.03278688524590164,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.031746031746031744,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "multi_query_llm",
+   "strategy": "multi_query",
+   "query": "python",
+   "deps": [
+    "embedder",
+    "llm"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.04865990111891751,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.04787506400409626,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.032266458495966696,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "query_expansion",
+   "strategy": "query_expansion",
+   "query": "busca",
+   "deps": [
+    "embedder",
+    "llm"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "query_count": 2
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.047619047619047616,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.03278688524590164,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.03225806451612903,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "decomposition",
+   "strategy": "decomposition",
+   "query": "python e busca",
+   "deps": [
+    "embedder",
+    "query_generator"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "base_strategy": "bm25"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.04865990111891751,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.04813947436898257,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.03225806451612903,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "rephrase_gen",
+   "strategy": "rephrase_query",
+   "query": "python",
+   "deps": [
+    "embedder",
+    "query_generator"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.7071067690849304,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.40824830532073975,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.3535533845424652,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "rephrase_llm",
+   "strategy": "rephrase_query",
+   "query": "python",
+   "deps": [
+    "embedder",
+    "llm"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.7071067690849304,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.40824830532073975,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.3535533845424652,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "hyde",
+   "strategy": "hyde",
+   "query": "o que é busca híbrida?",
+   "deps": [
+    "embedder",
+    "llm"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.9449111819267273,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.9258201122283936,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.37796449661254883,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "step_back",
+   "strategy": "step_back",
+   "query": "rust é tipado?",
+   "deps": [
+    "embedder",
+    "llm"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "base_strategy": "keyword"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 2.0,
+      "retrieval_strategy": "keyword",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 1.0,
+      "retrieval_strategy": "keyword",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 1.0,
+      "retrieval_strategy": "keyword",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "hyde_gen",
+   "strategy": "hyde",
+   "query": "qual fruta?",
+   "deps": [
+    "embedder",
+    "query_generator"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.7071067690849304,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_score": 0.7071067690849304,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "self_query_constructor",
+   "strategy": "self_query",
+   "query": "código python",
+   "deps": [
+    "embedder",
+    "query_constructor"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.5773502588272095,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.5,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "self_query_base",
+   "strategy": "self_query",
+   "query": "python",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "base_strategy": "bm25"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 1.248259405645121,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 1.1322706998108398,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "parent_document",
+   "strategy": "parent_document",
+   "query": "python rust busca",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "parent_store": {
+      "guide": {
+       "page_content": "Guia completo de linguagens: Python e Rust.",
+       "metadata": {
+        "id": "guide"
+       }
+      },
+      "guide-search": {
+       "page_content": "Guia de busca: densa, lexical e híbrida.",
+       "metadata": {
+        "id": "guide-search"
+       }
+      }
+     }
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Guia completo de linguagens: Python e Rust.",
+     "metadata": {
+      "id": "guide",
+      "retrieval_strategy": "parent_document",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Guia de busca: densa, lexical e híbrida.",
+     "metadata": {
+      "id": "guide-search",
+      "retrieval_strategy": "parent_document",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "parent_document_no_store",
+   "strategy": "parent_document",
+   "query": "fruta",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.7071067690849304,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_score": 0.7071067690849304,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "multi_vector",
+   "strategy": "multi_vector",
+   "query": "busca densa",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "parent_store": {
+      "guide": {
+       "page_content": "Guia completo de linguagens: Python e Rust.",
+       "metadata": {
+        "id": "guide"
+       }
+      },
+      "guide-search": {
+       "page_content": "Guia de busca: densa, lexical e híbrida.",
+       "metadata": {
+        "id": "guide-search"
+       }
+      }
+     },
+     "base_strategy": "bm25"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Guia de busca: densa, lexical e híbrida.",
+     "metadata": {
+      "id": "guide-search",
+      "retrieval_strategy": "multi_vector",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Guia completo de linguagens: Python e Rust.",
+     "metadata": {
+      "id": "guide",
+      "retrieval_strategy": "multi_vector",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "small_to_big",
+   "strategy": "small_to_big",
+   "query": "python",
+   "deps": [
+    "embedder",
+    "neighbor_loader"
+   ],
+   "rank_only": false,
+   "config": {
+    "k": 4,
+    "options": {
+     "parent_store": {
+      "guide": {
+       "page_content": "Guia completo de linguagens: Python e Rust.",
+       "metadata": {
+        "id": "guide"
+       }
+      },
+      "guide-search": {
+       "page_content": "Guia de busca: densa, lexical e híbrida.",
+       "metadata": {
+        "id": "guide-search"
+       }
+      }
+     }
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Guia completo de linguagens: Python e Rust.",
+     "metadata": {
+      "id": "guide",
+      "retrieval_strategy": "small_to_big",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Vizinho de python",
+     "metadata": {
+      "id": "n-python",
+      "retrieval_strategy": "small_to_big",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Vizinho de compare",
+     "metadata": {
+      "id": "n-compare",
+      "retrieval_strategy": "small_to_big",
+      "retrieval_rank": 3
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 4
+     }
+    }
+   ]
+  },
+  {
+   "name": "compression",
+   "strategy": "contextual_compression",
+   "query": "busca",
+   "deps": [
+    "embedder",
+    "compressor"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.8164965510368347,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    }
+   ]
+  },
+  {
+   "name": "compression_llm",
+   "strategy": "contextual_compression",
+   "query": "fruta python",
+   "deps": [
+    "embedder",
+    "llm"
+   ],
+   "rank_only": false,
+   "config": {
+    "top_n": 3,
+    "fetch_k": 4
+   },
+   "expected": [
+    {
+     "page_content": "Fortaleza tem praia,",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_score": 0.5000000596046448,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1,
+      "compressed": true
+     }
+    },
+    {
+     "page_content": "Python possui tipagem",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.40824830532073975,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2,
+      "compressed": true
+     }
+    },
+    {
+     "page_content": "Python e Rust:",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.3535533845424652,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3,
+      "compressed": true
+     }
+    }
+   ]
+  },
+  {
+   "name": "rerank",
+   "strategy": "rerank",
+   "query": "python",
+   "deps": [
+    "embedder",
+    "reranker"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "cross_encoder_rerank",
+   "strategy": "cross_encoder_rerank",
+   "query": "busca",
+   "deps": [
+    "embedder",
+    "reranker"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "base_strategy": "bm25"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "colbert_rerank",
+   "strategy": "colbert_rerank",
+   "query": "rust",
+   "deps": [
+    "embedder",
+    "reranker"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "llm_rerank",
+   "strategy": "llm_rerank",
+   "query": "python busca",
+   "deps": [
+    "embedder",
+    "llm"
+   ],
+   "rank_only": false,
+   "config": {
+    "top_n": 3
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 6.5,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 4.5,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 2.5,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "llm_rerank_injected",
+   "strategy": "llm_rerank",
+   "query": "python",
+   "deps": [
+    "embedder",
+    "llm",
+    "reranker"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "recency_flat",
+   "strategy": "recency",
+   "query": "qualquer",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "decay_rate": 0
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 1.0,
+      "retrieval_strategy": "recency",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 1.0,
+      "retrieval_strategy": "recency",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 1.0,
+      "retrieval_strategy": "recency",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "recency",
+   "strategy": "recency",
+   "query": "qualquer",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": true,
+   "config": {
+    "k": 7
+   },
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.8941683397880135,
+      "retrieval_strategy": "recency",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.8405380354069911,
+      "retrieval_strategy": "recency",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.7900877829818885,
+      "retrieval_strategy": "recency",
+      "retrieval_rank": 3
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.5580428344337129,
+      "retrieval_strategy": "recency",
+      "retrieval_rank": 4
+     }
+    },
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_score": 0.04255911034409905,
+      "retrieval_strategy": "recency",
+      "retrieval_rank": 5
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "recency",
+      "retrieval_rank": 6
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "recency",
+      "retrieval_rank": 7
+     }
+    }
+   ]
+  },
+  {
+   "name": "time_weighted_flat",
+   "strategy": "time_weighted",
+   "query": "python",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "decay_rate": 0
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 1.5773502588272095,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 1.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 1.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "graph",
+   "strategy": "graph",
+   "query": "python",
+   "deps": [
+    "provider"
+   ],
+   "rank_only": false,
+   "config": {
+    "documents": [],
+    "filters": {
+     "kind": "code"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_strategy": "graph",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_strategy": "graph",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_strategy": "graph",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "knowledge_graph",
+   "strategy": "knowledge_graph",
+   "query": "python",
+   "deps": [
+    "provider"
+   ],
+   "rank_only": false,
+   "config": {
+    "documents": [],
+    "filters": {
+     "kind": "code"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_strategy": "knowledge_graph",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_strategy": "knowledge_graph",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_strategy": "knowledge_graph",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "sql",
+   "strategy": "sql",
+   "query": "python",
+   "deps": [
+    "provider"
+   ],
+   "rank_only": false,
+   "config": {
+    "documents": [],
+    "filters": {
+     "kind": "code"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_strategy": "sql",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_strategy": "sql",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_strategy": "sql",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "web_search",
+   "strategy": "web_search",
+   "query": "python",
+   "deps": [
+    "provider"
+   ],
+   "rank_only": false,
+   "config": {
+    "documents": [],
+    "filters": {
+     "kind": "code"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_strategy": "web_search",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_strategy": "web_search",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_strategy": "web_search",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "knowledge_base",
+   "strategy": "knowledge_base",
+   "query": "python",
+   "deps": [
+    "provider"
+   ],
+   "rank_only": false,
+   "config": {
+    "documents": [],
+    "filters": {
+     "kind": "code"
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_strategy": "knowledge_base",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_strategy": "knowledge_base",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_strategy": "knowledge_base",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "adaptive_codes",
+   "strategy": "adaptive",
+   "query": "python 3.12",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.03278688524590164,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.03225806451612903,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.031746031746031744,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "adaptive_dense",
+   "strategy": "adaptive",
+   "query": "python",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.5773502588272095,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.5,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "adaptive_lexical",
+   "strategy": "adaptive",
+   "query": "busca densa",
+   "deps": [],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 2.25070675710968,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 2.1217915525574558,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.8047313544273581,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "adaptive_router",
+   "strategy": "adaptive",
+   "query": "fruta",
+   "deps": [
+    "embedder",
+    "router"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "strategies": [
+      "dense",
+      "keyword"
+     ]
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 1.0,
+      "retrieval_strategy": "keyword",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_score": 1.0,
+      "retrieval_strategy": "keyword",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "router",
+   "strategy": "router",
+   "query": "python fruta",
+   "deps": [
+    "embedder",
+    "router"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "strategies": [
+      "dense",
+      "fuzzy"
+     ]
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.30985915492957744,
+      "retrieval_strategy": "fuzzy",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.3076923076923077,
+      "retrieval_strategy": "fuzzy",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_score": 0.25396825396825395,
+      "retrieval_strategy": "fuzzy",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "fallback",
+   "strategy": "fallback",
+   "query": "python",
+   "deps": [
+    "embedder"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "strategies": [
+      "custom",
+      "boolean",
+      "bm25"
+     ]
+    }
+   },
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_strategy": "boolean",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_strategy": "boolean",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "cascade_default",
+   "strategy": "cascade",
+   "query": "python",
+   "deps": [
+    "embedder",
+    "reranker"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.5,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "cascade_stages",
+   "strategy": "cascade",
+   "query": "busca densa",
+   "deps": [
+    "embedder",
+    "llm"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "stages": [
+      "bm25",
+      "dense",
+      "llm_rerank"
+     ]
+    },
+    "top_n": 3
+   },
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 6.5,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 4.5,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 2.5,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "cascade_compression",
+   "strategy": "cascade",
+   "query": "busca",
+   "deps": [
+    "embedder",
+    "compressor"
+   ],
+   "rank_only": false,
+   "config": {
+    "options": {
+     "stages": [
+      "keyword",
+      "contextual_compression"
+     ]
+    }
+   },
+   "expected": [
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 2.0,
+      "retrieval_strategy": "keyword",
+      "retrieval_rank": 1
+     }
+    }
+   ]
+  },
+  {
+   "name": "custom",
+   "strategy": "custom",
+   "query": "python",
+   "deps": [
+    "custom"
+   ],
+   "rank_only": false,
+   "config": {},
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_strategy": "custom",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Fortaleza tem praia, sol e fruta fresca o ano todo.",
+     "metadata": {
+      "id": "fortaleza",
+      "kind": "travel",
+      "timestamp": "2025-12-31T23:59:59+00:00",
+      "retrieval_strategy": "custom",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_strategy": "custom",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  }
+ ],
+ "legacy": [
+  {
+   "name": "legacy_tf_idf",
+   "method": "tf_idf_retrieval",
+   "args": [
+    "busca densa",
+    2
+   ],
+   "deps": [
+    "embedder"
+   ],
+   "expected": [
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.4245466312570114,
+      "retrieval_strategy": "tfidf",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.2561947297409256,
+      "retrieval_strategy": "tfidf",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "legacy_bm25",
+   "method": "bm25_retrieval",
+   "args": [
+    "python",
+    2
+   ],
+   "deps": [
+    "embedder"
+   ],
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 1.248259405645121,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 1.1322706998108398,
+      "retrieval_strategy": "bm25",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "legacy_dense",
+   "method": "dense_retrieval",
+   "args": [
+    "rust",
+    2
+   ],
+   "deps": [
+    "embedder"
+   ],
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.5,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.5,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "legacy_hybrid",
+   "method": "hybrid_retrieval",
+   "args": [
+    "python busca",
+    3
+   ],
+   "deps": [
+    "embedder"
+   ],
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.01639344262295082,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.016001024065540194,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.016001024065540194,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "legacy_hybrid_tfidf",
+   "method": "hybrid_retrieval",
+   "args": [
+    "python busca",
+    3,
+    [
+     0.2,
+     0.8
+    ],
+    "tfidf"
+   ],
+   "deps": [
+    "embedder"
+   ],
+   "expected": [
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.01639344262295082,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.016129032258064516,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.015873015873015872,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 3
+     }
+    }
+   ]
+  },
+  {
+   "name": "legacy_ensemble",
+   "method": "ensemble_retrieval",
+   "args": [
+    "rust",
+    [
+     "dense",
+     "keyword"
+    ],
+    2
+   ],
+   "deps": [
+    "embedder"
+   ],
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.03278688524590164,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.03225806451612903,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "legacy_rerank",
+   "method": "rerank_retrieval",
+   "args": [
+    "python",
+    4,
+    2
+   ],
+   "deps": [
+    "embedder",
+    "reranker"
+   ],
+   "expected": [
+    {
+     "page_content": "Busca híbrida combina recuperação densa e lexical.",
+     "metadata": {
+      "id": "search",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "timestamp": 1793000000,
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Banana é uma fruta tropical amarela, doce e barata.",
+     "metadata": {
+      "id": "banana",
+      "kind": "food",
+      "timestamp": "2026-09-15T08:30:00Z",
+      "retrieval_score": 0.0,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "legacy_compression",
+   "method": "contextual_compression_retrieval",
+   "args": [
+    "busca",
+    2
+   ],
+   "deps": [
+    "embedder",
+    "compressor"
+   ],
+   "expected": [
+    {
+     "page_content": "A busca lexical BM25 pondera termos raros; a busca densa usa vetores.",
+     "metadata": {
+      "id": "bm25",
+      "kind": "search",
+      "parent_id": "guide-search",
+      "retrieval_score": 0.8164965510368347,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    }
+   ]
+  },
+  {
+   "name": "legacy_multi_query",
+   "method": "multi_query_retrieval",
+   "args": [
+    "python",
+    2
+   ],
+   "deps": [
+    "embedder",
+    "query_generator"
+   ],
+   "expected": [
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.03278688524590164,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.03225806451612903,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "legacy_rephrase",
+   "method": "rephrase_query_retrieval",
+   "args": [
+    "python",
+    2
+   ],
+   "deps": [
+    "embedder",
+    "llm"
+   ],
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.7071067690849304,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.40824830532073975,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "legacy_reprase",
+   "method": "reprase_query_retrieval",
+   "args": [
+    "python",
+    2
+   ],
+   "deps": [
+    "embedder",
+    "query_generator"
+   ],
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.7071067690849304,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python possui tipagem dinâmica e uma sintaxe simples.",
+     "metadata": {
+      "id": "python",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-11-01T12:00:00+00:00",
+      "retrieval_score": 0.40824830532073975,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  },
+  {
+   "name": "legacy_self_query",
+   "method": "self_query_retrieval",
+   "args": [
+    "código rust",
+    "docs",
+    [],
+    [],
+    [],
+    2
+   ],
+   "deps": [
+    "embedder",
+    "query_constructor"
+   ],
+   "expected": [
+    {
+     "page_content": "Rust é uma linguagem com tipagem estática e sintaxe expressiva.",
+     "metadata": {
+      "id": "rust",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": "2026-10-20T00:00:00-03:00",
+      "retrieval_score": 0.5,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 1
+     }
+    },
+    {
+     "page_content": "Python e Rust: duas linguagem populares para busca e dados.",
+     "metadata": {
+      "id": "compare",
+      "kind": "code",
+      "parent_id": "guide",
+      "timestamp": 0,
+      "retrieval_score": 0.5,
+      "retrieval_strategy": "dense",
+      "retrieval_rank": 2
+     }
+    }
+   ]
+  }
+ ]
+}

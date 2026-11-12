@@ -1,0 +1,32 @@
+[package]
+name = "retriever"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "Estratégias de recuperação (retrieval) para RAG"
+
+[features]
+default = ["onnx"]
+# Reranking com cross-encoder em ONNX Runtime (rerank, cross_encoder_rerank) e embeddings com
+# modelos locais (dense e afins), via crate embedding.
+onnx = ["embedding/onnx"]
+# multimodal com CLIP/SigLIP.
+vision = ["embedding/vision"]
+# Cliente de LLM compatível com OpenAI (Ollama, vLLM...) para as estratégias que reescrevem a
+# consulta, comprimem ou reordenam com LLM.
+llm = ["dep:reqwest"]
+# Contrato assíncrono (ainvoke, abatch, astream) sobre tokio.
+async = ["dep:tokio"]
+
+[dependencies]
+chunking = { path = "../chunking", default-features = false }
+embedding = { path = "../embedding", default-features = false }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+regex = "1.13"
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"], optional = true }
+tokio = { version = "1", features = ["rt", "sync"], optional = true }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }

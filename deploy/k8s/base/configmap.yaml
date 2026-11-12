@@ -55,4 +55,16 @@ data:
   RATE_EMBEDDING_PER_MIN: "30"
   # Modelos LOCAIS montados no pod (sem eles, só hashing, tfidf, bm25 e lsa):
   # EMBEDDING_MODELS: "e5=/models/multilingual-e5-base,bge=/models/bge-m3,clip=/models/clip-vit-base-patch32"
+  # Recuperação (/v1/retrieval): acervo no pedido, worker isolado e SEM rede; embeddings de EMBEDDING_MODELS.
+  RETRIEVAL_MAX_DOCUMENTS: "2000"
+  RETRIEVAL_MAX_TEXT_MB: "5"
+  RETRIEVAL_MAX_QUERIES: "16"
+  RETRIEVAL_MAX_K: "100"
+  RETRIEVAL_MAX_FETCH_K: "500"
+  RETRIEVAL_MAX_CONCURRENT: "2"
+  RETRIEVAL_TIMEOUT_SECS: "120"
+  RETRIEVAL_WORKER_MAX_RSS_MB: "0"
+  RATE_RETRIEVAL_PER_MIN: "30"
+  # Cross-encoder LOCAL montado no pod (sem ele, rerank e cross_encoder_rerank ficam indisponíveis):
+  # RETRIEVAL_RERANK_MODEL: "/models/bge-reranker-base"
   SECURITY_ALERT_LOGIN_FAILURES: "20"

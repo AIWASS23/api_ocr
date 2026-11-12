@@ -38,9 +38,11 @@ no README. Suporte dos ecossistemas:
 
 O lockfile foi atualizado para `ctutils 0.4.7`, `rustls-webpki 0.103.16`,
 `webpki-root-certs 1.0.11` e `webpki-roots 1.0.11`. A versão `zip 8.6.0` foi
-removida: Docling e seus componentes estão alinhados em `2.53.1`, com
-`calamine 0.37.0` e `utoipa-swagger-ui 10.0.2`, que usam ZIP 9. O ONNX Runtime
-foi alinhado em `2.0.0-rc.15`, compatível com Docling e fastembed.
+removida: Docling e seus componentes estão alinhados em `2.82.1`, com
+`calamine 0.38.0` e `utoipa-swagger-ui 10.0.2`, que usam ZIP 9. O ONNX Runtime
+foi alinhado em `2.0.0-rc.15`, compatível com Docling e fastembed. A atualização
+do Docling de `2.53.1` para `2.82.1` corrigiu o RUSTSEC-2026-0436 (`calamine`
+`0.37.0`: pânico e alocação sem limite no leitor CFB/OLE2 de `.xls`/`.xlsb`).
 `pulldown-cmark` também foi atualizado para `0.13.6` para corrigir o alerta
 RUSTSEC-2026-0414 encontrado pela auditoria atualizada.
 
