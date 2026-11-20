@@ -9,7 +9,15 @@ updates:
     schedule:
       interval: cron
       cronjob: "0 4 * * *"
-    open-pull-requests-limit: 10
+    # Mantém atualizações rotineiras desativadas; CVEs continuam abrindo PRs.
+    open-pull-requests-limit: 0
+    labels:
+      - dependencies
+      - cargo
+      - security
+    commit-message:
+      prefix: "chore(deps-cargo)"
+      include: scope
     # Inclui transitivas como ctutils, rustls-webpki, webpki-roots e zip.
     allow:
       - dependency-type: all
@@ -35,7 +43,14 @@ updates:
     schedule:
       interval: cron
       cronjob: "0 4 * * *"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
+    labels:
+      - dependencies
+      - docker
+      - security
+    commit-message:
+      prefix: "build(docker)"
+      include: scope
     # A imagem da aplicação é publicada pelo próprio projeto. O Postgres fica na 17: uma major
     # nova não abre o volume da anterior ("database files are incompatible with server") e exige
     # migrar os dados (pg_upgrade ou dump/restore); minor e patch da 17 continuam chegando.
@@ -54,7 +69,14 @@ updates:
     schedule:
       interval: cron
       cronjob: "0 4 * * *"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
+    labels:
+      - dependencies
+      - docker-compose
+      - security
+    commit-message:
+      prefix: "build(compose)"
+      include: scope
     ignore:
       - dependency-name: api-ocr
       # Postgres fixo na 17 (ver acima).
@@ -70,7 +92,14 @@ updates:
     schedule:
       interval: cron
       cronjob: "0 4 * * *"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
+    labels:
+      - dependencies
+      - github-actions
+      - security
+    commit-message:
+      prefix: "ci(actions)"
+      include: scope
     groups:
       actions-minor-and-patch:
         patterns: ["*"]
