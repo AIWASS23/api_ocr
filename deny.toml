@@ -10,7 +10,10 @@ all-features = false
 # Exceções, se inevitáveis, vão em `ignore` COM justificativa e prazo.
 yanked = "deny"
 unmaintained = "workspace"
-ignore = []
+# `chrono` é usado diretamente pela API (modelos/sqlx) e por Docling/sqlx.
+# O RustSec informa que não há atualização segura disponível para este advisory;
+# manter a exceção específica até a migração para uma alternativa mantida.
+ignore = ["RUSTSEC-2026-0543"]
 
 [licenses]
 confidence-threshold = 0.9
@@ -28,7 +31,6 @@ allow = [
     "BSL-1.0",
     "0BSD",
     "CC0-1.0",
-    "NCSA",
 ]
 
 # Crates do próprio workspace (publish = false) não precisam de licença.
